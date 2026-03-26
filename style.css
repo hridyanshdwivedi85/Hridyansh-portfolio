@@ -313,12 +313,15 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     #mod-brew .relative.flex-grow {
         overflow: hidden !important;
-        min-height: 300px;
+        min-height: 260px;
     }
 
     #brew-machine-panel {
-        min-height: 560px !important;
-        padding: 0.9rem !important;
+        min-height: clamp(350px, 74vh, 500px) !important;
+        max-height: 78vh;
+        padding: 0.85rem 0.75rem !important;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     #mod-brew .w-full.flex.flex-wrap.md\:flex-nowrap {
@@ -329,19 +332,30 @@ input:checked + .slider:before { transform: translateX(18px); }
     #mod-brew .w-full.flex.flex-wrap.md\:flex-nowrap > div:last-child {
         width: 100%;
         justify-content: space-between;
+        align-items: stretch;
     }
 
-    #mod-brew .hw-screen.rounded-xl.w-32.h-24 {
+    #mod-brew .hw-screen.rounded-xl.h-24 {
         width: calc(50% - 6px) !important;
     }
 
     .mobile-coffee-scale {
-        transform: scale(0.62) !important;
+        transform: scale(0.72) !important;
         transform-origin: center top !important;
-        min-height: 240px !important;
+        min-height: 280px !important;
         margin-bottom: 0 !important;
-        padding-top: 4px;
+        padding-top: 8px;
     }
+
+    .espresso-cup {
+        margin-top: 3rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .portafilter-group {
+        margin-top: 1.5rem !important;
+    }
+
 
     .compiler-scale-fix {
         transform: scale(0.60) !important;
@@ -391,6 +405,18 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     #mod-portfolio .heading-font {
         font-size: clamp(1.6rem, 8vw, 2.1rem) !important;
+    }
+}
+
+
+@media (max-width: 414px) {
+    .mobile-coffee-scale {
+        transform: scale(0.64) !important;
+        min-height: 250px !important;
+    }
+
+    #brew-machine-panel {
+        max-height: 76vh;
     }
 }
 
