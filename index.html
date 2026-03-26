@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en" class="scrollbar-hide bg-[#030303]">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport fixed for Google Mobile guidelines (Pinch-to-zoom enabled) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Hridyansh Dwivedi | The Lab</title>
+    <meta name="description" content="Portfolio of Hridyansh Dwivedi - System Architect & CEO. Engineering aggressive business growth through deep technical execution.">
+    <meta name="keywords" content="Hridyansh Dwivedi, Portfolio, System Architect, Web Developer, Full Stack, App Developer">
+    <meta name="author" content="Hridyansh Dwivedi">
+
+    <!-- Open Graph / Social Media Sharing -->
+    <meta property="og:title" content="Hridyansh Dwivedi | The Lab">
+    <meta property="og:description" content="Engineering aggressive business growth through deep technical execution.">
+    <meta property="og:type" content="website">
+    <!-- Replace with a direct link to a screenshot of your website hosted anywhere -->
+    <meta property="https://www.yourdomain.com/assets/images/og-image.png">
+    
+    <!-- Speed up External Resource Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="tailwind-output.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <!-- Custom CSS (Version updated to bust cache) -->
+<link rel="stylesheet" href="style.css?v=3.0">
+</head>
+<body>
+
+    <!-- Interaction Overlay for Audio Context -->
+    <div id="audio-unlock" class="fixed inset-0 z-[99999] bg-black flex flex-col items-center justify-center cursor-pointer transition-opacity duration-1000">
+        <div class="w-16 h-16 border-t-2 border-[var(--brand-orange)] rounded-full animate-spin mb-6"></div>
+        <div class="heading-font tracking-[0.3em] text-[var(--brand-orange)] font-bold text-xl animate-pulse">CLICK TO INITIALIZE AUDIO LINK</div>
+        <div class="code-font text-xs text-gray-500 mt-2">Establishing Neural Handshake...</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+    
+    <!-- General App Background (Canvas for standard tabs) -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Global Header -->
+    <div class="absolute top-8 left-12 z-50 text-white mix-blend-difference pointer-events-none">
+        <div class="heading-font text-2xl font-bold tracking-tighter">HD.</div>
+        <div class="code-font text-[8px] text-gray-500 uppercase tracking-widest mt-1">Sys.Online</div>
+    </div>
+
+    <div id="app-container">
+        
+        <div class="content-area" id="content-area">
+
+            <!-- MODULE 0: ORIGIN -->
+            <div class="module active" id="mod-origin">
+                <div class="max-w-3xl">
+                    <p class="code-font text-[var(--brand-orange)] text-xs mb-6 tracking-widest uppercase">> System Architect / CEO</p>
+                    <h1 class="heading-font text-7xl md:text-[120px] leading-[0.9] font-extrabold tracking-tighter mb-8 text-white drop-shadow-2xl">
+                        HRIDYANSH<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 to-gray-800">DWIVEDI.</span>
+                    </h1>
+                    <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed max-w-xl opacity-80">
+                        Engineering aggressive business growth through deep technical execution. Select a subsystem to initialize.
+                    </p>
+                </div>
+            </div>
+
+            <!-- --- NEW CODE --- -->
+<!-- MODULE 1: NEURAL CORE -->
+<div class="module" id="mod-neural">
+    <div class="w-full max-w-3xl mx-auto flex flex-col gap-3 md:gap-4 my-auto py-8 md:py-12 md:pr-32 lg:pr-48 px-4">        
+        <div class="hw-panel p-3 md:p-4 flex gap-3 md:gap-4 justify-center shrink-0 flex-wrap">
+            <button id="ai-btn-power" aria-label="Turn on Neural Core" class="hw-btn sound-click w-20 md:w-24 h-24 md:h-28 rounded-xl flex flex-col items-center justify-between py-3 md:py-4 cursor-pointer group"><i class="fas fa-power-off text-gray-600 text-lg md:text-xl group-hover:text-white transition"></i><div class="text-[8px] md:text-[9px] font-bold text-gray-500 tracking-widest">POWER</div><div class="hw-led" id="ai-led-power"></div></button>
+            <button id="ai-btn-ingest" class="hw-btn sound-click w-20 md:w-24 h-24 md:h-28 rounded-xl flex flex-col items-center justify-between py-3 md:py-4 cursor-pointer opacity-50 pointer-events-none"><i class="fas fa-database text-gray-600 text-lg md:text-xl"></i><div class="text-[8px] md:text-[9px] font-bold text-gray-500 tracking-widest">INGEST</div><div class="hw-led" id="ai-led-ingest"></div></button>
+            <button id="ai-btn-train" class="hw-btn sound-click w-20 md:w-24 h-24 md:h-28 rounded-xl flex flex-col items-center justify-between py-3 md:py-4 cursor-pointer opacity-50 pointer-events-none"><i class="fas fa-microchip text-gray-600 text-lg md:text-xl"></i><div class="text-[8px] md:text-[9px] font-bold text-gray-500 tracking-widest">TRAIN</div><div class="hw-led" id="ai-led-train"></div></button>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 md:gap-5 shrink-0">
+            <!-- Reduced screen height to h-40 -->
+            <div class="col-span-8 hw-panel p-1 hw-screen rounded-xl h-40 flex flex-col">
+                <div class="scanline"></div>
+                <div class="p-3 border-b border-[#222] flex justify-between items-center relative z-20">
+                    <div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-red-900" id="sys-status-dot"></div><span class="heading-font text-white font-bold tracking-widest text-xs uppercase">Neural_GLS</span></div>
+                    <span class="code-font text-[9px] text-gray-600" id="ai-status-text">SYSTEM OFFLINE</span>
+                </div>
+                <div class="flex-grow p-3 code-font text-[10px] text-[#d97706] opacity-0 overflow-hidden relative z-20" id="ai-terminal"><div class="w-2 h-3 bg-[#d97706] animate-pulse inline-block"></div></div>
+            </div>
+
+            <!-- Reduced gauge screen height to h-40 -->
+            <div class="col-span-4 hw-panel p-1 hw-screen rounded-xl h-40 flex items-center justify-center relative">
+                <div class="scanline"></div><div class="code-font text-[8px] absolute top-3 left-3 text-gray-600">PID.SYS</div>
+                <div class="relative w-28 h-28 opacity-10 transition-opacity duration-1000" id="ai-gauge">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="#111" stroke-width="2"/><circle id="gauge-fill" cx="50" cy="50" r="45" fill="none" stroke="#d97706" stroke-width="4" stroke-dasharray="283" stroke-dashoffset="283" class="transition-all duration-300"/></svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center z-20"><span class="code-font text-2xl text-white font-bold" id="gauge-text">0</span><span class="text-[7px] text-gray-500 uppercase mt-1">Epochs</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reduced orb container height to h-40 -->
+        <div class="hw-panel p-6 flex justify-center items-center h-40 relative overflow-hidden shrink-0">
+            <div class="absolute top-0 w-32 h-12 bg-gradient-to-b from-[#111] to-transparent rounded-b-3xl border-b border-[#333]"></div>
+            <div class="w-3 h-3 bg-black rounded-full absolute top-10 border border-[#333] z-10"></div>
+            <div class="mt-12 w-14 h-14 rounded-full bg-black border-2 border-[#222] shadow-[inset_0_0_20px_#000] flex items-center justify-center transition-all duration-500 relative" id="ai-orb">
+                <div class="absolute inset-0 rounded-full bg-[var(--brand-orange)] opacity-0 blur-md transition-opacity duration-500" id="ai-orb-glow"></div>
+                <i class="fas fa-brain text-[#333] text-xl transition-colors duration-500 z-10" id="ai-orb-icon"></i>
+            </div>
+            <div id="data-drops" class="absolute inset-0 pointer-events-none z-0"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODULE 2: ESSENCE BREW (Live Coffee Animation) -->
+            <div class="module" id="mod-brew">
+                <div class="w-full max-w-5xl mx-auto h-full flex flex-col justify-center items-center relative pb-10">
+                    
+                    <!-- Cozy Coffee Shop Atmosphere Background -->
+                    <div class="absolute inset-0 cozy-bg-layer pointer-events-none"></div>
+
+                    <div class="relative w-full max-w-3xl h-auto min-h-[480px] md:h-[550px] flex flex-col p-4 md:p-6 rounded-3xl overflow-hidden border border-white/5 bg-[#110a07]/90 shadow-2xl backdrop-blur-sm z-10">
+                        
+                        <!-- Heat Haze & Particle Container -->
+                        <div id="v2-haze" class="heat-haze"></div>
+                        <!-- NEW CODE -->
+<div id="v2-particle-container" class="absolute inset-0 pointer-events-none overflow-hidden z-40"></div>
+
+                        <!-- Floating Coffee Beans -->
+                        <div class="coffee-bean" style="top: 15%; left: 85%; transform: rotate(15deg) scale(1.2);"></div>
+                        <div class="coffee-bean" style="bottom: 10%; right: 10%; transform: rotate(-45deg) scale(0.9);"></div>
+                        <div class="coffee-bean" style="top: 50%; left: 5%; transform: rotate(70deg) scale(1.1);"></div>
+
+                        <!-- Top Dashboard Area -->
+                        <div class="w-full flex flex-wrap md:flex-nowrap justify-between gap-4 mb-4 z-30">
+                            
+                            <!-- Context Text & Hardware Buttons -->
+                            <div class="flex flex-col gap-4">
+                                <div>
+                                    <div class="heading-font text-2xl font-extrabold text-white tracking-tighter flex items-center gap-2">
+                                        <span class="text-white">GAGGIA.</span><span style="color: #d97706;">GLS</span>
+                                    </div>
+                                    <div class="code-font text-[8px] text-gray-500 tracking-[0.2em] mt-1 uppercase">Pro-Mod Series</div>
+                                </div>
+
+                                <div class="hw-panel p-3 flex gap-3 w-max bg-black/50">
+                                    <button id="brew-btn-power" aria-label="Power on Coffee Machine" class="hw-btn sound-click w-14 h-20 rounded-lg flex flex-col items-center justify-between py-2 group">
+                                        <i class="fas fa-power-off text-gray-600 text-sm group-hover:text-white transition"></i>
+                                        <div class="hw-led" id="led-power"></div>
+                                        <div class="text-[7px] font-bold text-gray-500 tracking-widest uppercase">Power</div>
+                                    </button>
+                                    <button id="brew-btn-brew" class="hw-btn sound-click w-14 h-20 rounded-lg flex flex-col items-center justify-between py-2 group opacity-50 pointer-events-none">
+                                        <i class="fas fa-coffee text-gray-600 text-sm group-hover:text-[var(--brand-orange)] transition"></i>
+                                        <div class="hw-led" id="led-brew"></div>
+                                        <div class="text-[7px] font-bold text-gray-500 tracking-widest uppercase">Brew</div>
+                                    </button>
+                                    <button id="brew-btn-steam" class="hw-btn sound-click w-14 h-20 rounded-lg flex flex-col items-center justify-between py-2 group opacity-50 pointer-events-none">
+                                        <i class="fas fa-wind text-gray-600 text-sm group-hover:text-white transition"></i>
+                                        <div class="hw-led" id="led-steam"></div>
+                                        <div class="text-[7px] font-bold text-gray-500 tracking-widest uppercase">Steam</div>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Telemetry Screens -->
+                            <div class="flex gap-3 items-end">
+                                <!-- PID Screen -->
+                                <div class="hw-screen rounded-xl w-32 h-24 p-2 flex flex-col justify-between border border-[#333]">
+                                    <div class="scanline"></div>
+                                    <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">PID.SYS</span><div class="w-1.5 h-1.5 rounded-full bg-red-900" id="pid-dot"></div></div>
+                                    <div class="z-10 text-center"><span id="pid-temp" class="code-font text-3xl text-gray-700 font-bold transition-colors duration-500">24.0</span><span class="text-[10px] text-gray-600 ml-1">°C</span></div>
+                                    <div class="z-10 flex justify-between"><span class="code-font text-[6px] text-gray-600" id="pid-status-text">OFFLINE</span><span class="code-font text-[6px] text-gray-600">SV:93.0</span></div>
+                                </div>
+                                
+                                <!-- Timer Screen -->
+                                <div class="hw-screen rounded-xl w-32 h-24 p-2 flex flex-col justify-between border border-[#333]">
+                                    <div class="scanline"></div>
+                                    <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">TIME</span><div class="w-1.5 h-1.5 rounded-full bg-gray-700" id="tmr-dot"></div></div>
+                                    <div class="z-10 text-center"><span id="shot-timer" class="code-font text-3xl text-gray-700 font-bold transition-colors duration-300">00.0</span><span class="text-[10px] text-gray-600 ml-1">s</span></div>
+                                    <div class="z-10 flex justify-between"><span class="code-font text-[6px] text-gray-600">YIELD: <span id="shot-yield">0.0</span>g</span><span class="code-font text-[6px] text-gray-600">RATIO 1:2.0</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- "LIVE SIM" Area (Portafilter & Cup) -->
+						<div class="relative flex-grow w-full border border-white/5 rounded-xl bg-gradient-to-b from-[#111] to-[#050505] flex flex-col items-center overflow-hidden z-20 shadow-[inset_0_20px_50px_rgba(0,0,0,0.8)]">
+							<div class="absolute top-3 left-4 flex items-center gap-2 z-30"><div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" id="sim-live-dot"></div><span class="code-font text-[9px] text-gray-500 uppercase tracking-widest">Live Sim</span></div>
+
+							<div class="mobile-coffee-scale">
+								<!-- Espresso Machine Group -->
+								<div class="portafilter-group relative mt-12 z-20">
+									<div class="pf-mount"></div>
+									<div class="pf-handle"></div>
+									<div class="pf-body">
+										<div class="pf-spout left"></div>
+										<div class="pf-spout right"></div>
+									</div>
+									<!-- Streams -->
+									<div class="espresso-stream left" id="stream-l"></div>
+									<div class="espresso-stream right" id="stream-r"></div>
+								</div>
+
+								<!-- Espresso Cup -->
+								<div class="espresso-cup mt-[50px] mb-6 z-10">
+									<div class="cup-handle"></div>
+									<div class="cup-body">
+										<div class="cup-inner">
+											<div class="cup-liquid" id="cup-liquid">
+												<div class="cup-crema"></div>
+											</div>
+										</div>
+									</div>
+									<div class="cup-shadow"></div>
+								</div>
+							</div>
+						</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- --- NEW CODE --- -->
+            <!-- MODULE 3: COMPILER V2 -->
+<div class="module" id="mod-compiler">
+    <!-- SHIFTED LEFT: max-w-3xl and increased right padding to completely clear the menu -->
+    <div class="w-full max-w-3xl mx-auto flex flex-col gap-4 relative h-full justify-start pt-8 md:justify-center pb-32 px-2 md:px-0 md:pr-48 lg:pr-64">
+        <div class="code-font text-[10px] text-[#3ddc84] tracking-widest uppercase text-center w-full mb-2 shrink-0">> UNIVERSAL DEPLOYMENT PIPELINE</div>
+        
+        <!-- Graph scaled down aggressively using CSS scale properties to fit tight spaces -->
+        <div class="flex-grow flex items-center justify-between relative px-2 md:px-6 compiler-scale-fix origin-center w-full shrink-0 min-h-[350px]">
+            
+            <!-- Nodes shrunk from w-48 to w-40 -->
+            <div class="flex flex-col gap-6 z-20 w-40 relative">
+                <div class="compiler-node" id="node-src-1">
+                    <i class="fab fa-js text-yellow-400 text-2xl mb-2"></i>
+                    <div class="code-font text-[8px] text-gray-400">Main.js</div>
+                </div>
+                <div class="compiler-node" id="node-src-2">
+                    <i class="fab fa-react text-blue-400 text-2xl mb-2"></i>
+                    <div class="code-font text-[8px] text-gray-400">App.tsx</div>
+                </div>
+                <div class="compiler-node" id="node-src-3">
+                    <i class="fab fa-css3-alt text-blue-500 text-2xl mb-2"></i>
+                    <div class="code-font text-[8px] text-gray-400">Styles.css</div>
+                </div>
+            </div>
+
+            <div class="relative z-30 flex flex-col items-center">
+                <div class="forge-container group" id="forge-core">
+                    <div class="forge-ring ring-1"></div>
+                    <div class="forge-ring ring-2"></div>
+                    <div class="forge-ring ring-3"></div>
+                    <div class="forge-center">
+                        <i class="fas fa-cube text-white text-4xl"></i>
+                    </div>
+                </div>
+                <button id="btn-compile-v2" class="mt-12 sound-click bg-transparent border border-[#3ddc84] text-[#3ddc84] hover:bg-[#3ddc84] hover:text-black transition-all duration-300 font-bold px-8 py-3 rounded-full text-xs tracking-widest code-font cursor-pointer z-50 shadow-[0_0_15px_rgba(61,220,132,0.2)] hover:shadow-[0_0_25px_rgba(61,220,132,0.6)]">
+                    INITIALIZE BUILD
+                </button>
+            </div>
+
+            <!-- Output nodes shrunk from w-48 to w-40 -->
+            <div class="flex flex-col gap-12 z-20 w-40">
+                <div class="output-node opacity-30 scale-90" id="out-apple">
+                    <i class="fab fa-apple text-white text-5xl"></i>
+                    <div class="code-font text-[10px] text-white mt-4 font-bold tracking-widest">iOS BUILD</div>
+                    <div class="status-badge">AWAITING</div>
+                </div>
+                <div class="output-node opacity-30 scale-90" id="out-android">
+                    <i class="fab fa-android text-[#3ddc84] text-5xl"></i>
+                    <div class="code-font text-[10px] text-[#3ddc84] mt-4 font-bold tracking-widest">APK BUILD</div>
+                    <div class="status-badge">AWAITING</div>
+                </div>
+            </div>
+
+            <svg class="absolute inset-0 w-full h-full pointer-events-none z-10" id="pipeline-lines">
+                <path class="pipe-line" id="pipe-in-1" d="M 150 150 L 350 350" />
+                <path class="pipe-line" id="pipe-in-2" d="M 150 350 L 350 350" />
+                <path class="pipe-line" id="pipe-in-3" d="M 150 550 L 350 350" />
+                <path class="pipe-line" id="pipe-out-1" d="M 650 350 L 850 200" />
+                <path class="pipe-line" id="pipe-out-2" d="M 650 350 L 850 500" />
+            </svg>
+        </div>
+
+        <div class="hw-screen h-28 rounded-xl p-4 border-[#222] mt-2 z-20 shrink-0">
+            <div class="scanline"></div>
+            <div class="code-font text-[10px] text-gray-400" id="compiler-terminal">
+                > SYSTEM IDLE.<br>> AWAITING BUILD COMMAND.
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- MODULE: PORTFOLIO SHOWCASE -->
+            <div class="module" id="mod-portfolio">
+                <div class="w-full max-w-5xl mx-auto flex flex-col gap-16 relative pt-12 pb-32 md:pr-32 lg:pr-48">
+                    
+                    <!-- ============================================== -->
+                    <!-- APP 1: INSECONDS PRO (DESKTOP ENGINE)          -->
+                    <!-- ============================================== -->
+                    <div class="shrink-0 bg-[#050505]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-10 relative overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] group transition-all duration-700 hover:border-cyan-500/40">
+                        <!-- Animated Ambient Glow -->
+                        <div class="absolute -top-32 -right-32 w-96 h-96 bg-cyan-500 opacity-5 blur-[120px] rounded-full group-hover:opacity-20 transition-opacity duration-700 pointer-events-none"></div>
+                        
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 relative z-10">
+                            <div>
+                                <h2 class="heading-font text-4xl md:text-5xl font-bold text-white tracking-tighter flex items-center gap-3">
+                                    InSeconds <span class="text-cyan-400 italic font-light">Pro</span>
+                                </h2>
+                                <p class="code-font text-[11px] text-cyan-500/70 tracking-widest uppercase mt-3">> The Ultimate Desktop Cold Email Engine</p>
+                            </div>
+                            <a href="https://wa.me/916393972524?text=Hi%20Hridyansh,%20I'm%20interested%20in%20buying%20the%20InSeconds%20Pro%20Desktop%20Engine!" target="_blank" class="shrink-0 inline-flex items-center gap-2 bg-white/5 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500 hover:text-black px-6 py-3 rounded-full text-xs font-bold shadow-[0_0_20px_rgba(6,182,212,0.1)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:-translate-y-1 transition-all duration-300 sound-click">
+                                <i class="fas fa-server text-lg"></i> Purchase Engine
+                            </a>
+                        </div>
+                        
+                        <!-- NEW: INTERACTIVE TERMINAL SECTION (Replaces Image) -->
+                        <div class="w-full bg-[#020202] rounded-2xl border border-white/5 mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative group-hover:border-cyan-500/30 transition-all duration-500 overflow-hidden">
+                            <div class="bg-[#0a0a0a] px-4 py-3 flex items-center gap-2 border-b border-white/5">
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                <span class="code-font text-[10px] text-gray-500 ml-2">sys_architecture.py</span>
+                            </div>
+                            <div class="p-6 md:p-8 grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-cyan-400 code-font text-xs uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-microchip"></i> What is it made of?</h4>
+                                    <p class="text-gray-400 text-sm leading-relaxed font-light">
+                                        Powered by a blazing-fast <span class="text-white font-medium">Python FastAPI</span> backend and bundled securely as a compiled executable. Handles massive datasets (50,000+ leads) instantly in local memory via <span class="text-white font-medium">Pandas</span>. The frontend is a masterclass in modern web design utilizing <span class="text-white font-medium">HTMX, Tailwind CSS,</span> and <span class="text-white font-medium">DaisyUI</span>. Secured with <span class="text-white font-medium">Firebase Auth</span> and native <span class="text-white font-medium">Google OAuth2</span>.
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 class="text-cyan-400 code-font text-xs uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-terminal"></i> How it runs</h4>
+                                    <p class="text-gray-400 text-sm leading-relaxed font-light">
+                                        Transforms your local computer into a decentralized marketing powerhouse. It connects directly to multiple Google Accounts via their official APIs, rotating through accounts and Proxy IPs seamlessly. Using advanced multithreading, it processes thousands of emails in the background while mimicking human typing delays and tab-switching, viewing the traffic as <span class="text-white font-medium">100% authentic user behavior</span>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- KEY FEATURES BENTO GRID -->
+                        <h3 class="text-xs font-bold text-white/50 mb-5 flex items-center gap-2 uppercase tracking-widest code-font"><i class="fas fa-bolt text-cyan-400"></i> Core Engineering</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10 relative z-10">
+                            <!-- Bento Item -->
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-cyan-900/10 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-cyan-400 text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-cyan-300 transition-transform"><i class="fas fa-user-secret"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Anti-Spam & Cloaking</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Polymorphic text engine using "Ghost Text" and SVG cloaking. Destroys digital fingerprints so no two emails look the same to AI.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-cyan-900/10 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-cyan-400 text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-cyan-300 transition-transform"><i class="fas fa-file-invoice-dollar"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Schema Injection</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Tricks Gmail into Primary Inbox placement by injecting official "Invoice" JSON-LD schemas with native 'View & Pay' buttons.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-cyan-900/10 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-cyan-400 text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-cyan-300 transition-transform"><i class="fas fa-mobile-alt"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Device/ESP Spoofing</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Emulates Apple iOS headers or mimics enterprise routing from Amazon SES/SendGrid to borrow their high-trust sender reputations.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-cyan-900/10 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-cyan-400 text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-cyan-300 transition-transform"><i class="fas fa-network-wired"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Smart BCC Matrix</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Mathematically splits lists into organic, random-sized BCC chunks across dozens of accounts to maximize daily limits.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-cyan-900/10 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-cyan-400 text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-cyan-300 transition-transform"><i class="fas fa-file-pdf"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Dynamic PDF Engine</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Instantly compiles base HTML into beautifully formatted, unique PDF attachments on the fly with personalized prospect data.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-cyan-900/10 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-cyan-400 text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-cyan-300 transition-transform"><i class="fas fa-fingerprint"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Hash Busting</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Automatically alters hidden MD5 metadata of PDFs, Images, and CSVs for every single recipient to evade bulk attachment flags.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-cyan-900/10 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-cyan-400 text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-cyan-300 transition-transform"><i class="fas fa-robot"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">AI Co-Pilot Scanner</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Integrated Groq (Llama AI) generates highly-converting copy, creates Spintax, and scans emails for "Spam Scores" before sending.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-cyan-900/10 hover:border-cyan-500/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-cyan-400 text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-cyan-300 transition-transform"><i class="fas fa-terminal"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Dual-Terminal Monitor</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Watch the engine in real-time with a "Live Campaign Feed" and an "Advanced Debugger" terminal for deep network-level insights.</p>
+                            </div>
+                        </div>
+
+                        <!-- WHY IT'S GOOD SECTION -->
+                        <div class="p-6 md:p-8 bg-cyan-950/20 border border-cyan-500/20 rounded-2xl relative z-10">
+                            <h3 class="text-cyan-400 text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-check-double"></i> Why InSeconds Pro is the ultimate advantage:</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="flex gap-3"><i class="fas fa-star text-yellow-400 mt-1"></i> <div><strong class="text-white">Primary Inbox Placement:</strong> <span class="text-gray-400 text-sm">Bypasses promotional tabs utilizing timezone masking, text parity, and invoice schemas.</span></div></div>
+                                <div class="flex gap-3"><i class="fas fa-infinity text-blue-400 mt-1"></i> <div><strong class="text-white">Infinite Scalability:</strong> <span class="text-gray-400 text-sm">Manage 5 to 500+ accounts. Intelligent proxy mapping prevents Google rate limits.</span></div></div>
+                                <div class="flex gap-3"><i class="fas fa-bullseye text-red-400 mt-1"></i> <div><strong class="text-white">Hyper-Personalization:</strong> <span class="text-gray-400 text-sm">Send 10k emails where every prospect gets a unique message & custom PDF report.</span></div></div>
+                                <div class="flex gap-3"><i class="fas fa-shield-alt text-green-400 mt-1"></i> <div><strong class="text-white">Data Sovereignty:</strong> <span class="text-gray-400 text-sm">Lead lists & APIs never leave your computer. 100% safe from SaaS data breaches.</span></div></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- APP 2: INSECONDS CHROME EXTENSION              -->
+                    <!-- ============================================== -->
+                    <div class="shrink-0 bg-[#050505]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-10 relative overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] group transition-all duration-700 hover:border-[#facc15]/40">
+                        <!-- Animated Ambient Glow -->
+                        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-[#facc15] opacity-5 blur-[120px] rounded-full group-hover:opacity-15 transition-opacity duration-700 pointer-events-none"></div>
+                        
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 relative z-10">
+                            <div>
+                                <h2 class="heading-font text-4xl md:text-5xl font-bold text-white tracking-tighter flex items-center gap-3">
+                                    InSeconds <span class="text-[#facc15] italic font-light">Extension</span>
+                                </h2>
+                                <p class="code-font text-[11px] text-[#facc15]/70 tracking-widest uppercase mt-3">> The Ultimate Gmail Outreach Assistant</p>
+                            </div>
+                            <a href="https://wa.me/916393972524?text=Hi%20Hridyansh,%20I'm%20interested%20in%20buying%20the%20InSeconds%20Chrome%20Extension!" target="_blank" class="shrink-0 inline-flex items-center gap-2 bg-white/5 border border-[#facc15]/30 text-[#facc15] hover:bg-[#facc15] hover:text-black px-6 py-3 rounded-full text-xs font-bold shadow-[0_0_20px_rgba(250,204,21,0.1)] hover:shadow-[0_0_30px_rgba(250,204,21,0.4)] hover:-translate-y-1 transition-all duration-300 sound-click">
+                                <i class="fas fa-puzzle-piece text-lg"></i> Purchase Extension
+                            </a>
+                        </div>
+
+                        <!-- NEW: INTERACTIVE TERMINAL SECTION (Replaces Image) -->
+                        <div class="w-full bg-[#020202] rounded-2xl border border-white/5 mb-10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative group-hover:border-[#facc15]/30 transition-all duration-500 overflow-hidden">
+                            <div class="bg-[#0a0a0a] px-4 py-3 flex items-center gap-2 border-b border-white/5">
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                <span class="code-font text-[10px] text-gray-500 ml-2">manifest_v3_core.js</span>
+                            </div>
+                            <div class="p-6 md:p-8 grid md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 class="text-[#facc15] code-font text-xs uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-layer-group"></i> What is it made of?</h4>
+                                    <p class="text-gray-400 text-sm leading-relaxed font-light">
+                                        Built natively for the modern web browser as a <span class="text-white font-medium">Manifest V3</span> extension. Engineered using blazing-fast <span class="text-white font-medium">Vanilla JavaScript, HTML5,</span> and <span class="text-white font-medium">CSS3</span>. Enterprise-grade security is powered by <span class="text-white font-medium">Firebase Auth</span> and <span class="text-white font-medium">Firestore DB</span> for real-time session management. No external SMTP servers—everything runs entirely within the safety of your local browser.
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 class="text-[#facc15] code-font text-xs uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fas fa-play-circle"></i> How it runs</h4>
+                                    <p class="text-gray-400 text-sm leading-relaxed font-light">
+                                        Acts like a virtual human assistant inside your Gmail. Once a CSV is uploaded, it physically interacts with the <span class="text-white font-medium">Gmail DOM</span>. It automatically clicks "Compose", types the personalized body, and hits "Send." For follow-ups, it uses Gmail's search to find specific threads. Because it mimics exact human behavior with randomized delays, algorithms view these emails as <span class="text-white font-medium">organic, manual sends</span>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- KEY FEATURES BENTO GRID -->
+                        <h3 class="text-xs font-bold text-white/50 mb-5 flex items-center gap-2 uppercase tracking-widest code-font"><i class="fas fa-star text-[#facc15]"></i> Core Capabilities</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10 relative z-10">
+                            <!-- Bento Item -->
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-paper-plane"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Automated Campaigns</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Upload a contact list, choose a template, and the tool sends personalized cold emails one by one organically.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-reply-all"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Smart Follow-Up Engine</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Automatically send follow-up replies to recent "Sent" items or target email threads filed under specific Gmail Labels.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-user-clock"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Human-Like Sending</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Avoid spam filters by setting randomized time delays between emails and global throttling limits (e.g., 10 emails/hr).</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-vial"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">A/B Testing</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Create Variant A and B of your initial email. InSeconds automatically alternates between them to test performance.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-tags"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Dynamic Personalization</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Use merge tags like {first_name} and {company} to make every mass email feel individually hand-written.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-folder-open"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Rich Template Manager</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Built-in editor allows you to create, save, categorize, and organize multiple templates for subjects and bodies.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-calendar-check"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Campaign Scheduling</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Set a specific date and time for your campaign to launch automatically in the background using Chrome Alarms.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-paint-brush"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">Deep UI Customization</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">15+ aesthetic themes, high-contrast modes, panel transparency, and live background animations directly in Gmail.</p>
+                            </div>
+                            <div class="bg-white/[0.02] p-5 rounded-2xl border border-white/[0.05] hover:bg-yellow-900/10 hover:border-[#facc15]/40 transition-all duration-300 hover:-translate-y-1 group/bento shadow-lg">
+                                <div class="text-[#facc15] text-xl mb-3 group-hover/bento:scale-110 group-hover/bento:text-yellow-300 transition-transform"><i class="fas fa-pause-circle"></i></div>
+                                <h4 class="text-white font-bold text-sm mb-2">State Saving & Pause</h4>
+                                <p class="text-gray-400 text-xs leading-relaxed">Pause, stop, and resume campaigns at any time. The tool remembers exactly who has and hasn't been emailed yet.</p>
+                            </div>
+                        </div>
+
+                        <!-- WHY IT'S GOOD SECTION -->
+                        <div class="p-6 md:p-8 bg-yellow-950/20 border border-[#facc15]/20 rounded-2xl relative z-10">
+                            <h3 class="text-[#facc15] text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-check-double"></i> Why InSeconds Extension is a game-changer:</h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="flex gap-3"><i class="fas fa-shield-check text-green-400 mt-1"></i> <div><strong class="text-white">Protects Sender Reputation:</strong> <span class="text-gray-400 text-sm">Sends individually right from your actual Gmail window, bypassing strict spam filters.</span></div></div>
+                                <div class="flex gap-3"><i class="fas fa-hourglass-half text-blue-400 mt-1"></i> <div><strong class="text-white">Reclaims Your Time:</strong> <span class="text-gray-400 text-sm">Automate hours of tedious copying, pasting, and clicking in just a few seconds.</span></div></div>
+                                <div class="flex gap-3"><i class="fas fa-chart-line text-purple-400 mt-1"></i> <div><strong class="text-white">Boosts Reply Rates:</strong> <span class="text-gray-400 text-sm">Targeted personalization and automated follow-ups ensure leads don't slip away.</span></div></div>
+                                <div class="flex gap-3"><i class="fas fa-magic text-pink-400 mt-1"></i> <div><strong class="text-white">100% Frictionless:</strong> <span class="text-gray-400 text-sm">No new software to learn. It lives exactly where you already work: inside your inbox.</span></div></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MODULE 6: NETWORK (LinkedIn & Terminal) -->
+            <div class="module overflow-hidden !top-0 !bottom-0 !h-[100dvh] !pb-0" id="mod-identity">
+                <!-- Main Wrapper: 100% height, Flex Column layout to naturally push footer down -->
+                <div class="h-full w-full max-w-6xl mx-auto flex flex-col relative pt-[10vh] md:pt-0">
+                    
+                    <!-- Content Area: flex-grow forces it to take available space, centering the cards -->
+                    <div class="flex-grow flex flex-col md:flex-row items-center justify-center gap-8 md:gap-10 w-full scale-[0.75] sm:scale-[0.85] lg:scale-[0.95] origin-center transition-transform">
+                        
+                        <!-- Left Column: iOS LinkedIn App Replica -->
+                        <div class="bg-[#1b1f23] rounded-[28px] w-full max-w-[420px] flex flex-col relative overflow-hidden shadow-2xl shrink-0 font-[Inter] border border-white/5">
+                            <!-- Syncing Overlay -->
+                            <div id="li-sync-overlay" class="absolute inset-0 bg-[#1b1f23] z-50 flex flex-col items-center justify-center transition-opacity duration-500">
+                                <i class="fab fa-linkedin text-[#0a66c2] text-4xl mb-3 animate-pulse"></i>
+                                <div class="text-white text-[12px] font-semibold tracking-wide flex items-center gap-2">
+                                    <div class="w-3 h-3 border-2 border-[#0a66c2] border-t-transparent rounded-full animate-spin"></div> Syncing Profile...
+                                </div>
+                            </div>
+
+                            <!-- Top App Bar -->
+                            <div class="w-full px-5 py-3 flex justify-between items-center z-10 absolute top-0">
+                                <div class="w-8 h-8 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white"><i class="fas fa-arrow-left text-[12px]"></i></div>
+                                <div class="w-8 h-8 rounded-full bg-black/40 backdrop-blur flex items-center justify-center text-white"><i class="fas fa-search text-[12px]"></i></div>
+                            </div>
+
+                            <!-- Cover Photo -->
+                            <div class="h-[95px] w-full bg-[#1b1f23] relative">
+                                <img src="assets/images/cover.jpg" alt="LinkedIn Cover Background" loading="lazy" class="w-full h-full object-cover">
+                            </div>
+
+                            <div class="px-5 pb-5">
+                                <!-- Profile Picture & Menu -->
+                                <div class="flex justify-between items-end -mt-10 mb-2">
+                                    <div class="relative">
+                                        <div class="w-20 h-20 rounded-full border-[4px] border-[#1b1f23] overflow-hidden bg-[#1b1f23]">
+                                            <img src="assets/images/profile.png" alt="Profile" class="w-full h-full object-cover">
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-ellipsis-h text-gray-400 text-xl mb-1.5"></i>
+                                </div>
+
+                                <!-- Identity -->
+                                <h2 class="text-white text-[21px] font-bold leading-tight">Hridyansh Dwivedi</h2>
+                                
+                                <!-- Company & Education -->
+                                <div class="mt-1.5 flex flex-col gap-1">
+                                    <div class="flex items-center gap-2 text-[12px] text-white font-semibold">
+                                        <i class="fas fa-building text-gray-400 w-4 text-center"></i> Beeyond Digital
+                                    </div>
+                                    <div class="flex items-center gap-2 text-[12px] text-white font-semibold">
+                                        <i class="fas fa-graduation-cap text-gray-400 w-4 text-center"></i> Axis Colleges
+                                    </div>
+                                </div>
+
+                                <!-- Location & Link -->
+                                <p class="text-gray-400 text-[11.5px] mt-2">Uttar Pradesh, India <span class="text-gray-600 mx-1">&bull;</span> <a href="#" class="text-[#70b5f9] font-semibold hover:underline">Contact info</a></p>
+                                
+                                <!-- Live Stats -->
+                                <div class="flex items-center gap-2 mt-1.5 text-[12.5px]">
+                                    <span class="text-gray-400"><span id="li-followers">4K</span> followers</span>
+                                    <span class="text-gray-600">&bull;</span>
+                                    <a href="#" class="text-[#70b5f9] font-semibold hover:underline"><span id="li-connections">500+</span> connections</a>
+                                </div>
+
+                                <!-- Mutual Connections -->
+                                <div class="flex items-center gap-2 mt-2">
+                                    <div class="flex -space-x-1.5">
+                                        <div class="w-4 h-4 rounded-full border border-[#1b1f23] bg-gray-500"></div>
+                                        <div class="w-4 h-4 rounded-full border border-[#1b1f23] bg-gray-400"></div>
+                                        <div class="w-4 h-4 rounded-full border border-[#1b1f23] bg-gray-600"></div>
+                                    </div>
+                                    <a href="#" class="text-[#70b5f9] font-semibold hover:underline text-[11px]">See your mutual connections</a>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="flex gap-2.5 mt-4">
+                                    <a href="https://in.linkedin.com/in/hridyanshd85" target="_blank" class="flex-1 bg-[#0a66c2] hover:bg-[#004182] text-white font-semibold text-[14px] py-1.5 rounded-full text-center transition flex items-center justify-center gap-1 sound-click">
+                                        Connect
+                                    </a>
+                                    <a href="mailto:mannathridyanshdwivedi85@gmail.com" class="flex-1 border border-gray-400 text-white hover:bg-white/10 font-semibold text-[14px] py-1.5 rounded-full text-center transition flex items-center justify-center gap-1 sound-click">
+                                        <i class="fas fa-paper-plane text-[11px]"></i> Message
+                                    </a>
+                                </div>
+
+                                <!-- Services -->
+                                <div class="mt-4 pt-3 border-t border-white/5">
+                                    <h2 class="text-white text-[13px] font-semibold mb-2">Services</h2>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="bg-[#38434f] text-white text-[10px] font-semibold px-2 py-1 rounded">Advertising</span>
+                                        <span class="bg-[#38434f] text-white text-[10px] font-semibold px-2 py-1 rounded">Web Development</span>
+                                        <span class="bg-[#38434f] text-white text-[10px] font-semibold px-2 py-1 rounded">Digital Marketing</span>
+                                        <span class="bg-[#38434f] text-white text-[10px] font-semibold px-2 py-1 rounded">SEO</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- About -->
+                                <div class="mt-3 pt-3 border-t border-white/5">
+                                    <h2 class="text-white text-[13px] font-semibold mb-1">About</h2>
+                                    <p class="text-gray-400 text-[11px] leading-relaxed">You have brains in your head. You have feet in your shoes. You can steer yourself any... <span class="text-gray-300 font-semibold cursor-pointer">see more</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Terminal & Socials (Updated to sleek design) -->
+                        <div class="flex flex-col justify-center gap-3 w-full max-w-[360px] shrink-0">
+                            
+                            <!-- Social Grid Box Design -->
+                            <div class="grid grid-cols-4 gap-2.5">
+                                <a href="https://www.instagram.com/hridyansh__d/" target="_blank" class="sound-click bg-[#0a0a0a] border border-white/5 rounded-2xl py-4 flex flex-col items-center justify-center gap-2 hover:bg-[#111] hover:border-white/20 transition group shadow-lg">
+                                    <div class="w-8 h-8 rounded-full bg-[#1b1b1b] flex justify-center items-center"><i class="fab fa-instagram text-[#e1306c] text-[15px]"></i></div>
+                                    <span class="code-font text-[7px] text-gray-500 tracking-widest uppercase font-bold">INSTAGRAM</span>
+                                </a>
+                                <a href="https://in.linkedin.com/in/hridyanshd85" target="_blank" class="sound-click bg-[#0a0a0a] border border-white/5 rounded-2xl py-4 flex flex-col items-center justify-center gap-2 hover:bg-[#111] hover:border-white/20 transition group shadow-lg">
+                                    <div class="w-8 h-8 rounded-full bg-[#1b1b1b] flex justify-center items-center"><i class="fab fa-linkedin-in text-[#0077b5] text-[15px]"></i></div>
+                                    <span class="code-font text-[7px] text-gray-500 tracking-widest uppercase font-bold">LINKEDIN</span>
+                                </a>
+                                <a href="https://x.com/Hridyansh_d" target="_blank" class="sound-click bg-[#0a0a0a] border border-white/5 rounded-2xl py-4 flex flex-col items-center justify-center gap-2 hover:bg-[#111] hover:border-white/20 transition group shadow-lg">
+									<div class="w-8 h-8 rounded-full bg-[#1b1b1b] flex justify-center items-center"><i class="fab fa-twitter text-white text-[15px]"></i></div>
+									<span class="code-font text-[7px] text-gray-500 tracking-widest uppercase font-bold">X</span>
+								</a>
+								<a href="https://github.com/hridyanshdwivedi85" target="_blank" class="sound-click bg-[#0a0a0a] border border-white/5 rounded-2xl py-4 flex flex-col items-center justify-center gap-2 hover:bg-[#111] hover:border-white/20 transition group shadow-lg">
+									<div class="w-8 h-8 rounded-full bg-[#1b1b1b] flex justify-center items-center"><i class="fab fa-github text-white text-[15px]"></i></div>
+									<span class="code-font text-[7px] text-gray-500 tracking-widest uppercase font-bold">GITHUB</span>
+								</a>
+                            </div>
+
+                            <!-- Terminal Interface -->
+                            <div class="bg-[#0a0a0a] border border-white/5 rounded-[20px] p-5 shadow-xl">
+                                <div class="flex items-center justify-between mb-4 border-b border-white/5 pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex gap-1.5">
+                                            <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
+                                            <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
+                                            <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+                                        </div>
+                                        <span class="code-font text-gray-500 text-[10px] ml-2">mail_client.js</span>
+                                    </div>
+                                    <i class="far fa-envelope text-gray-600 text-[12px]"></i>
+                                </div>
+                                
+                                <div class="code-font text-[11px] mb-4 bg-transparent p-0 rounded-lg text-white">
+                                    <span class="text-[#b48ead]">await</span> <span class="text-[#81a1c1]">connect</span>(<span class="text-[#a3be8c]">"mannathridyansh<br>@gmail.com"</span>);
+                                    <span class="animate-pulse inline-block w-[6px] h-[12px] bg-gray-400 align-middle ml-0.5 mt-[-2px]"></span>
+                                </div>
+                                
+                                <a href="mailto:mannathridyanshdwivedi85@gmail.com" class="sound-click bg-[#1b1b1b] border border-white/5 hover:border-[var(--brand-orange)] hover:text-[var(--brand-orange)] text-white font-bold text-[10px] tracking-[0.2em] py-3.5 px-5 rounded-xl flex justify-between items-center transition-all group">
+                                    <span class="code-font">INITIALIZE</span> 
+                                    <i class="fas fa-arrow-right text-[var(--brand-orange)] group-hover:translate-x-1 transition-all"></i>
+                                </a>
+                            </div>
+
+                            <!-- Status Module -->
+                            <div class="bg-[#0a0a0a] border border-white/5 rounded-[16px] p-5 flex justify-between items-center shadow-xl">
+                                <div>
+                                    <div class="code-font text-[8px] text-gray-500 uppercase tracking-widest mb-1.5 font-bold">SYSTEM STATUS</div>
+                                    <div class="text-white text-[13px] font-bold flex items-center gap-2">
+                                        <div class="w-2.5 h-2.5 bg-[#27c93f] rounded-full animate-pulse shadow-[0_0_8px_#27c93f]"></div> Available for Work
+                                    </div>
+                                </div>
+                                <div class="flex gap-3 text-gray-500 text-[12px]">
+                                    <i class="fas fa-wifi"></i>
+                                    <i class="fas fa-desktop"></i>
+                                    <i class="far fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Links: Restored to natural flex flow for perfect mathematical centering -->
+                    <div class="shrink-0 w-full flex flex-col items-center justify-center gap-2 z-20 pointer-events-auto pb-8 md:pb-10">
+                        <div class="flex items-center gap-4 code-font text-[10px] text-gray-600">
+                            <button class="hover:text-[var(--brand-orange)] transition flex items-center gap-1 cursor-pointer" onclick="openLegalModal('privacy')"><i class="far fa-circle text-[8px]"></i> Privacy</button> &bull;
+                            <button class="hover:text-[var(--brand-orange)] transition flex items-center gap-1 cursor-pointer" onclick="openLegalModal('terms')"><i class="far fa-file-alt text-[8px]"></i> Terms</button> &bull;
+                            <button class="hover:text-[var(--brand-orange)] transition flex items-center gap-1 cursor-pointer" onclick="openLegalModal('credits')"><i class="far fa-heart text-[8px]"></i> Credits</button>
+                        </div>
+                        <div class="code-font text-[9px] text-gray-600">
+                            &copy; 2025 Hridyansh Dwivedi &bull; Made with <i class="fas fa-heart text-[var(--brand-orange)] mx-0.5"></i> & <i class="fas fa-coffee text-[#81a1c1] mx-0.5"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        <!-- Right Navigation Menu (FORCED TO BOTTOM RIGHT) -->
+<div class="nav-area fixed z-[999] flex flex-col items-end pointer-events-auto" style="bottom: 40px !important; right: 40px !important; top: auto !important; height: auto !important; justify-content: flex-end !important;">
+            <div class="text-[8px] md:text-[9px] text-gray-500 tracking-[0.2em] uppercase mb-4 pr-4 code-font font-semibold">InSeconds</div>
+            <nav id="main-nav" class="flex flex-col items-end gap-3 relative border-r border-white/20 pr-4 py-1">
+                <div class="nav-item active flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-origin" data-theme="galaxy">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
+                    <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">ORIGIN</span>
+                </div>
+                <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-neural" data-theme="data">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
+                    <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">LAB</span>
+                </div>
+                <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-brew" data-theme="coffee">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
+                    <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">ESSENCE</span>
+                </div>
+                <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-compiler" data-theme="matrix">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
+                    <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">COMPILER</span>
+                </div>
+                
+                <!-- Celestial Link -->
+                <a href="celestial.html" class="flex items-center gap-3 sound-hover group cursor-pointer" style="text-decoration: none;">
+                    <span class="font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">launching</span>
+                    <span class="text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">CELESTIAL</span>
+                </a>
+
+                <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-portfolio" data-theme="geo">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
+                    <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">PORTFOLIO</span>
+                </div>
+                
+                <!-- Merged Identity/Contact Tab -->
+                <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-identity" data-theme="aurora">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
+                    <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">CONTACT</span>
+                </div>
+            </nav>
+        </div>
+
+    </div>
+
+    <!-- Legal / Credits Modal -->
+    <div id="legal-modal" class="fixed inset-0 z-[999999] bg-black/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300 pointer-events-auto">
+        
+        <!-- Invisible background layer to detect outside clicks -->
+        <div id="legal-modal-bg" class="absolute inset-0 z-0 cursor-pointer"></div>
+        
+        <div class="bg-[#050505] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-10 pointer-events-auto">
+            <div class="p-4 border-b border-white/5 flex justify-between items-center bg-[#0a0a0a] rounded-t-2xl">
+                <div class="flex items-center gap-2 code-font text-xs text-gray-400">
+                    <div class="flex gap-1.5 mr-2">
+                        <div class="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
+                    </div>
+                    <i class="fas fa-terminal text-[10px]"></i> <span id="modal-title">system_doc.md</span>
+                </div>
+                <!-- ID added here, inline onclick removed -->
+                <button id="close-modal-btn" aria-label="Close Modal" class="text-gray-500 hover:text-white transition p-2 cursor-pointer z-50">
+                    <i class="fas fa-times text-lg pointer-events-none"></i>
+                </button>
+            </div>
+            <div id="modal-content" class="p-6 md:p-8 overflow-y-auto code-font text-[10px] md:text-xs text-gray-400 leading-relaxed scrollbar-hide">
+                <!-- Content injected here via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const legalData = {
+            privacy: `
+                <h2 class="text-white text-lg mb-2 font-bold heading-font tracking-wide">Privacy Policy</h2>
+                <p class="text-[var(--brand-orange)] mb-6">Last Updated: November 30, 2025</p>
+                <h3 class="text-white mb-2 font-bold">Overview</h3>
+                <p class="mb-6">This Privacy Policy describes how Hridyansh Dwivedi ("we", "us", or "our") collects, uses, and shares information when you visit this website.</p>
+                
+                <h3 class="text-white mb-2 font-bold">Information We Collect</h3>
+                <p class="mb-2"><strong class="text-gray-300">Analytics Data:</strong> We use minimal analytics to understand how visitors interact with our Website. This includes pages visited, time spent, device type, and referral sources.</p>
+                <p class="mb-6"><strong class="text-gray-300">Contact Information:</strong> If you contact us through email or social media links, you voluntarily provide your contact details.</p>
+                
+                <h3 class="text-white mb-2 font-bold">Data Retention & Third-Party Services</h3>
+                <p class="mb-6">Analytics data is retained according to strict retention policies. We do not store personal data on our servers. We utilize Vercel for hosting which maintains its own privacy standards.</p>
+                
+                <h3 class="text-white mb-2 font-bold">Contact</h3>
+                <p>For privacy inquiries: <a href="mailto:mannathridyanshdwivedi85@gmail.com" class="text-blue-400 hover:underline">mannathridyanshdwivedi85@gmail.com</a></p>
+            `,
+            terms: `
+                <h2 class="text-white text-lg mb-2 font-bold heading-font tracking-wide">Terms of Service</h2>
+                <p class="text-[var(--brand-orange)] mb-6">Last Updated: November 30, 2025</p>
+                
+                <h3 class="text-white mb-2 font-bold">Acceptance of Terms</h3>
+                <p class="mb-6">By accessing this website, you agree to be bound by these Terms of Service.</p>
+                
+                <h3 class="text-white mb-2 font-bold">Description of Service & Intellectual Property</h3>
+                <p class="mb-6">This Website is a personal portfolio showcasing the work and projects of Hridyansh Dwivedi. Website design, code, and original content are © 2025 Hridyansh Dwivedi. The interactive simulations are original creations for educational and portfolio purposes.</p>
+                
+                <h3 class="text-white mb-2 font-bold">Disclaimers & Limitations</h3>
+                <p class="mb-6">This Website is NOT affiliated with, endorsed by, or connected to Meta Platforms, Inc., X Corp, LinkedIn Corporation, GitHub, Inc., or Gaggia S.p.A. The website is provided "AS IS" without warranty of any kind.</p>
+                
+                <h3 class="text-white mb-2 font-bold">Contact</h3>
+                <p>For inquiries: <a href="mailto:mannathridyanshdwivedi85@gmail.com" class="text-blue-400 hover:underline">mannathridyanshdwivedi85@gmail.com</a></p>
+            `,
+            credits: `
+                <h2 class="text-white text-lg mb-6 font-bold heading-font tracking-wide">Credits & Acknowledgments</h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-white mb-2 font-bold"><i class="fas fa-music mr-2"></i>Audio & Design</h3>
+                        <p class="mb-4">Audio synthesis generated procedurally via the Web Audio API.</p>
+                        <p class="mb-1 text-gray-300">Design Inspirations:</p>
+                        <ul class="list-disc pl-4 mb-6 space-y-1">
+                            <li>Swiss Design / International Typographic Style</li>
+                            <li>Industrial Coffee Machine Aesthetics</li>
+                            <li>Cinematic UI/UX & Cyberpunk Terminals</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-white mb-2 font-bold"><i class="fas fa-code mr-2"></i>Built With</h3>
+                        <ul class="list-disc pl-4 mb-6 space-y-1 text-gray-300">
+                            <li>Vanilla HTML5 & JavaScript</li>
+                            <li>Tailwind CSS</li>
+                            <li>GSAP (GreenSock)</li>
+                            <li>Web Audio API</li>
+                            <li>FontAwesome Icons</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 p-4 rounded-lg mt-2 border border-white/10">
+                    <h3 class="text-white text-xs mb-2 font-bold uppercase tracking-widest">Disclaimer</h3>
+                    <p class="text-[10px] leading-relaxed">This website is a personal portfolio and is NOT affiliated with, endorsed by, or connected to Meta Platforms, X Corp, LinkedIn, GitHub, or Gaggia S.p.A. All trademarks are the property of their respective owners. The Gaggia espresso machine simulation is an original educational creation and does not represent any actual product.</p>
+                </div>
+            `
+        };
+
+        function openLegalModal(type) {
+            document.getElementById('modal-title').innerText = type + '_doc.md';
+            document.getElementById('modal-content').innerHTML = legalData[type];
+            const modal = document.getElementById('legal-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Allow CSS to register display change before fading in
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeLegalModal() {
+            const modal = document.getElementById('legal-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => { 
+                modal.classList.add('hidden'); 
+                modal.classList.remove('flex'); 
+            }, 300);
+        }
+
+        // Attach event listeners safely once the DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Close when clicking the "X" button
+            document.getElementById('close-modal-btn').addEventListener('click', closeLegalModal);
+            
+            // Close when clicking the dark background behind the modal
+            document.getElementById('legal-modal-bg').addEventListener('click', closeLegalModal);
+        });
+    </script>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Custom Application Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
