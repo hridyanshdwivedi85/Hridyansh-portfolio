@@ -613,7 +613,8 @@ document.addEventListener('DOMContentLoaded', () => {
             steam.style.width = `${size}px`;
             steam.style.height = `${size}px`;
             steam.style.left = `${leftOffset}%`;
-            steam.style.top = `250px`; 
+            const dynamicTop = Math.max(120, Math.floor(container.clientHeight * 0.55));
+            steam.style.top = `${dynamicTop}px`; 
             
             container.appendChild(steam);
 
@@ -635,81 +636,249 @@ document.addEventListener('DOMContentLoaded', () => {
      * 6. COMPILER ARENA V2
      */
     const CompilerArena = {
-        init() {
-            const btn = document.getElementById('btn-compile-v2');
-            const term = document.getElementById('compiler-terminal');
-            const linesIn = [document.getElementById('pipe-in-1'), document.getElementById('pipe-in-2'), document.getElementById('pipe-in-3')];
-            const linesOut = [document.getElementById('pipe-out-1'), document.getElementById('pipe-out-2')];
-            const outApple = document.getElementById('out-apple');
-            const outAndroid = document.getElementById('out-android');
-            const forgeCenter = document.querySelector('.forge-center i');
+        state: {
+            isCompiling: false,
+            packetInterval: null,
+        },
 
-            let isCompiling = false;
+        init() {
+            this.ui = {
+                btn: document.getElementById('btn-compile-v2'),
+                term: document.getElementById('compiler-terminal'),
+                linesIn: [document.getElementById('pipe-in-1'), document.getElementById('pipe-in-2'), document.getElementById('pipe-in-3')],
+                linesOut: [document.getElementById('pipe-out-1'), document.getElementById('pipe-out-2')],
+                outApple: document.getElementById('out-apple'),
+                outAndroid: document.getElementById('out-android'),
+                forge: document.getElementById('forge-core'),
+                forgeIcon: document.querySelector('.forge-center i'),
+                progress: document.getElementById('compiler-progress-bar'),
+                stages: [
+                    document.getElementById('stage-parse'),
+                    document.getElementById('stage-compile'),
+                    document.getElementById('stage-bundle'),
+                    document.getElementById('stage-sign'),
+                    document.getElementById('stage-deploy')
+                ],
+                packets: document.getElementById('compiler-dataflow'),
+                inputNodes: ['#node-src-1', '#node-src-2', '#node-src-3']
+            };
 
             this.updateSVGPaths();
             window.addEventListener('resize', () => this.updateSVGPaths());
-
-            btn.addEventListener('click', () => {
-                if(isCompiling) return;
-                isCompiling = true;
-                btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
-                let audioStream; // Added reference
-
-                const tl = gsap.timeline();
-                
-                tl.call(() => { audioStream = AudioEngine.startDataStream(); term.innerHTML = "> PARSING AST...<br>> RESOLVING DEPENDENCIES..."; linesIn.forEach(l => l.classList.add('active')); });
-                tl.to(['#node-src-1', '#node-src-2', '#node-src-3'], { x: 50, opacity: 0.5, duration: 0.5, stagger: 0.2 });
-                
-                tl.call(() => { term.innerHTML += "<br>> COMPILING BYTECODE...<br>> OPTIMIZING ASSETS..."; forgeCenter.className = "fas fa-sync fa-spin text-[#3ddc84] text-4xl shadow-[#3ddc84]"; });
-                tl.to('.forge-container', { scale: 1.2, duration: 1.5, ease: "power2.inOut" });
-                
-                tl.call(() => { 
-                    linesIn.forEach(l => l.classList.remove('active'));
-                    linesOut.forEach(l => l.classList.add('active'));
-                    term.innerHTML += "<br>> SIGNING PAYLOADS...<br>> DISPATCHING BUILD...";
-                    forgeCenter.className = "fas fa-check text-white text-4xl";
-                    gsap.to('.forge-container', { scale: 1, duration: 0.5 });
-                });
-
-                tl.to([outApple, outAndroid], { opacity: 1, scale: 1, duration: 0.8, ease: "elastic.out(1, 0.5)" }, "+=1");
-                tl.call(() => {
-                    if(audioStream) audioStream.stop();
-                    AudioEngine.playSuccess();
-                    linesOut.forEach(l => l.classList.remove('active'));
-                    outApple.classList.add('active'); outApple.querySelector('.status-badge').innerText = "DEPLOYED";
-                    outAndroid.classList.add('active'); outAndroid.querySelector('.status-badge').innerText = "DEPLOYED";
-                    term.innerHTML += "<br>> <span style='color:#3ddc84'>UNIVERSAL BUILD SUCCESSFUL.</span>";
-                    
-                    setTimeout(() => {
-                        outApple.classList.remove('active'); outApple.querySelector('.status-badge').innerText = "AWAITING";
-                        outAndroid.classList.remove('active'); outAndroid.querySelector('.status-badge').innerText = "AWAITING";
-                        gsap.to([outApple, outAndroid], { opacity: 0.3, scale: 0.9, duration: 0.5 });
-                        gsap.to(['#node-src-1', '#node-src-2', '#node-src-3'], { x: 0, opacity: 1, duration: 0.5 });
-                        forgeCenter.className = "fas fa-cube text-white text-4xl";
-                        term.innerHTML = "> SYSTEM IDLE.<br>> AWAITING BUILD COMMAND.";
-                        btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
-                        isCompiling = false;
-                    }, 5000);
-                });
-            });
+            this.ui.btn.addEventListener('click', () => this.startBuild());
         },
+
+        setProgress(value) {
+            this.ui.progress.style.width = `${Math.max(0, Math.min(100, value))}%`;
+        },
+
+        setStage(index) {
+            this.ui.stages.forEach((s, i) => s.classList.toggle('active', i <= index));
+        },
+
+        log(lines) {
+            this.ui.term.innerHTML = lines.join('<br>');
+        },
+
+        startPackets() {
+            this.stopPackets();
+            this.state.packetInterval = setInterval(() => {
+                if(!document.getElementById('mod-compiler').classList.contains('active')) return;
+                const packet = document.createElement('div');
+                packet.className = 'data-packet';
+                this.ui.packets.appendChild(packet);
+
+                const rect = this.ui.packets.getBoundingClientRect();
+                const startY = rect.height * (0.22 + Math.random() * 0.56);
+                const isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+                if(isMobile) {
+                    packet.style.left = `${rect.width * (0.2 + Math.random() * 0.6)}px`;
+                    packet.style.top = `${rect.height * 0.28}px`;
+                    gsap.to(packet, {
+                        y: rect.height * 0.5,
+                        opacity: 0,
+                        duration: 0.9,
+                        ease: 'power1.out',
+                        onComplete: () => packet.remove()
+                    });
+                    return;
+                }
+
+                packet.style.left = `170px`;
+                packet.style.top = `${startY}px`;
+                gsap.to(packet, {
+                    x: rect.width - 340,
+                    y: (Math.random() - 0.5) * 40,
+                    opacity: 0,
+                    duration: 1.1,
+                    ease: 'none',
+                    onComplete: () => packet.remove()
+                });
+            }, 140);
+        },
+
+        stopPackets() {
+            clearInterval(this.state.packetInterval);
+            this.state.packetInterval = null;
+        },
+
+        startBuild() {
+            if(this.state.isCompiling) return;
+            this.state.isCompiling = true;
+            this.ui.btn.style.opacity = '0.5';
+            this.ui.btn.style.pointerEvents = 'none';
+
+            let audioStream;
+            this.setProgress(4);
+            this.setStage(-1);
+            this.log([
+                '> BUILD REQUEST ACCEPTED.',
+                '> PREPARING EXECUTION GRAPH...',
+                '> TARGETS: IOS, ANDROID.'
+            ]);
+
+            const tl = gsap.timeline();
+
+            tl.call(() => {
+                audioStream = AudioEngine.startDataStream();
+                this.setStage(0);
+                this.setProgress(16);
+                this.log([
+                    '> STAGE 1/5 :: PARSE',
+                    '> PARSING SOURCE MODULES...',
+                    '> RESOLVING DEPENDENCIES...'
+                ]);
+                this.ui.linesIn.forEach(l => l.classList.add('active'));
+                this.ui.inputNodes.forEach(sel => document.querySelector(sel).classList.add('active'));
+            });
+            tl.to(this.ui.inputNodes, { x: 36, duration: 0.5, stagger: 0.12, ease: 'power2.inOut' });
+
+            tl.call(() => {
+                this.setStage(1);
+                this.setProgress(40);
+                this.ui.forge.classList.add('compiling');
+                this.ui.forgeIcon.className = 'fas fa-microchip text-[#3ddc84] text-4xl';
+                this.log([
+                    '> STAGE 2/5 :: COMPILE',
+                    '> EMITTING BYTECODE SEGMENTS...',
+                    '> OPTIMIZING TREESHAKE + MINIFY...'
+                ]);
+                this.startPackets();
+            });
+            tl.to(this.ui.forge, { scale: 1.16, duration: 0.85, ease: 'power1.inOut' });
+
+            tl.call(() => {
+                this.setStage(2);
+                this.setProgress(62);
+                this.log([
+                    '> STAGE 3/5 :: BUNDLE',
+                    '> SPLITTING CHUNKS BY TARGET...',
+                    '> GENERATING SOURCE MAPS...'
+                ]);
+            });
+            tl.to(this.ui.forge, { scale: 1.04, duration: 0.5 });
+
+            tl.call(() => {
+                this.setStage(3);
+                this.setProgress(78);
+                this.ui.linesIn.forEach(l => l.classList.remove('active'));
+                this.ui.linesOut.forEach(l => l.classList.add('active'));
+                this.log([
+                    '> STAGE 4/5 :: SIGN',
+                    '> SIGNING IOS ARTIFACTS...',
+                    '> SIGNING ANDROID ARTIFACTS...'
+                ]);
+                this.ui.forgeIcon.className = 'fas fa-shield-alt text-[#60a5fa] text-4xl';
+            });
+            tl.to(this.ui.forge, { scale: 1.0, duration: 0.4 });
+
+            tl.call(() => {
+                this.setStage(4);
+                this.setProgress(96);
+                this.log([
+                    '> STAGE 5/5 :: DEPLOY',
+                    '> PUSHING IOS BUILD TO RELEASE QUEUE...',
+                    '> PUSHING ANDROID BUILD TO RELEASE QUEUE...'
+                ]);
+                this.ui.forgeIcon.className = 'fas fa-rocket text-[#facc15] text-4xl';
+            });
+            tl.to(this.ui.outApple, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' });
+            tl.call(() => {
+                this.ui.outApple.classList.add('active');
+                this.ui.outApple.querySelector('.status-badge').innerText = 'DEPLOYED';
+            });
+            tl.to(this.ui.outAndroid, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.5)' }, '-=0.2');
+
+            tl.call(() => {
+                this.ui.outAndroid.classList.add('active');
+                this.ui.outAndroid.querySelector('.status-badge').innerText = 'DEPLOYED';
+                this.setProgress(100);
+                this.log([
+                    '> STAGE 5/5 :: DEPLOY',
+                    '> IOS BUILD: DEPLOYED ✅',
+                    '> ANDROID BUILD: DEPLOYED ✅',
+                    '> UNIVERSAL PIPELINE SUCCESSFUL.'
+                ]);
+                this.ui.forgeIcon.className = 'fas fa-check text-[#3ddc84] text-4xl';
+                this.ui.linesOut.forEach(l => l.classList.remove('active'));
+                this.stopPackets();
+                if(audioStream) audioStream.stop();
+                AudioEngine.playSuccess();
+            });
+
+            tl.call(() => this.resetAfterRun(), null, '+=3.5');
+        },
+
+        resetAfterRun() {
+            this.ui.outApple.classList.remove('active');
+            this.ui.outAndroid.classList.remove('active');
+            this.ui.outApple.querySelector('.status-badge').innerText = 'AWAITING';
+            this.ui.outAndroid.querySelector('.status-badge').innerText = 'AWAITING';
+            gsap.to([this.ui.outApple, this.ui.outAndroid], { opacity: 0.3, scale: 0.9, duration: 0.45 });
+            gsap.to(this.ui.inputNodes, { x: 0, duration: 0.4 });
+            this.ui.inputNodes.forEach(sel => document.querySelector(sel).classList.remove('active'));
+            this.ui.forge.classList.remove('compiling');
+            this.ui.forgeIcon.className = 'fas fa-cube text-white text-4xl';
+            this.log([
+                '> SYSTEM IDLE.',
+                '> WAITING FOR BUILD TRIGGER.',
+                '> TARGETS: IOS, ANDROID.'
+            ]);
+            this.setProgress(0);
+            this.setStage(-1);
+            this.ui.btn.style.opacity = '1';
+            this.ui.btn.style.pointerEvents = 'auto';
+            this.state.isCompiling = false;
+        },
+
         updateSVGPaths() {
             const svg = document.getElementById('pipeline-lines');
-            if(!svg) return;
-            const w = svg.clientWidth; const h = svg.clientHeight;
-            
-            const p1 = `M 180 ${h/2 - 90} Q 400 ${h/2 - 90} ${w/2} ${h/2}`;
-            const p2 = `M 180 ${h/2} L ${w/2} ${h/2}`;
-            const p3 = `M 180 ${h/2 + 90} Q 400 ${h/2 + 90} ${w/2} ${h/2}`;
+            if(!svg || window.matchMedia('(max-width: 767px)').matches) return;
 
-            const o1 = `M ${w/2} ${h/2} Q 600 ${h/2 - 80} ${w - 180} ${h/2 - 80}`;
-            const o2 = `M ${w/2} ${h/2} Q 600 ${h/2 + 80} ${w - 180} ${h/2 + 80}`;
+            const toLocal = (el) => {
+                const svgRect = svg.getBoundingClientRect();
+                const rect = el.getBoundingClientRect();
+                return {
+                    x: rect.left - svgRect.left + rect.width / 2,
+                    y: rect.top - svgRect.top + rect.height / 2
+                };
+            };
 
-            document.getElementById('pipe-in-1').setAttribute('d', p1);
-            document.getElementById('pipe-in-2').setAttribute('d', p2);
-            document.getElementById('pipe-in-3').setAttribute('d', p3);
-            document.getElementById('pipe-out-1').setAttribute('d', o1);
-            document.getElementById('pipe-out-2').setAttribute('d', o2);
+            const inputs = [
+                toLocal(document.getElementById('node-src-1')),
+                toLocal(document.getElementById('node-src-2')),
+                toLocal(document.getElementById('node-src-3'))
+            ];
+            const core = toLocal(document.getElementById('forge-core'));
+            const out1 = toLocal(document.getElementById('out-apple'));
+            const out2 = toLocal(document.getElementById('out-android'));
+
+            document.getElementById('pipe-in-1').setAttribute('d', `M ${inputs[0].x + 40} ${inputs[0].y} Q ${core.x - 80} ${inputs[0].y} ${core.x - 20} ${core.y}`);
+            document.getElementById('pipe-in-2').setAttribute('d', `M ${inputs[1].x + 40} ${inputs[1].y} L ${core.x - 20} ${core.y}`);
+            document.getElementById('pipe-in-3').setAttribute('d', `M ${inputs[2].x + 40} ${inputs[2].y} Q ${core.x - 80} ${inputs[2].y} ${core.x - 20} ${core.y}`);
+            document.getElementById('pipe-out-1').setAttribute('d', `M ${core.x + 20} ${core.y} Q ${out1.x - 90} ${out1.y} ${out1.x - 40} ${out1.y}`);
+            document.getElementById('pipe-out-2').setAttribute('d', `M ${core.x + 20} ${core.y} Q ${out2.x - 90} ${out2.y} ${out2.x - 40} ${out2.y}`);
         }
     };
 
