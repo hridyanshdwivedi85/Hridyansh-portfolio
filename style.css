@@ -527,6 +527,8 @@ input:checked + .slider:before { transform: translateX(18px); }
         transform: scale(0.68) !important;
         min-height: 178px !important;
     }
+    .lab-functional-layer .espresso-stream { top: 62px; height: 54px; }
+    .lab-functional-layer .espresso-cup { top: 108px; width: min(84px, 48%); }
 
     #brew-machine-panel {
         max-height: none;
