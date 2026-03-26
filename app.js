@@ -428,9 +428,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 pidTemp: document.getElementById('pid-temp'),
                 pidDot: document.getElementById('pid-dot'),
                 pidStatus: document.getElementById('pid-status-text'),
+                flowRate: document.getElementById('flow-rate'),
                 shotTimer: document.getElementById('shot-timer'),
                 shotYield: document.getElementById('shot-yield'),
                 tmrDot: document.getElementById('tmr-dot'),
+                gaugeNeedle: document.getElementById('lab-gauge-needle'),
+                pressure: document.getElementById('lab-pressure'),
+                clockHour: document.getElementById('lab-clock-hour'),
+                clockMinute: document.getElementById('lab-clock-minute'),
+                clockSecond: document.getElementById('lab-clock-second'),
                 streamL: document.getElementById('stream-l'),
                 streamR: document.getElementById('stream-r'),
                 liquid: document.getElementById('cup-liquid'),
@@ -438,6 +444,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 pContainer: document.getElementById('v2-particle-container')
             };
 
+            this.updateClock();
+            setInterval(() => this.updateClock(), 1000);
+            this.updateGauge(0);
             this.startAmbientParticles();
             this.bindEvents();
         },
@@ -463,6 +472,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             this.setReady();
                         }
                         this.ui.pidTemp.innerText = this.temp.toFixed(1);
+                        const heatProgress = Math.min((this.temp - 24.0) / (this.targetTemp - 24.0), 1);
+                        this.updateGauge(2 + heatProgress * 7);
                     }, 150);
                 } else {
                     // Turn OFF
@@ -502,6 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.state = 'READY';
             this.ui.pidDot.classList.replace('bg-red-500', 'bg-green-500');
             this.ui.pidStatus.innerText = "READY";
+            this.updateGauge(9.0);
             this.ui.btnBrew.classList.remove('opacity-50', 'pointer-events-none');
             this.ui.btnSteam.classList.remove('opacity-50', 'pointer-events-none');
             this.ui.ledPower.classList.replace('on', 'success');
@@ -518,10 +530,12 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.tmrDot.classList.replace('bg-gray-700', 'bg-red-500');
             this.ui.shotTimer.classList.replace('text-gray-700', 'text-white');
             this.ui.haze.classList.add('active');
+            this.updateGauge(10.5);
             
             // Reset Cup
             this.ui.liquid.style.height = '0%';
             this.timer = 0; this.yieldGrams = 0;
+            this.ui.flowRate.innerText = '0.00';
 
             const tl = gsap.timeline();
             
@@ -539,8 +553,11 @@ document.addEventListener('DOMContentLoaded', () => {
             this.intervals.brew = setInterval(() => {
                 this.timer += 0.1;
                 this.yieldGrams += 0.14; // Approximate flow rate
+                const liveFlow = 1.35 + (Math.random() * 0.45);
                 this.ui.shotTimer.innerText = this.timer.toFixed(1);
                 this.ui.shotYield.innerText = this.yieldGrams.toFixed(1);
+                this.ui.flowRate.innerText = liveFlow.toFixed(2);
+                this.updateGauge(10 + Math.random() * 1.8);
                 
                 // Spawn minor steam during brew
                 if(Math.random() > 0.6) this.spawnSteam(this.ui.pContainer, false);
@@ -565,6 +582,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.ledBrew.classList.remove('process');
             this.ui.tmrDot.classList.replace('bg-red-500', 'bg-green-500');
             this.ui.haze.classList.remove('active');
+            this.ui.flowRate.innerText = '0.00';
+            this.updateGauge(9.0);
             AudioEngine.playSuccess();
         },
 
@@ -588,9 +607,33 @@ document.addEventListener('DOMContentLoaded', () => {
             this.temp = 24.0;
             this.ui.pidTemp.innerText = "24.0";
             this.ui.pidStatus.innerText = "OFFLINE";
+            this.ui.flowRate.innerText = "0.00";
+            this.updateGauge(0);
             
             gsap.to([this.ui.streamL, this.ui.streamR], { scaleY: 0, duration: 0.2 });
             gsap.to(this.ui.liquid, { height: "0%", duration: 1.5 });
+        },
+
+        updateGauge(pressureBar) {
+            const clamped = Math.max(0, Math.min(12, pressureBar));
+            const rotation = -90 + ((clamped / 12) * 180);
+            if (this.ui.gaugeNeedle) this.ui.gaugeNeedle.style.transform = `rotate(${rotation}deg)`;
+            if (this.ui.pressure) this.ui.pressure.innerText = clamped.toFixed(1);
+        },
+
+        updateClock() {
+            const now = new Date();
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes();
+            const hours = now.getHours() % 12;
+
+            const secondDeg = seconds * 6;
+            const minuteDeg = (minutes * 6) + (seconds * 0.1);
+            const hourDeg = (hours * 30) + (minutes * 0.5);
+
+            if (this.ui.clockSecond) this.ui.clockSecond.style.transform = `rotate(${secondDeg}deg)`;
+            if (this.ui.clockMinute) this.ui.clockMinute.style.transform = `rotate(${minuteDeg}deg)`;
+            if (this.ui.clockHour) this.ui.clockHour.style.transform = `rotate(${hourDeg}deg)`;
         },
 
         startAmbientParticles() {
