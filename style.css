@@ -288,6 +288,18 @@ input:checked + .slider:before { transform: translateX(18px); }
     #mod-compiler .forge-ring {
         animation: none !important;
         opacity: 0.7;
+    .mobile-coffee-scale {
+        transform: scale(0.62) !important;
+        transform-origin: center top !important;
+        min-height: 300px !important;
+        margin-bottom: -12px !important;
+    }
+
+    .compiler-scale-fix {
+        transform: scale(0.60) !important;
+        transform-origin: center center !important;
+        margin: 0 auto -72px !important;
+        min-height: 280px !important;
     }
 
     #mod-compiler .compiler-node,
@@ -295,6 +307,8 @@ input:checked + .slider:before { transform: translateX(18px); }
         width: 88px !important;
         min-width: 88px;
         padding: 8px 6px !important;
+        width: 72px !important;
+        padding: 8px 4px !important;
     }
 
     #mod-compiler .compiler-node i,
@@ -308,6 +322,7 @@ input:checked + .slider:before { transform: translateX(18px); }
         margin-top: 18px !important;
         padding: 6px 12px !important;
         font-size: 9px !important;
+        font-size: 8px !important;
     }
 
     #mod-compiler #compiler-terminal {
