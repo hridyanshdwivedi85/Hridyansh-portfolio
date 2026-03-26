@@ -461,6 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.state = 'HEATING';
                     AudioEngine.playBoot();
                     this.ui.ledPower.classList.add('on');
+                    this.ui.btnPower.classList.add('active');
                     this.ui.pidDot.classList.replace('bg-red-900', 'bg-red-500');
                     this.ui.pidTemp.classList.replace('text-gray-700', 'text-[#d97706]');
                     this.ui.pidStatus.innerText = "HEATING...";
@@ -499,6 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.steamActive = !this.steamActive;
                     this.ui.ledSteam.classList.toggle('active', this.steamActive);
                     this.ui.ledSteam.classList.toggle('process', this.steamActive);
+                    this.ui.btnSteam.classList.toggle('active', this.steamActive);
                     if(this.steamActive) {
                         AudioEngine.playSteamBurst();
                         for(let i=0; i<18; i++) {
@@ -522,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.btnBrew.classList.remove('opacity-50', 'pointer-events-none');
             this.ui.btnSteam.classList.remove('opacity-50', 'pointer-events-none');
             this.ui.ledPower.classList.replace('on', 'success');
+            this.ui.btnPower.classList.add('active');
             AudioEngine.playSuccess();
         },
 
@@ -532,6 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // UI Updates
             this.ui.ledBrew.classList.add('process');
+            this.ui.btnBrew.classList.add('active');
             this.ui.tmrDot.classList.replace('bg-gray-700', 'bg-red-500');
             this.ui.shotTimer.classList.replace('text-gray-700', 'text-white');
             this.ui.haze.classList.add('active');
@@ -585,6 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // UI Reset
             this.ui.ledBrew.classList.remove('process');
+            this.ui.btnBrew.classList.remove('active');
             this.ui.tmrDot.classList.replace('bg-red-500', 'bg-green-500');
             this.ui.haze.classList.remove('active');
             this.ui.flowRate.innerText = '0.00';
@@ -600,6 +605,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.ledPower.classList.remove('on', 'success');
             this.ui.ledBrew.classList.remove('process');
             this.ui.ledSteam.classList.remove('process', 'active');
+            this.ui.btnPower.classList.remove('active');
+            this.ui.btnBrew.classList.remove('active');
+            this.ui.btnSteam.classList.remove('active');
             this.steamActive = false;
             
             this.ui.btnBrew.classList.add('opacity-50', 'pointer-events-none');
