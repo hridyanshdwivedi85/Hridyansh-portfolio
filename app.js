@@ -186,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else if(newTheme === 'coffee') document.body.style.backgroundColor = "#0a0602";
             else if(newTheme === 'aurora') document.body.style.backgroundColor = "#050208";
             else if(newTheme === 'geo') document.body.style.backgroundColor = "#020617";
+            else if(newTheme === 'entropy') document.body.style.backgroundColor = "#0b0806";
             else document.body.style.backgroundColor = "#030303";
         },
         createParticles() {
@@ -266,6 +267,11 @@ document.addEventListener('DOMContentLoaded', () => {
         switchTab(navElement, targetId, theme, updateHash = true) {
             this.isAnimating = true;
             
+            // Toggle Vibrating Cursor for Entropy
+            const cursorOutline = document.getElementById("cursor-outline");
+            if(targetId === 'mod-entropy') cursorOutline.classList.add('cursor-vibrate');
+            else cursorOutline.classList.remove('cursor-vibrate');
+
             // Update URL for SEO and Sharing
             if (updateHash) {
                 const urlName = targetId.replace('mod-', '');
@@ -461,16 +467,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
         animateBeanDose() {
             const container = this.ui.pContainer;
-            if (!container) return;
-            for (let i = 0; i < 18; i++) {
+            const cup = this.ui.cup;
+            if (!container || !cup) return;
+
+            // Get precise visual coordinates of the cup to ensure beans drop exactly inside it
+            const cRect = container.getBoundingClientRect();
+            const cupRect = cup.getBoundingClientRect();
+            
+            // X Center of the cup relative to container
+            const cupCenterX = (cupRect.left - cRect.left) + (cupRect.width / 2);
+            // Target Y inside the cup
+            const targetY = (cupRect.top - cRect.top) + 15;
+
+            for (let i = 0; i < 20; i++) {
                 const bean = document.createElement('div');
-                bean.className = 'coffee-bean-shot';
-                bean.style.left = `${50 + (Math.random() * 12 - 6)}%`;
-                bean.style.top = `${42 + (Math.random() * 3)}%`;
+                bean.className = 'absolute w-2.5 h-3.5 rounded-[40%] bg-[#3D2817] z-50';
+                bean.style.boxShadow = 'inset -1px -1px 3px #1a0f08, 0 2px 4px rgba(0,0,0,0.5)';
+                
+                // Position above cup and randomized slightly on X axis
+                bean.style.left = `${cupCenterX - 5 + ((Math.random() - 0.5) * 20)}px`;
+                bean.style.top = `20px`; 
                 container.appendChild(bean);
+                
                 gsap.fromTo(bean, 
-                    { y: -20 - Math.random() * 30, x: (Math.random() - 0.5) * 20, opacity: 0, scale: 0.8 },
-                    { y: 0, x: 0, opacity: 0.95, scale: 1, duration: 0.35 + Math.random() * 0.25, ease: "power2.in", onComplete: () => bean.remove() }
+                    { y: 0, opacity: 0, scale: 0.5, rotation: Math.random() * 360 },
+                    { 
+                        y: targetY + Math.random() * 10, 
+                        opacity: 1, scale: 1, rotation: Math.random() * 360, 
+                        duration: 0.6 + Math.random() * 0.2, 
+                        ease: "bounce.out", 
+                        delay: i * 0.06, 
+                        onComplete: () => {
+                            gsap.to(bean, {opacity: 0, duration: 0.3, delay: 0.3, onComplete: () => bean.remove()});
+                        }
+                    }
                 );
             }
         },
@@ -567,25 +597,31 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.haze.classList.add('active');
             this.updateGauge(10.5);
             
-            // Reset Cup
-            this.ui.liquid.style.height = '0%';
+            // Reset Cup Heights directly via GSAP
+            gsap.set(this.ui.liquid, { height: "0%" });
             this.timer = 0; this.yieldGrams = 0;
             this.ui.flowRate.innerText = '0.00';
 
             const tl = gsap.timeline();
             
-            // Beans-in pre-step then extraction
-            tl.add(() => this.animateBeanDose());
-            tl.to({}, { duration: 1.0 });
-            tl.add(() => this.setLiveStatus('EXTRACTING SHOT...'));
-            tl.to([this.ui.streamL, this.ui.streamR], { scaleY: 1, duration: 0.8, ease: "power2.in" });
-            tl.add(() => {
-                this.ui.streamL.classList.add('stream-wobble');
-                this.ui.streamR.classList.add('stream-wobble-alt');
-            });
+            // 1) Drop beans perfectly into the cup
+			tl.add(() => this.animateBeanDose());
+			
+			// 2) Wait for the beans to fully land and settle (1.8s delay)
+			tl.to({}, { duration: 1.8 });
+			
+			// 3) Initialize liquid pouring
+			tl.add(() => {
+				this.setLiveStatus('EXTRACTING SHOT...');
+				this.ui.streamL.classList.add('stream-wobble');
+				this.ui.streamR.classList.add('stream-wobble-alt');
+			});
+            
+            // Drop streams down
+			tl.to([this.ui.streamL, this.ui.streamR], { scaleY: 1, duration: 0.8, ease: "power2.in" });
 
-            // Fill Cup Animation
-            tl.to(this.ui.liquid, { height: "75%", duration: 28, ease: "power1.out" }, "-=0.2");
+            // Highly Detailed Cup Fill Animation
+            tl.to(this.ui.liquid, { height: "90%", duration: 28, ease: "power1.inOut" }, "-=0.2");
 
             // Telemetry Counters
             this.intervals.brew = setInterval(() => {
@@ -992,6 +1028,203 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+
+    
+    
+    /**
+     * 9. ENTROPY ENGINE (3D IDENTITY CARD)
+     */
+    /**
+     * 9. ENTROPY ENGINE (Kinetic Particle Exploder & Sequence)
+     */
+    const EntropyEngine = {
+        init() {
+            this.canvas = document.getElementById('entropy-canvas');
+            if(!this.canvas) return;
+            
+            this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+            this.particles = [];
+            this.textParticles = [];
+            this.mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+            this.isExploded = false;
+            this.sequenceStarted = false;
+
+            this.resize();
+            window.addEventListener('resize', () => this.resize());
+            window.addEventListener('mousemove', (e) => {
+                this.mouse.x = e.clientX;
+                this.mouse.y = e.clientY;
+            });
+
+            // Bind observer to start sequence only when tab is opened
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mut) => {
+                    if (mut.target.classList.contains('active') && !this.sequenceStarted) {
+                        this.sequenceStarted = true;
+                        this.runSequence();
+                    }
+                });
+            });
+            observer.observe(document.getElementById('mod-entropy'), { attributes: true, attributeFilter: ['class'] });
+
+            this.initBackgroundParticles();
+            this.animate();
+        },
+
+        resize() {
+            this.width = window.innerWidth;
+            this.height = window.innerHeight;
+            this.canvas.width = this.width;
+            this.canvas.height = this.height;
+        },
+
+        runSequence() {
+            const t1 = document.getElementById('entropy-t1');
+            const t2 = document.getElementById('entropy-t2');
+            
+            // Reset state if re-running
+            this.textParticles = [];
+            this.isExploded = false;
+            t1.style.opacity = 0; t2.style.opacity = 0;
+
+            const tl = gsap.timeline();
+            tl.to(t1, { opacity: 1, duration: 2, ease: "power2.out" })
+              .to(t1, { opacity: 0, duration: 1.5, ease: "power2.in" }, "+=2")
+              .to(t2, { opacity: 1, scale: 1.05, duration: 2, ease: "back.out(1.2)" }, "+=0.5")
+              .add(() => {
+                  setTimeout(() => {
+                      t2.style.opacity = 0; 
+                      if(window.AudioEngine && window.AudioEngine.unlocked) AudioEngine.playSteamBurst();
+                      this.explodeText("Coding means creativity.");
+                  }, 2000);
+              });
+        },
+
+        explodeText(text) {
+            // Draw text onto hidden canvas state to sample pixels
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.ctx.fillStyle = "white";
+            const fontSize = window.innerWidth < 768 ? '10vw' : '7vw';
+            this.ctx.font = `900 ${fontSize} "Syne", sans-serif`;
+            this.ctx.textAlign = "center";
+            this.ctx.textBaseline = "middle";
+            this.ctx.fillText(text, this.width / 2, this.height / 2);
+            
+            const data = this.ctx.getImageData(0, 0, this.width, this.height).data;
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            
+            // Map pixels to particles
+            const step = window.innerWidth < 768 ? 5 : 7; // Performance adjustment
+            for(let y = 0; y < this.height; y += step) {
+                for(let x = 0; x < this.width; x += step) {
+                    const index = (y * this.width + x) * 4;
+                    if(data[index + 3] > 128) {
+                        this.textParticles.push({
+                            x: x, y: y,
+                            originX: x, originY: y,
+                            vx: (Math.random() - 0.5) * 20,
+                            vy: (Math.random() - 0.5) * 20,
+                            color: Math.random() > 0.5 ? '#ffffff' : '#d97706',
+                            size: Math.random() * 2 + 1,
+                            life: Math.random() * 100 + 50
+                        });
+                    }
+                }
+            }
+            this.isExploded = true;
+        },
+
+        initBackgroundParticles() {
+            const count = window.innerWidth < 768 ? 60 : 150;
+            for(let i = 0; i < count; i++) {
+                this.particles.push({
+                    x: Math.random() * this.width,
+                    y: Math.random() * this.height,
+                    vx: (Math.random() - 0.5) * 1.5,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    size: Math.random() * 2 + 0.5
+                });
+            }
+        },
+
+        animate() {
+            requestAnimationFrame(() => this.animate());
+            
+            if(!document.getElementById('mod-entropy').classList.contains('active')) return;
+
+            // Fluid trail clear
+            this.ctx.fillStyle = 'rgba(5, 5, 5, 0.25)';
+            this.ctx.fillRect(0, 0, this.width, this.height);
+
+            // Ambient Particles & Mouse Lines
+            this.ctx.lineWidth = 0.5;
+            for(let i = 0; i < this.particles.length; i++) {
+                let p = this.particles[i];
+                p.x += p.vx; p.y += p.vy;
+                
+                if(p.x < 0 || p.x > this.width) p.vx *= -1;
+                if(p.y < 0 || p.y > this.height) p.vy *= -1;
+
+                this.ctx.fillStyle = '#d97706';
+                this.ctx.beginPath(); 
+                this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); 
+                this.ctx.fill();
+
+                // Connect to Mouse dynamically
+                let dx = this.mouse.x - p.x;
+                let dy = this.mouse.y - p.y;
+                let dist = Math.hypot(dx, dy);
+                if(dist < 180) {
+                    this.ctx.strokeStyle = `rgba(217, 119, 6, ${1 - dist/180})`;
+                    this.ctx.beginPath(); 
+                    this.ctx.moveTo(p.x, p.y); 
+                    this.ctx.lineTo(this.mouse.x, this.mouse.y); 
+                    this.ctx.stroke();
+                }
+            }
+
+            // Text Explosion Physics
+            if(this.isExploded) {
+                for(let i = 0; i < this.textParticles.length; i++) {
+                    let p = this.textParticles[i];
+                    p.x += p.vx; 
+                    p.y += p.vy;
+                    
+                    p.vx *= 0.94; // Friction
+                    p.vy *= 0.94;
+
+                    // Mouse gravity effect
+                    let dx = this.mouse.x - p.x;
+                    let dy = this.mouse.y - p.y;
+                    let dist = Math.hypot(dx, dy);
+                    if(dist < 250) {
+                        // Repel or Attract
+                        p.vx += dx * 0.02;
+                        p.vy += dy * 0.02;
+                        
+                        // Draw connection lines from exploded text to mouse
+                        if (dist < 80 && Math.random() > 0.8) {
+                            this.ctx.strokeStyle = `rgba(255, 255, 255, ${0.5 - dist/160})`;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(p.x, p.y);
+                            this.ctx.lineTo(this.mouse.x, this.mouse.y);
+                            this.ctx.stroke();
+                        }
+                    }
+
+                    // Return to origin slowly
+                    let ox = p.originX - p.x;
+                    let oy = p.originY - p.y;
+                    p.vx += ox * 0.005;
+                    p.vy += oy * 0.005;
+
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.fillRect(p.x, p.y, p.size, p.size);
+                }
+            }
+        }
+    };
+
     /**
      * INIT ALL SYSTEMS
      */
@@ -1001,5 +1234,6 @@ document.addEventListener('DOMContentLoaded', () => {
     BrewEngine.init();
     CompilerArena.init();
     SocialCard.init();
-
+    EntropyEngine.init(); // <-- Add this initialization
+     
 });

@@ -15,8 +15,16 @@ body, html {
     font-family: 'Inter', sans-serif; 
 }
 
-/* Custom Cursor - ONLY FOR PC (Mice) */
-.cursor-dot, .cursor-outline { display: none; }
+/* Custom Cursor with Cinematic Mix-Blend-Difference */
+.cursor-dot { display: block; width: 6px; height: 6px; background: #e8e0d5; border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); mix-blend-mode: difference; box-shadow: 0 0 15px rgba(232,224,213,0.4); }
+.cursor-outline { display: block; width: 40px; height: 40px; border: 1px solid rgba(232, 224, 213, 0.3); background: rgba(255,255,255,0.05); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s, border-color 0.2s; mix-blend-mode: difference; }
+
+/* ENTROPY 3D Flip Card Utility Classes */
+.perspective-\[1500px\] { perspective: 1500px; }
+.transform-style-3d { transform-style: preserve-3d; }
+.backface-hidden { backface-visibility: hidden; }
+.rotate-y-180 { transform: rotateY(180deg); }
+.is-flipped { transform: rotateY(180deg); }
 
 @media (pointer: fine) {
     body, html { cursor: none; }
@@ -157,8 +165,8 @@ body, html {
 
 /* Double Streams */
 .espresso-stream { position: absolute; top: 60px; width: 3.5px; height: 70px; background: linear-gradient(to bottom, #2C1810, #3D2817, #4A3728); border-radius: 2px; transform-origin: top; transform: scaleY(0); z-index: 1; filter: drop-shadow(0 0 6px rgba(201, 168, 108, 0.4)); transition: transform 0.2s ease-in; }
-.espresso-stream.left { left: 53px; }
-.espresso-stream.right { right: 53px; }
+.espresso-stream.left { left: calc(50% - 16px); }
+.espresso-stream.right { left: calc(50% + 13px); }
 .stream-wobble { animation: stream-wobble 0.08s infinite alternate ease-in-out; }
 .stream-wobble-alt { animation: stream-wobble 0.1s infinite alternate-reverse ease-in-out; }
 @keyframes stream-wobble { from { transform: scaleY(1) translateX(-0.5px); } to { transform: scaleY(1) translateX(0.5px); } }
@@ -171,8 +179,43 @@ body, html {
 .cup-shadow { position: absolute; bottom: -4px; width: 70px; height: 8px; background: rgba(0,0,0,0.7); border-radius: 50%; filter: blur(4px); z-index: 0; }
 
 /* Liquid Dynamics inside cup */
-.cup-liquid { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to bottom, #3D2817, #1a0f08); transition: height 0.1s linear; }
-.cup-crema { position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: linear-gradient(90deg, #b08d55, #C9A86C, #b08d55); box-shadow: 0 2px 4px rgba(0,0,0,0.6); }
+.cup-liquid { 
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; 
+    background: linear-gradient(to bottom, #2C1810, #0a0502); 
+    box-shadow: inset 0 5px 15px rgba(0,0,0,0.9);
+    /* Removed CSS transition so GSAP can strictly animate it without visual conflicts */
+}
+.cup-crema { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 10px; 
+    background: radial-gradient(ellipse at center, #d4a373 0%, #b07d47 70%, #6b4423 100%); 
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.8), inset 0 2px 4px rgba(255,255,255,0.25); 
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Vibrating Cursor & Entropy Effects */
+@keyframes cursorVibrate {
+    0% { transform: translate(-50%, -50%) translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-50%, -50%) translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-50%, -50%) translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(-50%, -50%) translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(-50%, -50%) translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-50%, -50%) translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-50%, -50%) translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(-50%, -50%) translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-50%, -50%) translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(-50%, -50%) translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) translate(1px, -2px) rotate(-1deg); }
+}
+.cursor-vibrate {
+    animation: cursorVibrate 0.15s linear infinite !important;
+    border-color: #d97706 !important;
+    background: rgba(217, 119, 6, 0.1) !important;
+    box-shadow: 0 0 20px #d97706 !important;
+    width: 60px !important;
+    height: 60px !important;
+}
 
 .lab-live-visual {
     min-height: 186px !important;

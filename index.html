@@ -561,7 +561,23 @@
 
                 </div>
             </div>
-
+			
+			<!-- MODULE: ENTROPY (Particle Engine) -->
+            <div class="module !p-0 !m-0 !w-full !max-w-none !h-[100dvh] overflow-hidden" id="mod-entropy">
+                <div class="absolute inset-0 w-full h-full bg-black z-0 pointer-events-none">
+                    <canvas id="entropy-canvas" class="w-full h-full block"></canvas>
+                </div>
+                
+                <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                    <h2 id="entropy-t1" class="heading-font text-4xl md:text-6xl text-white tracking-widest uppercase opacity-0 font-bold drop-shadow-[0_0_20px_rgba(217,119,6,0.6)] text-center px-4">
+                        Presented by <span class="text-[var(--brand-orange)]">Hridyansh</span>
+                    </h2>
+                    <h2 id="entropy-t2" class="heading-font text-5xl md:text-8xl text-white tracking-tighter opacity-0 font-extrabold drop-shadow-[0_0_30px_rgba(255,255,255,0.8)] absolute text-center px-4">
+                        Coding means creativity.
+                    </h2>
+                </div>
+            </div>
+			
             <!-- MODULE 6: NETWORK (LinkedIn & Terminal) -->
             <div class="module overflow-hidden !top-0 !bottom-0 !h-[100dvh] !pb-0" id="mod-identity">
                 <!-- Main Wrapper: 100% height, Flex Column layout to naturally push footer down -->
@@ -778,6 +794,12 @@
                 <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-portfolio" data-theme="geo">
                     <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
                     <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">PORTFOLIO</span>
+                </div>
+
+                <!-- ENTROPY Tab -->
+                <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-entropy" data-theme="entropy">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
+                    <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">ENTROPY</span>
                 </div>
                 
                 <!-- Merged Identity/Contact Tab -->
