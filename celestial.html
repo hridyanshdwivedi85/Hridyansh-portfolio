@@ -14,10 +14,10 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-        <style>
-        body { margin: 0; overflow: hidden; background: #000; } /* Removed touch-action: none from body */
-        #webgl-container { position: absolute; inset: 0; width: 100vw; height: 100vh; z-index: 0; cursor: crosshair; overflow: hidden; touch-action: none; } /* Added here instead */
-        .glass-panel { background: rgba(5, 5, 10, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.9); }
+            <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        #webgl-container { position: absolute; inset: 0; width: 100vw; height: 100vh; z-index: 0; cursor: crosshair; overflow: hidden; touch-action: none; }
+        .glass-panel { background: rgba(5, 5, 10, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.9); }
         .sys-button { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sys-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
         .sys-button:active { transform: translateY(1px); }
@@ -26,55 +26,54 @@
         
         * { user-select: none; -webkit-user-select: none; }
 
-        /* Celestial Module - Non-Intrusive Panel & Mobile Fixes */
-        @media (min-width: 769px) {
+        /* CELESTIAL FIXES - Non-intrusive panel */
+        @media (min-width: 1025px) {
             #telemetry-panel {
                 top: 80px !important;
                 right: 20px !important;
                 left: auto !important;
                 bottom: auto !important;
-                max-width: 300px !important;
                 width: 280px !important;
-                max-height: 75vh !important;
+                max-width: 280px !important;
+                max-height: 70vh !important;
                 overflow-y: auto !important;
                 transform: translateX(0) !important;
+                padding: 16px !important;
             }
             #telemetry-panel.-translate-x-\[120\%\] {
                 transform: translateX(calc(100% + 20px)) !important;
             }
-            .absolute.bottom-24.md\:bottom-10.right-4.md\:right-8 {
-                bottom: 30px !important;
-                right: 20px !important;
-                z-index: 60;
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            #telemetry-panel {
+                top: 70px !important;
+                right: 15px !important;
+                left: auto !important;
+                bottom: auto !important;
+                width: 260px !important;
+                max-width: 260px !important;
+                max-height: 65vh !important;
+                overflow-y: auto !important;
+                transform: translateX(0) !important;
+                padding: 14px !important;
             }
-            #btn-breakdown {
-                padding: 6px 10px !important;
-                font-size: 9px !important;
-            }
-            #core-info-panel {
-                max-height: 180px;
-                overflow-y: auto;
-            }
-            #core-layers-container > div {
-                padding: 6px !important;
-                margin-bottom: 4px;
-            }
-            #core-layers-container .text-xs {
-                font-size: 10px !important;
+            #telemetry-panel.-translate-x-\[120\%\] {
+                transform: translateX(calc(100% + 20px)) !important;
             }
         }
 
         @media (max-width: 768px) {
             #telemetry-panel {
                 top: auto !important;
-                bottom: 70px !important;
+                bottom: 80px !important;
                 left: 12px !important;
                 right: 12px !important;
                 width: auto !important;
                 max-width: none !important;
-                max-height: 40vh !important;
+                max-height: 35vh !important;
                 border-radius: 20px !important;
-                background: rgba(5, 5, 10, 0.9) !important;
+                background: rgba(5, 5, 10, 0.95) !important;
                 backdrop-filter: blur(20px) !important;
                 padding: 12px !important;
                 transform: translateY(0) !important;
@@ -83,7 +82,7 @@
                 transform: translateY(120%) !important;
             }
             #telemetry-panel .overflow-y-auto {
-                max-height: 30vh !important;
+                max-height: 25vh !important;
             }
             #telemetry-panel .font-\[Syne\] {
                 font-size: 14px !important;
@@ -95,42 +94,46 @@
                 font-size: 10px !important;
             }
             #btn-breakdown {
-                padding: 6px 8px !important;
+                padding: 5px 8px !important;
                 font-size: 8px !important;
-                margin-top: 8px !important;
-            }
-            #btn-breakdown i {
-                font-size: 10px !important;
+                margin-top: 6px !important;
             }
             #core-info-panel {
-                margin-top: 8px;
-                max-height: 120px;
-                overflow-y: auto;
+                max-height: 100px !important;
+                overflow-y: auto !important;
+            }
+            #core-layers-container > div {
+                padding: 4px !important;
+                margin-bottom: 4px !important;
             }
             .absolute.top-4.left-4 {
                 top: 12px !important;
                 left: 12px !important;
-                max-width: 65% !important;
+                max-width: 70% !important;
             }
             .absolute.top-4.left-4 .font-\[Syne\] {
                 font-size: 14px !important;
             }
-            .absolute.top-4.left-4 .font-\[Fira\ Code\] {
-                font-size: 8px !important;
-            }
             .absolute.bottom-8.md\:bottom-12.left-1\/2 {
                 display: none;
             }
+        }
+
+        /* Time slider reposition */
+        .absolute.bottom-24.md\:bottom-10.right-4.md\:right-8 {
+            bottom: 20px !important;
+            right: 20px !important;
+            z-index: 60;
+            background: rgba(5, 5, 10, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 8px 16px;
+        }
+        @media (max-width: 768px) {
             .absolute.bottom-24.md\:bottom-10.right-4.md\:right-8 {
-                bottom: 15px !important;
+                bottom: 12px !important;
                 right: 12px !important;
-                padding: 6px 10px !important;
-            }
-            .absolute.bottom-24.md\:bottom-10.right-4.md\:right-8 .font-\[Fira\ Code\] {
-                font-size: 8px !important;
-            }
-            .absolute.bottom-24.md\:bottom-10.right-4.md\:right-8 input {
-                width: 100px !important;
+                padding: 6px 12px !important;
             }
         }
     </style>
