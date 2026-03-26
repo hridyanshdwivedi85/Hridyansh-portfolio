@@ -154,33 +154,30 @@ input:checked + .slider:before { transform: translateX(18px); }
 /* --- MOBILE RESPONSIVENESS FIXES (UPDATED) --- */
 @media (max-width: 767px) {
     /* General scroll fix so users can scroll past the menu */
-    .module { padding-bottom: 180px !important; }
+    .module { padding-bottom: 220px !important; }
 
     /* 1. Coffee Machine Scale Fix */
     .mobile-coffee-scale {
-        transform: scale(0.7);
+        transform: scale(0.65); /* Scaled down slightly more */
         transform-origin: top center;
-        height: 320px; 
+        height: 250px; /* Drastically reduced to prevent clipping */
         margin-top: 10px;
+        margin-bottom: 0px; 
     }
-    .espresso-cup { margin-bottom: 0 !important; margin-top: 10px !important; }
+    .espresso-cup { margin-bottom: 30px !important; margin-top: 10px !important; }
     
     /* 2. Compiler Pipeline Scale Fix */
     .compiler-scale-fix {
-        transform: scale(0.55);
+        transform: scale(0.48); /* Scaled to fit mobile width */
         transform-origin: top center;
         margin-top: 0px;
-        margin-bottom: -100px; /* Pulls the terminal box up closer to the graph */
+        margin-bottom: -180px; /* Pulls the terminal box up properly */
+    }
+    #mod-compiler .min-h-\[350px\] {
+        min-height: 200px !important; /* Prevents huge empty gaps */
     }
     
-    /* 3. Celestial Panel Fix */
-    #telemetry-panel {
-        top: auto !important;
-        bottom: 80px !important; 
-        max-height: 40vh; 
-    }
-
-    /* 4. Nav Menu Fix (Creates a dark floating island so it never blends with content) */
+    /* 4. Nav Menu Fix */
     .nav-area {
         background: rgba(5, 5, 5, 0.85) !important;
         backdrop-filter: blur(12px) !important;
