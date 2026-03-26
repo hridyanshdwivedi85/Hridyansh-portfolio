@@ -16,8 +16,32 @@ body, html {
 }
 
 /* Custom Cursor with Cinematic Mix-Blend-Difference */
-.cursor-dot { display: block; width: 6px; height: 6px; background: #e8e0d5; border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); mix-blend-mode: difference; box-shadow: 0 0 15px rgba(232,224,213,0.4); }
+.cursor-dot { display: block; width: 6px; height: 6px; background: #e8e0d5; border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%); mix-blend-mode: difference; box-shadow: 0 0 15px rgba(232,224,213,0.4); transition: opacity 0.2s; }
 .cursor-outline { display: block; width: 40px; height: 40px; border: 1px solid rgba(232, 224, 213, 0.3); background: rgba(255,255,255,0.05); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s, background 0.2s, border-color 0.2s; mix-blend-mode: difference; }
+
+/* Entropy Crosshair Cursor (Matches Reference Image) */
+.entropy-cursor {
+    width: 60px !important;
+    height: 60px !important;
+    border: 2px solid rgba(255, 255, 255, 0.15) !important;
+    background: radial-gradient(circle, rgba(217,119,6,0.1) 0%, transparent 50%) !important;
+    mix-blend-mode: normal !important; /* Removes difference so colors show */
+    box-shadow: none !important;
+    border-radius: 50% !important;
+}
+.entropy-cursor::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 100%; background: #ef4444; /* Red Vertical */
+    box-shadow: 0 0 8px #ef4444;
+}
+.entropy-cursor::after {
+    content: ''; position: absolute; top: 50%; left: 0; transform: translateY(-50%);
+    width: 100%; height: 3px; background: #d97706; /* Orange Horizontal */
+    box-shadow: 0 0 8px #d97706;
+}
+.entropy-cursor-dot {
+    opacity: 0 !important; /* Hide dot inside crosshair */
+}}
 
 /* ENTROPY 3D Flip Card Utility Classes */
 .perspective-\[1500px\] { perspective: 1500px; }
@@ -171,50 +195,64 @@ body, html {
 .stream-wobble-alt { animation: stream-wobble 0.1s infinite alternate-reverse ease-in-out; }
 @keyframes stream-wobble { from { transform: scaleY(1) translateX(-0.5px); } to { transform: scaleY(1) translateX(0.5px); } }
 
-/* Ceramic Cup */
-.espresso-cup { position: relative; display: flex; justify-content: center; align-items: flex-end; }
-.cup-body { width: 95px; height: 60px; background: linear-gradient(145deg, #ffffff, #d4d4d4); border-radius: 4px 4px 40px 40px; box-shadow: inset -8px -8px 20px rgba(0,0,0,0.15), 0 15px 30px rgba(0,0,0,0.7); position: relative; z-index: 2; border-top: 3px solid #f0f0f0; overflow: hidden; }
-.cup-handle { position: absolute; width: 35px; height: 35px; border: 7px solid #e5e5e5; border-radius: 50%; right: -22px; top: 8px; z-index: 1; box-shadow: 3px 5px 10px rgba(0,0,0,0.3); }
-.cup-inner { position: absolute; inset: 2px; background: #e0e0e0; border-radius: 2px 2px 35px 35px; box-shadow: inset 0 10px 15px rgba(0,0,0,0.4); overflow: hidden; }
-.cup-shadow { position: absolute; bottom: -4px; width: 70px; height: 8px; background: rgba(0,0,0,0.7); border-radius: 50%; filter: blur(4px); z-index: 0; }
+/* Highly Detailed Double-Walled Glass Espresso Cup */
+.espresso-cup { position: relative; display: flex; justify-content: center; align-items: flex-end; margin-bottom: 5px; }
 
-/* Liquid Dynamics inside cup */
+.cup-body { 
+    width: 80px; height: 65px; 
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0.05) 100%);
+    border-radius: 4px 4px 25px 25px; 
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top: 1px solid rgba(255,255,255,0.7);
+    box-shadow: inset 0 0 15px rgba(255,255,255,0.1), 0 20px 30px rgba(0,0,0,0.9); 
+    position: relative; z-index: 2; overflow: hidden; 
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+/* Glass glare reflection */
+.cup-body::after {
+    content: ''; position: absolute; top: 0; left: 8px; width: 12px; height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-15deg); pointer-events: none; z-index: 10;
+}
+
+.cup-handle { 
+    position: absolute; width: 26px; height: 36px; 
+    border: 3px solid rgba(255,255,255,0.3); 
+    border-left: none;
+    border-radius: 0 20px 20px 0; 
+    right: -26px; top: 10px; z-index: 1; 
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05));
+    box-shadow: 4px 5px 12px rgba(0,0,0,0.5); 
+    backdrop-filter: blur(2px);
+}
+
+.cup-inner { 
+    position: absolute; inset: 2px 3px 5px 3px; 
+    background: transparent; 
+    border-radius: 2px 2px 20px 20px; 
+    overflow: hidden; 
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.cup-shadow { position: absolute; bottom: -8px; width: 60px; height: 12px; background: rgba(0,0,0,0.9); border-radius: 50%; filter: blur(5px); z-index: 0; }
+
+/* Dynamic Liquid Engine */
 .cup-liquid { 
     position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; 
-    background: linear-gradient(to bottom, #2C1810, #0a0502); 
-    box-shadow: inset 0 5px 15px rgba(0,0,0,0.9);
-    /* Removed CSS transition so GSAP can strictly animate it without visual conflicts */
-}
-.cup-crema { 
-    position: absolute; top: 0; left: 0; width: 100%; height: 10px; 
-    background: radial-gradient(ellipse at center, #d4a373 0%, #b07d47 70%, #6b4423 100%); 
-    border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.8), inset 0 2px 4px rgba(255,255,255,0.25); 
-    transform: translateY(-50%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(to right, #1f0b02 0%, #4a1f0a 50%, #1f0b02 100%); 
+    box-shadow: inset 0 -5px 15px rgba(0,0,0,0.9);
+    border-radius: 0 0 16px 16px;
 }
 
-/* Vibrating Cursor & Entropy Effects */
-@keyframes cursorVibrate {
-    0% { transform: translate(-50%, -50%) translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-50%, -50%) translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-50%, -50%) translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(-50%, -50%) translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(-50%, -50%) translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-50%, -50%) translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-50%, -50%) translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(-50%, -50%) translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-50%, -50%) translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(-50%, -50%) translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) translate(1px, -2px) rotate(-1deg); }
-}
-.cursor-vibrate {
-    animation: cursorVibrate 0.15s linear infinite !important;
-    border-color: #d97706 !important;
-    background: rgba(217, 119, 6, 0.1) !important;
-    box-shadow: 0 0 20px #d97706 !important;
-    width: 60px !important;
-    height: 60px !important;
+.cup-crema { 
+    position: absolute; top: 0; left: -5%; width: 110%; height: 8px; 
+    background: radial-gradient(ellipse at center, #E6B781 0%, #C38E54 60%, #85552A 100%); 
+    border-radius: 50%;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 2px 6px rgba(0,0,0,0.8); 
+    transform: translateY(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .lab-live-visual {
@@ -636,4 +674,233 @@ input:checked + .slider:before { transform: translateX(18px); }
   .essence-col { border-right:0; border-bottom: 1px solid rgba(28,25,23,0.1); padding-bottom: .5rem; }
   .essence-col:last-child { border-bottom: 0; }
   .essence-flip-btn { right: 8px; top: 12px; transform:none; }
+}
+
+/* ========================================================= */
+/* 🥃 MIXOLOGY ENGINE V3: STRUCTURAL & PHOTOREALISTIC CSS    */
+/* ========================================================= */
+
+/* --- 1. CUSTOM GRID LAYOUT (Fixes the vertical stacking issue) --- */
+.bottle-grid {
+    display: flex;
+    flex-direction: column; /* Stack on mobile */
+    gap: 1rem;
+}
+.machine-layout {
+    display: flex;
+    flex-direction: column; /* Stack on mobile */
+}
+.machine-controls-left, .machine-controls-right { padding: 1.25rem; }
+.machine-stage {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1a1a24 0%, #050505 80%);
+    box-shadow: inset 0 20px 50px rgba(0,0,0,1), inset 0 -20px 50px rgba(0,0,0,1);
+}
+
+/* Desktop Layout Override */
+@media (min-width: 768px) {
+    .bottle-grid {
+        flex-direction: row; /* 3 Columns on Desktop */
+    }
+    .bottle-slot { flex: 1; } /* Make bottles equal width */
+    
+    .machine-layout {
+        flex-direction: row; /* Row layout for the machine */
+    }
+    .machine-controls-left { width: 25%; border-right: 1px solid rgba(255,255,255,0.05); }
+    .machine-stage { width: 50%; min-height: 480px; }
+    .machine-controls-right { width: 25%; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: space-between;}
+}
+
+
+/* --- 2. BOTTLE RESERVE STYLING --- */
+.bottle-slot {
+    position: relative;
+    height: 160px; /* Taller for better visibility */
+    background: linear-gradient(to top, rgba(20,20,25,0.9), transparent);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 -10px 20px rgba(0,0,0,0.8);
+    transition: all 0.3s ease;
+}
+.bottle-img {
+    height: 120px;
+    object-fit: contain;
+    z-index: 2;
+    mix-blend-mode: screen; /* Blends images seamlessly */
+    opacity: 0.6;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+    transition: opacity 0.3s, transform 0.3s;
+}
+.bottle-slot.active .bottle-img { opacity: 1; transform: scale(1.05); }
+
+.bottle-glow {
+    position: absolute;
+    bottom: -20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    filter: blur(25px);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+.bottle-slot.active .bottle-glow { opacity: 0.7; }
+.bottle-glow.whiskey { background: #d97706; }
+.bottle-glow.wine { background: #9f1239; }
+.bottle-glow.vodka { background: #38bdf8; }
+
+.bottle-label {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: 'Fira Code', monospace;
+    font-size: 8px;
+    color: white;
+    font-weight: bold;
+    letter-spacing: 1px;
+    z-index: 3;
+}
+.bottle-label span { color: #888; font-size: 6px; }
+
+
+/* --- 3. MODERN HARDWARE BUTTONS --- */
+.neo-btn {
+    background: #111115;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #888;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-family: 'Fira Code', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.neo-btn:hover { background: #1a1a20; color: white; border-color: rgba(255,255,255,0.3); }
+.neo-btn.active {
+    background: rgba(217, 119, 6, 0.1);
+    border-color: #d97706;
+    color: #d97706;
+    box-shadow: inset 0 0 15px rgba(217,119,6,0.2);
+}
+
+
+/* --- 4. DRIP TRAY --- */
+.drip-tray {
+    background: repeating-linear-gradient(90deg, #111 0px, #111 5px, #222 5px, #222 10px);
+    border-top: 3px solid #444;
+    box-shadow: 0 -10px 20px rgba(0,0,0,0.9);
+}
+
+
+/* --- 5. PHOTOREALISTIC GLASS ENGINE --- */
+.realistic-glass {
+    position: relative;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top: 2px solid rgba(255, 255, 255, 0.6);
+    background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.01) 50%, rgba(255,255,255,0.03) 100%);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 
+        inset 0 0 25px rgba(255,255,255,0.15),
+        0 40px 50px rgba(0,0,0,0.9);
+    z-index: 10;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass Morphing Shapes (Larger sizes for visibility) */
+.realistic-glass.whiskey-shape { width: 180px; height: 200px; border-radius: 8px 8px 30px 30px; }
+.realistic-glass.wine-shape { width: 220px; height: 240px; border-radius: 10px 10px 110px 110px; }
+.realistic-glass.vodka-shape { width: 120px; height: 260px; border-radius: 4px 4px 15px 15px; }
+
+/* 3D Glass Glare (Front) */
+.glass-front {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%, 
+        rgba(255,255,255,0.4) 15%, 
+        rgba(255,255,255,0) 30%,
+        rgba(255,255,255,0) 80%,
+        rgba(255,255,255,0.15) 95%,
+        rgba(255,255,255,0) 100%
+    );
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* --- 6. LIQUID PHYSICS LAYER --- */
+.realistic-liquid {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%; /* JS animates this */
+    border-radius: 0 0 inherit inherit; /* Inherits bottom curve of glass */
+    transition: height 0.1s linear, background-color 1s ease;
+    box-shadow: inset 0 -15px 40px rgba(0,0,0,0.9), inset 0 5px 15px rgba(255,255,255,0.25);
+    z-index: 5;
+}
+
+/* 3D Liquid Surface Ellipse */
+.realistic-liquid::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 16px;
+    border-radius: 50%;
+    background: inherit;
+    filter: brightness(1.4) contrast(1.2);
+    transform: translateY(-50%);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: inset 0 2px 8px rgba(255,255,255,0.5);
+}
+
+/* --- 7. PHYSICAL ICE CUBES --- */
+.real-ice {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    /* This creates the optical distortion of liquid behind it! */
+    backdrop-filter: blur(3px) contrast(1.15);
+    -webkit-backdrop-filter: blur(3px) contrast(1.15);
+    box-shadow: 
+        inset 0 0 20px rgba(255,255,255,0.8),
+        inset 5px 5px 15px rgba(255,255,255,1),
+        0 10px 20px rgba(0,0,0,0.4);
+    z-index: 10;
+}
+
+/* Internal Cracks / Light Refraction */
+.real-ice::before {
+    content: '';
+    position: absolute;
+    top: 15%; left: 20%;
+    width: 60%; height: 80%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.6) 45%, transparent 50%);
+    transform: rotate(25deg);
 }

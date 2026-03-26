@@ -50,43 +50,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 osc.connect(gain).connect(this.ctx.destination); osc.start(t); osc.stop(t + 1.5);
             });
         },
-        playSteamBurst() {
+        playIceClink() {
             if (!this.unlocked || !this.ctx) return;
-            const bufferSize = this.ctx.sampleRate * 2; const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-            const data = buffer.getChannelData(0); for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-            const noise = this.ctx.createBufferSource(); noise.buffer = buffer;
-            const filter = this.ctx.createBiquadFilter(); filter.type = 'highpass'; filter.frequency.value = 3000;
-            const gain = this.ctx.createGain(); gain.gain.setValueAtTime(0.15, this.ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.5);
-            noise.connect(filter).connect(gain).connect(this.ctx.destination); noise.start();
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            // High pitch glass clink
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(3500 + Math.random() * 1000, t);
+            osc.frequency.exponentialRampToValueAtTime(1000, t + 0.1);
+            gain.gain.setValueAtTime(0.3, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+            osc.connect(gain).connect(this.ctx.destination);
+            osc.start(t); osc.stop(t + 0.1);
         },
-        startBrew() {
+        startPour() {
             if (!this.unlocked || !this.ctx) return { stop: () => {} };
             const t = this.ctx.currentTime;
-            
-            // 1. Machine Pump (60Hz Hum)
-            const humOsc = this.ctx.createOscillator(); humOsc.type = 'sawtooth'; humOsc.frequency.value = 55;
-            const humGain = this.ctx.createGain(); humGain.gain.setValueAtTime(0, t); humGain.gain.linearRampToValueAtTime(0.08, t + 0.5);
-            humOsc.connect(humGain).connect(this.ctx.destination); humOsc.start();
-
-            // 2. Liquid Gurgle (Modulated White Noise)
+            // Liquid pouring sound using filtered noise
             const bSize = this.ctx.sampleRate * 2; const buf = this.ctx.createBuffer(1, bSize, this.ctx.sampleRate);
             const data = buf.getChannelData(0); for (let i=0; i<bSize; i++) data[i] = Math.random() * 2 - 1;
             const noise = this.ctx.createBufferSource(); noise.buffer = buf; noise.loop = true;
-            const filter = this.ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 400;
             
-            // LFO to create the "bubbling" effect
-            const lfo = this.ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 4; 
-            const lfoGain = this.ctx.createGain(); lfoGain.gain.value = 300; 
-            lfo.connect(lfoGain).connect(filter.frequency); lfo.start();
+            const filter = this.ctx.createBiquadFilter(); filter.type = 'bandpass'; 
+            filter.frequency.setValueAtTime(800, t);
+            filter.frequency.linearRampToValueAtTime(1500, t + 3); // Pitch goes up as glass fills
+            filter.Q.value = 1.5;
 
-            const noiseGain = this.ctx.createGain(); noiseGain.gain.setValueAtTime(0, t); noiseGain.gain.linearRampToValueAtTime(0.08, t + 2);
-            noise.connect(filter).connect(noiseGain).connect(this.ctx.destination); noise.start();
+            const gain = this.ctx.createGain(); 
+            gain.gain.setValueAtTime(0, t); 
+            gain.gain.linearRampToValueAtTime(0.15, t + 0.2);
+            
+            noise.connect(filter).connect(gain).connect(this.ctx.destination); noise.start(t);
 
             return {
                 stop: () => {
-                    const st = this.ctx.currentTime;
-                    humGain.gain.linearRampToValueAtTime(0, st + 0.5); noiseGain.gain.linearRampToValueAtTime(0, st + 0.5);
-                    setTimeout(() => { humOsc.stop(); noise.stop(); lfo.stop(); }, 500);
+                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
+                    setTimeout(() => noise.stop(), 400);
                 }
             };
         },
@@ -267,10 +267,16 @@ document.addEventListener('DOMContentLoaded', () => {
         switchTab(navElement, targetId, theme, updateHash = true) {
             this.isAnimating = true;
             
-            // Toggle Vibrating Cursor for Entropy
+            // Toggle Crosshair Cursor for Entropy
             const cursorOutline = document.getElementById("cursor-outline");
-            if(targetId === 'mod-entropy') cursorOutline.classList.add('cursor-vibrate');
-            else cursorOutline.classList.remove('cursor-vibrate');
+            const cursorDot = document.getElementById("cursor-dot");
+            if(targetId === 'mod-entropy') {
+                cursorOutline.classList.add('entropy-cursor');
+                cursorDot.classList.add('entropy-cursor-dot');
+            } else {
+                cursorOutline.classList.remove('entropy-cursor');
+                cursorDot.classList.remove('entropy-cursor-dot');
+            }
 
             // Update URL for SEO and Sharing
             if (updateHash) {
@@ -414,353 +420,263 @@ document.addEventListener('DOMContentLoaded', () => {
         stopDataDrops() { clearInterval(this.dropInterval); }
     };
 
+/**
     /**
-     * 5. ESSENCE BREW ENGINE (PRO-MOD LIVE ANIMATION)
+     * 5. MIXOLOGY ENGINE V3 (Advanced Physics & Photorealism)
      */
-    const BrewEngine = {
-        state: 'OFF', // OFF, HEATING, READY, BREWING
-        temp: 24.0, targetTemp: 93.0,
-        steamActive: false,
-        timer: 0, yieldGrams: 0,
-        intervals: { heat: null, brew: null, particles: null },
+    const MixologyEngine = {
+        state: 'READY', // READY, POURING
+        drink: 'whiskey', // whiskey, wine, vodka
+        waterMl: 0,
+        iceCount: 0,
+        liquidVol: 0,
 
-        init() {
-            this.ui = {
-                btnPower: document.getElementById('brew-btn-power'),
-                btnBrew: document.getElementById('brew-btn-brew'),
-                btnSteam: document.getElementById('brew-btn-steam'),
-                ledPower: document.getElementById('led-power'),
-                ledBrew: document.getElementById('led-brew'),
-                ledSteam: document.getElementById('led-steam'),
-                pidTemp: document.getElementById('pid-temp'),
-                pidDot: document.getElementById('pid-dot'),
-                pidStatus: document.getElementById('pid-status-text'),
-                liveStatus: document.getElementById('lab-live-status'),
-                flowRate: document.getElementById('flow-rate'),
-                shotTimer: document.getElementById('shot-timer'),
-                shotYield: document.getElementById('shot-yield'),
-                tmrDot: document.getElementById('tmr-dot'),
-                gaugeNeedle: document.getElementById('lab-gauge-needle'),
-                pressure: document.getElementById('lab-pressure'),
-                clockHour: document.getElementById('lab-clock-hour'),
-                clockMinute: document.getElementById('lab-clock-minute'),
-                clockSecond: document.getElementById('lab-clock-second'),
-                streamL: document.getElementById('stream-l'),
-                streamR: document.getElementById('stream-r'),
-                liquid: document.getElementById('cup-liquid'),
-                cup: document.querySelector('.espresso-cup'),
-                haze: document.getElementById('v2-haze'),
-                pContainer: document.getElementById('v2-particle-container')
-            };
-
-            this.updateClock();
-            setInterval(() => this.updateClock(), 1000);
-            this.updateGauge(0);
-            this.setLiveStatus('MACHINE OFF');
-            this.startAmbientParticles();
-            this.bindEvents();
-        },
-
-        setLiveStatus(text) {
-            if (this.ui.liveStatus) this.ui.liveStatus.innerText = text;
-        },
-
-        animateBeanDose() {
-            const container = this.ui.pContainer;
-            const cup = this.ui.cup;
-            if (!container || !cup) return;
-
-            // Get precise visual coordinates of the cup to ensure beans drop exactly inside it
-            const cRect = container.getBoundingClientRect();
-            const cupRect = cup.getBoundingClientRect();
-            
-            // X Center of the cup relative to container
-            const cupCenterX = (cupRect.left - cRect.left) + (cupRect.width / 2);
-            // Target Y inside the cup
-            const targetY = (cupRect.top - cRect.top) + 15;
-
-            for (let i = 0; i < 20; i++) {
-                const bean = document.createElement('div');
-                bean.className = 'absolute w-2.5 h-3.5 rounded-[40%] bg-[#3D2817] z-50';
-                bean.style.boxShadow = 'inset -1px -1px 3px #1a0f08, 0 2px 4px rgba(0,0,0,0.5)';
-                
-                // Position above cup and randomized slightly on X axis
-                bean.style.left = `${cupCenterX - 5 + ((Math.random() - 0.5) * 20)}px`;
-                bean.style.top = `20px`; 
-                container.appendChild(bean);
-                
-                gsap.fromTo(bean, 
-                    { y: 0, opacity: 0, scale: 0.5, rotation: Math.random() * 360 },
-                    { 
-                        y: targetY + Math.random() * 10, 
-                        opacity: 1, scale: 1, rotation: Math.random() * 360, 
-                        duration: 0.6 + Math.random() * 0.2, 
-                        ease: "bounce.out", 
-                        delay: i * 0.06, 
-                        onComplete: () => {
-                            gsap.to(bean, {opacity: 0, duration: 0.3, delay: 0.3, onComplete: () => bean.remove()});
-                        }
-                    }
-                );
+        // High-end realistic color gradients and physical properties
+        drinks: {
+            whiskey: { 
+                name: "WHISKEY", 
+                colorBase: "rgba(180, 70, 0, 0.85)", // Deep Amber
+                colorGradient: "linear-gradient(to right, rgba(120,40,0,0.9) 0%, rgba(200,90,10,0.8) 50%, rgba(120,40,0,0.9) 100%)",
+                vol: 60, 
+                shape: "whiskey-shape",
+                glow: "rgba(217, 119, 6, 0.6)"
+            },
+            wine: { 
+                name: "RED WINE", 
+                colorBase: "rgba(90, 5, 15, 0.95)", // Deep Ruby
+                colorGradient: "linear-gradient(to right, rgba(50,0,5,0.95) 0%, rgba(130,10,25,0.9) 50%, rgba(50,0,5,0.95) 100%)",
+                vol: 150, 
+                shape: "wine-shape",
+                glow: "rgba(159, 18, 57, 0.6)"
+            },
+            vodka: { 
+                name: "VODKA", 
+                colorBase: "rgba(230, 245, 255, 0.3)", // Clear / Icy
+                colorGradient: "linear-gradient(to right, rgba(200,230,255,0.2) 0%, rgba(255,255,255,0.4) 50%, rgba(200,230,255,0.2) 100%)",
+                vol: 45, 
+                shape: "vodka-shape",
+                glow: "rgba(56, 189, 248, 0.6)"
             }
         },
 
+        init() {
+            this.ui = {
+                btnWhiskey: document.getElementById('btn-whiskey'),
+                btnWine: document.getElementById('btn-wine'),
+                btnVodka: document.getElementById('btn-vodka'),
+                btnIce: document.getElementById('btn-ice'),
+                btnPour: document.getElementById('btn-pour'),
+                btnReset: document.getElementById('btn-reset'),
+                sliderWater: document.getElementById('slider-water'),
+                valWater: document.getElementById('val-water'),
+                
+                glass: document.getElementById('the-glass'),
+                liquid: document.getElementById('the-liquid'),
+                iceContainer: document.getElementById('ice-container'),
+                stream: document.getElementById('pour-stream'),
+                stem: document.getElementById('wine-stem'),
+                
+                statusText: document.getElementById('mix-status-text'),
+                readoutVol: document.getElementById('readout-vol'),
+                readoutAbv: document.getElementById('readout-abv'),
+                
+                slots: {
+                    whiskey: document.getElementById('slot-whiskey'),
+                    wine: document.getElementById('slot-wine'),
+                    vodka: document.getElementById('slot-vodka')
+                }
+            };
+
+            this.bindEvents();
+            this.setDrink('whiskey'); // Default initialization
+        },
+
         bindEvents() {
-           // POWER BUTTON
-            this.ui.btnPower.addEventListener('click', () => {
-                AudioEngine.playMech();
-                if(this.state === 'OFF') {
-                    this.state = 'HEATING';
-                    AudioEngine.playBoot();
-                    this.setLiveStatus('BOILER HEATING');
-                    this.ui.ledPower.classList.add('on');
-                    this.ui.btnPower.classList.add('active');
-                    this.ui.pidDot.classList.replace('bg-red-900', 'bg-red-500');
-                    this.ui.pidTemp.classList.replace('text-gray-700', 'text-[#d97706]');
-                    this.ui.pidStatus.innerText = "HEATING...";
-                    
-                    // Simulate PID heating
-                    this.intervals.heat = setInterval(() => {
-                        this.temp += (Math.random() * 2 + 0.5);
-                        if(this.temp >= this.targetTemp) {
-                            this.temp = this.targetTemp;
-                            clearInterval(this.intervals.heat);
-                            this.setReady();
-                        }
-                        this.ui.pidTemp.innerText = this.temp.toFixed(1);
-                        const heatProgress = Math.min((this.temp - 24.0) / (this.targetTemp - 24.0), 1);
-                        this.updateGauge(2 + heatProgress * 7);
-                    }, 150);
-                } else {
-                    // Turn OFF
-                    this.resetSystem();
-                }
+            this.ui.btnWhiskey.addEventListener('click', () => this.setDrink('whiskey'));
+            this.ui.btnWine.addEventListener('click', () => this.setDrink('wine'));
+            this.ui.btnVodka.addEventListener('click', () => this.setDrink('vodka'));
+
+            this.ui.btnIce.addEventListener('click', () => {
+                if(this.state !== 'POURING') this.addIce();
             });
 
-            // BREW BUTTON
-            this.ui.btnBrew.addEventListener('click', () => {
-                if(this.state === 'READY') {
-                    this.startExtraction();
-                } else if(this.state === 'BREWING') {
-                    this.stopExtraction();
-                }
+            this.ui.sliderWater.addEventListener('input', (e) => {
+                this.waterMl = parseInt(e.target.value);
+                this.ui.valWater.innerText = this.waterMl + "ml";
+                this.updateMetrics();
             });
 
-            // STEAM BUTTON
-            this.ui.btnSteam.addEventListener('click', () => {
-                if(this.state === 'READY' || this.state === 'BREWING') {
-                    AudioEngine.playMech();
-                    this.steamActive = !this.steamActive;
-                    this.ui.ledSteam.classList.toggle('active', this.steamActive);
-                    this.ui.ledSteam.classList.toggle('process', this.steamActive);
-                    this.ui.btnSteam.classList.toggle('active', this.steamActive);
-                    this.setLiveStatus(this.steamActive ? 'STEAM PURGE ACTIVE' : (this.state === 'BREWING' ? 'EXTRACTING SHOT...' : 'READY TO BREW'));
-                    if(this.steamActive) {
-                        AudioEngine.playSteamBurst();
-                        for(let i=0; i<18; i++) {
-                            setTimeout(() => this.spawnSteam(this.ui.pContainer, true), i * 90);
-                        }
-                    }
-                }
+            this.ui.btnPour.addEventListener('click', () => {
+                if(this.state === 'READY') this.startPour();
             });
 
-            // Floating Beans Animation
-            document.querySelectorAll('.coffee-bean').forEach((bean, i) => {
-                gsap.to(bean, { y: "+=15", rotation: "+=25", x: "+=5", duration: 3 + i * 0.5, yoyo: true, repeat: -1, ease: "sine.inOut" });
+            this.ui.btnReset.addEventListener('click', () => {
+                if(this.state !== 'POURING') this.resetGlass();
             });
         },
 
-        setReady() {
-            this.state = 'READY';
-            this.setLiveStatus('READY TO BREW');
-            this.ui.pidDot.classList.replace('bg-red-500', 'bg-green-500');
-            this.ui.pidStatus.innerText = "READY";
-            this.updateGauge(9.0);
-            this.ui.btnBrew.classList.remove('opacity-50', 'pointer-events-none');
-            this.ui.btnSteam.classList.remove('opacity-50', 'pointer-events-none');
-            this.ui.ledPower.classList.replace('on', 'success');
-            this.ui.btnPower.classList.add('active');
-            AudioEngine.playSuccess();
+        setDrink(type) {
+            if(this.state === 'POURING') return;
+            AudioEngine.playClick();
+            
+            // Toggle Button UI
+            [this.ui.btnWhiskey, this.ui.btnWine, this.ui.btnVodka].forEach(btn => btn.classList.remove('active'));
+            if(type === 'whiskey') this.ui.btnWhiskey.classList.add('active');
+            if(type === 'wine') this.ui.btnWine.classList.add('active');
+            if(type === 'vodka') this.ui.btnVodka.classList.add('active');
+
+            // Toggle Bottle Glow UI
+            Object.values(this.ui.slots).forEach(slot => slot.classList.remove('active'));
+            this.ui.slots[type].classList.add('active');
+
+            this.drink = type;
+            this.resetGlass();
+            this.ui.statusText.innerText = "STANDBY: " + this.drinks[type].name;
+            this.ui.statusText.style.color = "#4ade80"; // reset to green
+            
+            // Morph Glass Shape Seamlessly
+            this.ui.glass.className = `realistic-glass ${this.drinks[type].shape}`;
+            
+            // Handle Wine Stem
+            if(type === 'wine') {
+                gsap.to(this.ui.stem, {opacity: 1, duration: 0.5});
+                this.ui.liquid.style.borderRadius = "0 0 80px 80px";
+            } else if (type === 'whiskey') {
+                gsap.to(this.ui.stem, {opacity: 0, duration: 0.3});
+                this.ui.liquid.style.borderRadius = "0 0 20px 20px";
+            } else {
+                gsap.to(this.ui.stem, {opacity: 0, duration: 0.3});
+                this.ui.liquid.style.borderRadius = "0 0 10px 10px";
+            }
         },
 
-        startExtraction() {
-            this.state = 'BREWING';
-            AudioEngine.playMech();
-            this.brewSound = AudioEngine.startBrew();
-            this.setLiveStatus('ADDING BEANS...');
+        addIce() {
+            if(this.drink === 'wine') {
+                this.ui.statusText.innerText = "ERR: NO ICE IN WINE";
+                this.ui.statusText.style.color = "#ef4444";
+                return;
+            }
+            if(this.iceCount >= 4) return;
             
-            // UI Updates
-            this.ui.ledBrew.classList.add('process');
-            this.ui.btnBrew.classList.add('active');
-            this.ui.tmrDot.classList.replace('bg-gray-700', 'bg-red-500');
-            this.ui.shotTimer.classList.replace('text-gray-700', 'text-white');
-            this.ui.haze.classList.add('active');
-            this.updateGauge(10.5);
+            AudioEngine.playIceClink();
+            this.iceCount++;
             
-            // Reset Cup Heights directly via GSAP
-            gsap.set(this.ui.liquid, { height: "0%" });
-            this.timer = 0; this.yieldGrams = 0;
-            this.ui.flowRate.innerText = '0.00';
+            const ice = document.createElement('div');
+            ice.className = 'real-ice';
+            
+            // Calculate physics-based landing position
+            // Spread ice horizontally, stack them vertically
+            const rot = (Math.random() - 0.5) * 60;
+            const xOffset = (Math.random() - 0.5) * 40; 
+            const yStack = (this.iceCount * 25); // Stack height offset
+            
+            this.ui.iceContainer.appendChild(ice);
 
+            // Realistic Drop Animation
+            gsap.fromTo(ice, 
+                { y: -300, x: xOffset, rotation: rot + 180, opacity: 0, scale: 0.5 },
+                { y: `calc(100% - ${yStack}px)`, x: xOffset, rotation: rot, opacity: 1, scale: 1, duration: 0.7, ease: "bounce.out" }
+            );
+
+            // Displace liquid if already poured (Archimedes principle)
+            if(this.liquidVol > 0) {
+                this.liquidVol += 15; // Ice displacement volume
+                gsap.to(this.ui.liquid, { height: `${this.liquidVol}%`, duration: 0.4, ease: "back.out(1.2)" });
+            }
+            
+            this.ui.statusText.innerText = `ICE CUBE INSERTED (${this.iceCount})`;
+            this.ui.statusText.style.color = "#38bdf8";
+        },
+
+        startPour() {
+            this.state = 'POURING';
+            this.ui.statusText.innerText = "DISPENSING...";
+            this.ui.statusText.style.color = "#facc15";
+            this.audioRef = AudioEngine.startPour();
+            
+            const baseVol = this.drinks[this.drink].vol;
+            const targetFill = Math.min(95, (baseVol + this.waterMl + (this.iceCount * 15)) / 2.5);
+
+            // Stream Styling (mix color if water added)
+            const pureColor = this.drinks[this.drink].colorBase;
+            this.ui.stream.style.background = this.waterMl > baseVol ? "rgba(200,240,255,0.7)" : pureColor;
+            this.ui.stream.style.boxShadow = `0 0 15px ${this.drinks[this.drink].glow}`;
+            
             const tl = gsap.timeline();
             
-            // 1) Drop beans perfectly into the cup
-			tl.add(() => this.animateBeanDose());
-			
-			// 2) Wait for the beans to fully land and settle (1.8s delay)
-			tl.to({}, { duration: 1.8 });
-			
-			// 3) Initialize liquid pouring
-			tl.add(() => {
-				this.setLiveStatus('EXTRACTING SHOT...');
-				this.ui.streamL.classList.add('stream-wobble');
-				this.ui.streamR.classList.add('stream-wobble-alt');
-			});
+            // 1. Stream shoots down
+            tl.to(this.ui.stream, { scaleY: 1, duration: 0.3, ease: "power2.in" });
             
-            // Drop streams down
-			tl.to([this.ui.streamL, this.ui.streamR], { scaleY: 1, duration: 0.8, ease: "power2.in" });
+            // 2. Liquid Rises
+            this.ui.liquid.style.background = this.drinks[this.drink].colorGradient;
+            if(this.waterMl > 0) {
+                this.ui.liquid.style.opacity = "0.85"; // Water dilution
+            } else {
+                this.ui.liquid.style.opacity = "1";
+            }
 
-            // Highly Detailed Cup Fill Animation
-            tl.to(this.ui.liquid, { height: "90%", duration: 28, ease: "power1.inOut" }, "-=0.2");
-
-            // Telemetry Counters
-            this.intervals.brew = setInterval(() => {
-                this.timer += 0.1;
-                this.yieldGrams += 0.14; // Approximate flow rate
-                const liveFlow = 1.35 + (Math.random() * 0.45);
-                this.ui.shotTimer.innerText = this.timer.toFixed(1);
-                this.ui.shotYield.innerText = this.yieldGrams.toFixed(1);
-                this.ui.flowRate.innerText = liveFlow.toFixed(2);
-                this.updateGauge(10 + Math.random() * 1.8);
-                
-                // Spawn minor steam during brew
-                if(Math.random() > 0.6) this.spawnSteam(this.ui.pContainer, false);
-                
-                // Auto-stop at 30s
-                if(this.timer >= 30.0) this.stopExtraction();
-            }, 100);
-        },
-
-        stopExtraction() {
-            if(this.brewSound) this.brewSound.stop();
-            AudioEngine.playMech();
-            this.state = 'READY';
-            clearInterval(this.intervals.brew);
-            
-            // Stop Streams
-            this.ui.streamL.classList.remove('stream-wobble');
-            this.ui.streamR.classList.remove('stream-wobble-alt');
-            gsap.to([this.ui.streamL, this.ui.streamR], { scaleY: 0, transformOrigin: "top", duration: 0.5 });
-            
-            // UI Reset
-            this.ui.ledBrew.classList.remove('process');
-            this.ui.btnBrew.classList.remove('active');
-            this.ui.tmrDot.classList.replace('bg-red-500', 'bg-green-500');
-            this.ui.haze.classList.remove('active');
-            this.ui.flowRate.innerText = '0.00';
-            this.updateGauge(9.0);
-            this.setLiveStatus('READY TO BREW');
-            AudioEngine.playSuccess();
-        },
-
-        resetSystem() {
-            this.state = 'OFF';
-            clearInterval(this.intervals.heat);
-            clearInterval(this.intervals.brew);
-            
-            this.ui.ledPower.classList.remove('on', 'success');
-            this.ui.ledBrew.classList.remove('process');
-            this.ui.ledSteam.classList.remove('process', 'active');
-            this.ui.btnPower.classList.remove('active');
-            this.ui.btnBrew.classList.remove('active');
-            this.ui.btnSteam.classList.remove('active');
-            this.steamActive = false;
-            
-            this.ui.btnBrew.classList.add('opacity-50', 'pointer-events-none');
-            this.ui.btnSteam.classList.add('opacity-50', 'pointer-events-none');
-            
-            this.ui.pidTemp.classList.replace('text-[#d97706]', 'text-gray-700');
-            this.ui.shotTimer.classList.replace('text-white', 'text-gray-700');
-            this.ui.pidDot.className = "w-1.5 h-1.5 rounded-full bg-red-900";
-            this.ui.tmrDot.className = "w-1.5 h-1.5 rounded-full bg-gray-700";
-            
-            this.temp = 24.0;
-            this.ui.pidTemp.innerText = "24.0";
-            this.ui.pidStatus.innerText = "OFFLINE";
-            this.ui.flowRate.innerText = "0.00";
-            this.updateGauge(0);
-            this.setLiveStatus('MACHINE OFF');
-            
-            gsap.to([this.ui.streamL, this.ui.streamR], { scaleY: 0, duration: 0.2 });
-            gsap.to(this.ui.liquid, { height: "0%", duration: 1.5 });
-        },
-
-        updateGauge(pressureBar) {
-            const clamped = Math.max(0, Math.min(12, pressureBar));
-            const rotation = -90 + ((clamped / 12) * 180);
-            if (this.ui.gaugeNeedle) this.ui.gaugeNeedle.style.transform = `rotate(${rotation}deg)`;
-            if (this.ui.pressure) this.ui.pressure.innerText = clamped.toFixed(1);
-        },
-
-        updateClock() {
-            const now = new Date();
-            const seconds = now.getSeconds();
-            const minutes = now.getMinutes();
-            const hours = now.getHours() % 12;
-
-            const secondDeg = seconds * 6;
-            const minuteDeg = (minutes * 6) + (seconds * 0.1);
-            const hourDeg = (hours * 30) + (minutes * 0.5);
-
-            if (this.ui.clockSecond) this.ui.clockSecond.style.transform = `rotate(${secondDeg}deg)`;
-            if (this.ui.clockMinute) this.ui.clockMinute.style.transform = `rotate(${minuteDeg}deg)`;
-            if (this.ui.clockHour) this.ui.clockHour.style.transform = `rotate(${hourDeg}deg)`;
-        },
-
-        startAmbientParticles() {
-            this.intervals.particles = setInterval(() => {
-                const mod = document.getElementById('mod-brew');
-                if(!mod.classList.contains('active')) return;
-                // Idle steam only if heated
-                if ((this.state === 'READY' && Math.random() > 0.6) || (this.steamActive && Math.random() > 0.2)) {
-                    this.spawnSteam(this.ui.pContainer, this.steamActive);
-                }
-            }, 800);
-        },
-
-        spawnSteam(container, isHeavy) {
-            const steam = document.createElement('div');
-            steam.className = 'steam-wisp-v2';
-            
-            const size = isHeavy ? (40 + Math.random() * 50) : (20 + Math.random() * 20);
-            const containerRect = container.getBoundingClientRect();
-            const cupRect = this.ui.cup?.getBoundingClientRect();
-            const cupCenterX = cupRect ? (cupRect.left - containerRect.left) + (cupRect.width / 2) : container.clientWidth * 0.5;
-            const cupTopY = cupRect ? (cupRect.top - containerRect.top) + 6 : container.clientHeight * 0.7;
-            const leftPx = cupCenterX - (size / 2) + ((Math.random() - 0.5) * 16);
-            const topPx = cupTopY - (Math.random() * 12);
-            
-            steam.style.width = `${size}px`;
-            steam.style.height = `${size}px`;
-            steam.style.left = `${Math.max(0, Math.min(container.clientWidth - size, leftPx))}px`;
-            steam.style.top = `${Math.max(0, topPx)}px`;
-            
-            container.appendChild(steam);
-
-            gsap.to(steam, {
-                y: -150 - Math.random() * 100,
-                x: (Math.random() - 0.5) * 80,
-                scale: 1.5 + Math.random(),
-                opacity: isHeavy ? 0.4 : 0.15,
-                duration: isHeavy ? 2.5 : (4 + Math.random() * 2),
-                ease: "power1.out",
-                onComplete: () => {
-                    gsap.to(steam, { opacity: 0, duration: 1, onComplete: () => steam.remove() });
+            tl.to(this.ui.liquid, { 
+                height: `${targetFill}%`, 
+                duration: 2.5 + (targetFill * 0.02), 
+                ease: "power1.inOut",
+                onUpdate: () => {
+                    const currentProgress = tl.progress();
+                    this.liquidVol = targetFill * currentProgress;
+                    this.updateMetrics(currentProgress);
                 }
             });
+
+            // 3. Stream stops
+            tl.to(this.ui.stream, { scaleY: 0, transformOrigin: "top", duration: 0.3 }, "-=0.2");
+            
+            tl.call(() => {
+                if(this.audioRef) this.audioRef.stop();
+                this.state = 'READY';
+                this.ui.statusText.innerText = "READY TO SERVE";
+                this.ui.statusText.style.color = "#4ade80";
+            });
+        },
+
+        resetGlass() {
+            this.liquidVol = 0;
+            this.iceCount = 0;
+            
+            // Fade out ice cubes before removing
+            gsap.to('.real-ice', { opacity: 0, scale: 0.5, duration: 0.3, onComplete: () => {
+                this.ui.iceContainer.innerHTML = '';
+            }});
+            
+            gsap.to(this.ui.liquid, { height: "0%", duration: 0.5, ease: "power2.inOut" });
+            gsap.to(this.ui.stream, { scaleY: 0, duration: 0.2 });
+            
+            this.updateMetrics(0);
+            this.ui.statusText.innerText = "SYSTEM FLUSHED";
+            this.ui.statusText.style.color = "#4ade80";
+        },
+
+        updateMetrics(progress = 1) {
+            const baseVol = this.drinks[this.drink].vol;
+            const currentTotal = Math.floor((baseVol + this.waterMl) * progress);
+            
+            // Animate number change
+            this.ui.readoutVol.innerHTML = `${currentTotal}<span class="text-xs text-gray-500">ml</span>`;
+
+            // Calculate precise ABV
+            let baseAbv = 0;
+            if(this.drink === 'whiskey') baseAbv = 42.5;
+            if(this.drink === 'vodka') baseAbv = 40.0;
+            if(this.drink === 'wine') baseAbv = 13.5;
+
+            if(currentTotal === 0) {
+                this.ui.readoutAbv.innerHTML = `0.0<span class="text-xs text-orange-700">%</span>`;
+            } else {
+                const totalLiquid = baseVol + this.waterMl;
+                const dilutedAbv = (baseVol * baseAbv) / totalLiquid;
+                this.ui.readoutAbv.innerHTML = `${dilutedAbv.toFixed(1)}<span class="text-xs text-orange-700">%</span>`;
+            }
         }
     };
-
+	
     /**
      * 6. COMPILER ARENA V2
      */
@@ -1031,11 +947,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     
-    /**
-     * 9. ENTROPY ENGINE (3D IDENTITY CARD)
-     */
-    /**
-     * 9. ENTROPY ENGINE (Kinetic Particle Exploder & Sequence)
+   /**
+     * 9. ENTROPY ENGINE (Kinetic Particle Exploder & Bokeh Trail)
      */
     const EntropyEngine = {
         init() {
@@ -1043,7 +956,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(!this.canvas) return;
             
             this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
-            this.particles = [];
+            this.trailParticles = [];
             this.textParticles = [];
             this.mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
             this.isExploded = false;
@@ -1054,6 +967,11 @@ document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener('mousemove', (e) => {
                 this.mouse.x = e.clientX;
                 this.mouse.y = e.clientY;
+                
+                // Spawn beautiful bokeh trail particles on mouse move
+                if(document.getElementById('mod-entropy').classList.contains('active')) {
+                    this.spawnTrailParticles(e.clientX, e.clientY);
+                }
             });
 
             // Bind observer to start sequence only when tab is opened
@@ -1067,7 +985,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             observer.observe(document.getElementById('mod-entropy'), { attributes: true, attributeFilter: ['class'] });
 
-            this.initBackgroundParticles();
             this.animate();
         },
 
@@ -1076,6 +993,24 @@ document.addEventListener('DOMContentLoaded', () => {
             this.height = window.innerHeight;
             this.canvas.width = this.width;
             this.canvas.height = this.height;
+        },
+
+        spawnTrailParticles(x, y) {
+            const count = Math.random() * 3 + 2; // Spawn more particles (2 to 5 per move)
+            const colors = ['255, 255, 255', '217, 119, 6', '150, 150, 150']; 
+            
+            for(let i=0; i<count; i++) {
+                this.trailParticles.push({
+                    x: x + (Math.random() - 0.5) * 10,
+                    y: y + (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.5) * 1.0,
+                    vy: (Math.random() - 0.5) * 1.0 - 0.5, // Stronger upward smoke-like drift
+                    size: Math.random() * 3 + 1.5, // MUCH SMALLER: 1.5px to 4.5px radius
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 70 + Math.random() * 50,
+                    maxLife: 120
+                });
+            }
         },
 
         runSequence() {
@@ -1125,8 +1060,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             vx: (Math.random() - 0.5) * 20,
                             vy: (Math.random() - 0.5) * 20,
                             color: Math.random() > 0.5 ? '#ffffff' : '#d97706',
-                            size: Math.random() * 2 + 1,
-                            life: Math.random() * 100 + 50
+                            size: Math.random() * 2 + 1
                         });
                     }
                 }
@@ -1134,56 +1068,40 @@ document.addEventListener('DOMContentLoaded', () => {
             this.isExploded = true;
         },
 
-        initBackgroundParticles() {
-            const count = window.innerWidth < 768 ? 60 : 150;
-            for(let i = 0; i < count; i++) {
-                this.particles.push({
-                    x: Math.random() * this.width,
-                    y: Math.random() * this.height,
-                    vx: (Math.random() - 0.5) * 1.5,
-                    vy: (Math.random() - 0.5) * 1.5,
-                    size: Math.random() * 2 + 0.5
-                });
-            }
-        },
-
         animate() {
             requestAnimationFrame(() => this.animate());
             
             if(!document.getElementById('mod-entropy').classList.contains('active')) return;
 
-            // Fluid trail clear
-            this.ctx.fillStyle = 'rgba(5, 5, 5, 0.25)';
+            // Smoky background clear for long trails
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.fillStyle = 'rgba(2, 4, 2, 0.25)'; // Dark clear for trails
             this.ctx.fillRect(0, 0, this.width, this.height);
 
-            // Ambient Particles & Mouse Lines
-            this.ctx.lineWidth = 0.5;
-            for(let i = 0; i < this.particles.length; i++) {
-                let p = this.particles[i];
+            // Draw Bokeh Trail Particles
+            this.ctx.globalCompositeOperation = 'screen';
+            for(let i = this.trailParticles.length - 1; i >= 0; i--) {
+                let p = this.trailParticles[i];
                 p.x += p.vx; p.y += p.vy;
+                p.life--;
                 
-                if(p.x < 0 || p.x > this.width) p.vx *= -1;
-                if(p.y < 0 || p.y > this.height) p.vy *= -1;
-
-                this.ctx.fillStyle = '#d97706';
-                this.ctx.beginPath(); 
-                this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); 
+                let alpha = (p.life / p.maxLife) * 0.7; // Max opacity 0.7
+                
+                let radGrad = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
+                radGrad.addColorStop(0, `rgba(${p.color}, ${alpha})`);
+                radGrad.addColorStop(0.4, `rgba(${p.color}, ${alpha * 0.5})`);
+                radGrad.addColorStop(1, `rgba(${p.color}, 0)`);
+                
+                this.ctx.fillStyle = radGrad;
+                this.ctx.beginPath();
+                this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                 this.ctx.fill();
 
-                // Connect to Mouse dynamically
-                let dx = this.mouse.x - p.x;
-                let dy = this.mouse.y - p.y;
-                let dist = Math.hypot(dx, dy);
-                if(dist < 180) {
-                    this.ctx.strokeStyle = `rgba(217, 119, 6, ${1 - dist/180})`;
-                    this.ctx.beginPath(); 
-                    this.ctx.moveTo(p.x, p.y); 
-                    this.ctx.lineTo(this.mouse.x, this.mouse.y); 
-                    this.ctx.stroke();
-                }
+                if(p.life <= 0) this.trailParticles.splice(i, 1);
             }
 
-            // Text Explosion Physics
+            // Draw Text Explosion Particles
+            this.ctx.globalCompositeOperation = 'source-over';
             if(this.isExploded) {
                 for(let i = 0; i < this.textParticles.length; i++) {
                     let p = this.textParticles[i];
@@ -1193,18 +1111,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     p.vx *= 0.94; // Friction
                     p.vy *= 0.94;
 
-                    // Mouse gravity effect
+                    // Mouse gravity/repel effect
                     let dx = this.mouse.x - p.x;
                     let dy = this.mouse.y - p.y;
                     let dist = Math.hypot(dx, dy);
                     if(dist < 250) {
-                        // Repel or Attract
                         p.vx += dx * 0.02;
                         p.vy += dy * 0.02;
                         
                         // Draw connection lines from exploded text to mouse
                         if (dist < 80 && Math.random() > 0.8) {
-                            this.ctx.strokeStyle = `rgba(255, 255, 255, ${0.5 - dist/160})`;
+                            this.ctx.strokeStyle = `rgba(217, 119, 6, ${0.4 - dist/200})`;
                             this.ctx.beginPath();
                             this.ctx.moveTo(p.x, p.y);
                             this.ctx.lineTo(this.mouse.x, this.mouse.y);
@@ -1231,7 +1148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     BGEngine.init();
     AppController.init();
     NeuralCore.init();
-    BrewEngine.init();
+    MixologyEngine.init();
     CompilerArena.init();
     SocialCard.init();
     EntropyEngine.init(); // <-- Add this initialization
