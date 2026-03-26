@@ -161,16 +161,36 @@
                                     </div>
                                 </div>
 
-                                <div class="lab-gauge-wrap hw-screen rounded-full">
-                                    <div class="lab-gauge-face">
-                                        <div class="lab-gauge-tick"></div>
-                                        <div class="lab-gauge-tick"></div>
-                                        <div class="lab-gauge-tick"></div>
-                                        <div class="lab-gauge-tick"></div>
-                                        <div class="lab-gauge-needle" id="lab-gauge-needle"></div>
-                                        <div class="lab-gauge-center"></div>
-                                        <div class="lab-gauge-readout code-font"><span id="lab-pressure">0.0</span><span>bar</span></div>
-                                    </div>
+                                <div class="lab-gauge-wrap pms-gauge-wrap hw-screen rounded-full">
+                                    <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-lg">
+                                        <defs>
+                                            <radialGradient id="pms-face" cx="50%" cy="50%" r="50%"><stop offset="85%" stop-color="#1a1a1a"></stop><stop offset="100%" stop-color="#050505"></stop></radialGradient>
+                                            <linearGradient id="pms-rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#444"></stop><stop offset="20%" stop-color="#888"></stop><stop offset="50%" stop-color="#333"></stop><stop offset="80%" stop-color="#888"></stop><stop offset="100%" stop-color="#444"></stop></linearGradient>
+                                        </defs>
+                                        <circle cx="50" cy="50" r="48" fill="url(#pms-rim)" stroke="#111" stroke-width="0.5"></circle>
+                                        <circle cx="50" cy="50" r="44" fill="url(#pms-face)" stroke="#222" stroke-width="1"></circle>
+                                        <g transform="translate(50 50)">
+                                            <line x1="0" y1="-37" x2="0" y2="-42" transform="rotate(-135)" stroke="#a8a29e" stroke-width="1.2"></line>
+                                            <line x1="0" y1="-37" x2="0" y2="-42" transform="rotate(-67.5)" stroke="#a8a29e" stroke-width="1.2"></line>
+                                            <line x1="0" y1="-37" x2="0" y2="-42" transform="rotate(0)" stroke="#10b981" stroke-width="1.2"></line>
+                                            <line x1="0" y1="-37" x2="0" y2="-42" transform="rotate(67.5)" stroke="#a8a29e" stroke-width="1.2"></line>
+                                            <line x1="0" y1="-37" x2="0" y2="-42" transform="rotate(135)" stroke="#ef4444" stroke-width="1.2"></line>
+                                            <text x="-22.62" y="22.62" text-anchor="middle" font-size="7" fill="#e5e5e5" font-family="monospace">0</text>
+                                            <text x="-29.56" y="-12.25" text-anchor="middle" font-size="7" fill="#e5e5e5" font-family="monospace">4</text>
+                                            <text x="0" y="-32" text-anchor="middle" font-size="7" fill="#e5e5e5" font-family="monospace">8</text>
+                                            <text x="29.56" y="-12.25" text-anchor="middle" font-size="7" fill="#e5e5e5" font-family="monospace">12</text>
+                                            <text x="22.62" y="22.62" text-anchor="middle" font-size="7" fill="#e5e5e5" font-family="monospace">16</text>
+                                        </g>
+                                        <text x="50" y="22" text-anchor="middle" font-size="4.5" fill="#d97706" font-family="sans-serif" font-weight="900">PMS</text>
+                                        <text x="50" y="28" text-anchor="middle" font-size="2.5" fill="#666" font-family="monospace" letter-spacing="0.5">PRESSURE</text>
+                                        <text x="50" y="65" text-anchor="middle" font-size="3" fill="#555" font-family="monospace" font-weight="bold">BAR</text>
+                                        <g id="lab-gauge-needle">
+                                            <path d="M 49 50 L 51 50 L 50 10 Z" fill="#e5e5e5"></path>
+                                            <circle cx="50" cy="50" r="3.5" fill="url(#pms-rim)" stroke="#111" stroke-width="0.5"></circle>
+                                            <circle cx="50" cy="50" r="1.5" fill="#d4d4d8"></circle>
+                                        </g>
+                                        <text id="lab-pressure" x="50" y="82" text-anchor="middle" font-size="7" fill="#d4d4d8" font-family="monospace">0.0</text>
+                                    </svg>
                                 </div>
                             </div>
                         </div>
@@ -204,31 +224,38 @@
                             </div>
                         </div>
 
-                        <div id="brew-live-sim" class="relative w-full border border-white/10 rounded-xl bg-gradient-to-b from-[#0a0d14] via-[#07090f] to-[#05070c] flex flex-col items-center overflow-hidden z-20 pt-5 pb-1 md:pb-2 shadow-[inset_0_40px_80px_rgba(255,255,255,0.06)]">
+                        <div id="brew-live-sim" class="relative w-full border border-white/10 rounded-xl bg-gradient-to-b from-[#0a0d14] via-[#07090f] to-[#05070c] flex flex-col items-center overflow-hidden z-20 pt-5 pb-0 shadow-[inset_0_40px_80px_rgba(255,255,255,0.06)]">
                             <div class="absolute top-3 left-4 flex items-center gap-2 z-30"><div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" id="sim-live-dot"></div><span class="code-font text-[8px] text-gray-500 uppercase tracking-widest">Live Sim</span></div>
 
-                            <div class="mobile-coffee-scale">
-                                <div class="portafilter-group relative mt-4 sm:mt-6 md:mt-8 z-20">
-                                    <div class="pf-mount"></div>
-                                    <div class="pf-handle"></div>
-                                    <div class="pf-body">
-                                        <div class="pf-spout left"></div>
-                                        <div class="pf-spout right"></div>
-                                    </div>
+                            <div class="mobile-coffee-scale lab-live-visual">
+                                <svg viewBox="0 0 200 220" class="w-full h-full drop-shadow-2xl overflow-visible">
+                                    <defs>
+                                        <linearGradient id="chrome-grad-mobile" x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="#52525b"></stop><stop offset="20%" stop-color="#a1a1aa"></stop><stop offset="45%" stop-color="#ffffff"></stop><stop offset="50%" stop-color="#d4d4d8"></stop><stop offset="80%" stop-color="#52525b"></stop><stop offset="100%" stop-color="#27272a"></stop></linearGradient>
+                                        <linearGradient id="cup-ceramic" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f5f5f4"></stop><stop offset="50%" stop-color="#ffffff"></stop><stop offset="100%" stop-color="#d6d3d1"></stop></linearGradient>
+                                    </defs>
+                                    <path d="M50 20 L150 20 L150 45 C150 55 50 55 50 45 Z" fill="url(#chrome-grad-mobile)" stroke="#3f3f46" stroke-width="1"></path>
+                                    <g transform="translate(100 55)">
+                                        <path d="M-25 -5 L-120 10 L-115 35 L-20 20" fill="#222" stroke="#000" stroke-width="1"></path>
+                                        <path d="M-35 -10 L35 -10 L30 25 C20 40 -20 40 -30 25 Z" fill="url(#chrome-grad-mobile)" stroke="#52525b" stroke-width="0.5"></path>
+                                        <path d="M-8 30 Q-15 50 -15 55" stroke="url(#chrome-grad-mobile)" stroke-width="6" fill="none" stroke-linecap="round"></path>
+                                        <path d="M8 30 Q15 50 15 55" stroke="url(#chrome-grad-mobile)" stroke-width="6" fill="none" stroke-linecap="round"></path>
+                                    </g>
+                                    <path d="M52 135 Q48 175 55 195 Q100 210 145 195 Q152 175 148 135" fill="url(#cup-ceramic)" stroke="#a8a29e" stroke-width="0.5"></path>
+                                    <path d="M55 135 Q55 195 100 195 Q145 195 145 135" fill="#0c0a09"></path>
+                                    <path d="M145 150 Q175 150 175 170 Q175 190 145 185" fill="none" stroke="url(#cup-ceramic)" stroke-width="8" stroke-linecap="round"></path>
+                                    <ellipse cx="100" cy="200" rx="50" ry="7" fill="black" opacity="0.65"></ellipse>
+                                </svg>
+
+                                <div class="lab-functional-layer" aria-hidden="true">
                                     <div class="espresso-stream left" id="stream-l"></div>
                                     <div class="espresso-stream right" id="stream-r"></div>
-                                </div>
-
-                                <div class="espresso-cup mt-7 sm:mt-8 md:mt-9 mb-0 z-10">
-                                    <div class="cup-handle"></div>
-                                    <div class="cup-body">
-                                        <div class="cup-inner">
-                                            <div class="cup-liquid" id="cup-liquid">
-                                                <div class="cup-crema"></div>
+                                    <div class="espresso-cup z-10">
+                                        <div class="cup-body">
+                                            <div class="cup-inner">
+                                                <div class="cup-liquid" id="cup-liquid"><div class="cup-crema"></div></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="cup-shadow"></div>
                                 </div>
                             </div>
                         </div>
