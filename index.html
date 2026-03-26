@@ -695,10 +695,16 @@
 
                     <!-- Footer Links: Restored to natural flex flow for perfect mathematical centering -->
                     <div class="shrink-0 w-full flex flex-col items-center justify-center gap-2 z-20 pointer-events-auto pb-8 md:pb-10">
-                        <div class="flex items-center gap-4 code-font text-[10px] text-gray-600">
-                            <button class="hover:text-[var(--brand-orange)] transition flex items-center gap-1 cursor-pointer" onclick="openLegalModal('privacy')"><i class="far fa-circle text-[8px]"></i> Privacy</button> &bull;
-                            <button class="hover:text-[var(--brand-orange)] transition flex items-center gap-1 cursor-pointer" onclick="openLegalModal('terms')"><i class="far fa-file-alt text-[8px]"></i> Terms</button> &bull;
-                            <button class="hover:text-[var(--brand-orange)] transition flex items-center gap-1 cursor-pointer" onclick="openLegalModal('credits')"><i class="far fa-heart text-[8px]"></i> Credits</button>
+                        <div class="relative code-font text-[10px] text-gray-600" id="legal-tabs-wrap">
+                            <button id="legal-tabs-toggle" class="hover:text-[var(--brand-orange)] transition flex items-center gap-2 cursor-pointer border border-white/10 rounded-full px-3 py-1.5 bg-[#0c0c0c]">
+                                <i class="fas fa-folder-tree text-[9px]"></i> Tabs
+                                <i class="fas fa-chevron-down text-[8px]" id="legal-tabs-chevron"></i>
+                            </button>
+                            <div id="legal-tabs-menu" class="hidden absolute left-1/2 -translate-x-1/2 bottom-[120%] min-w-[170px] bg-[#0a0a0a] border border-white/10 rounded-xl p-2 shadow-2xl">
+                                <button class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/5 hover:text-[var(--brand-orange)] transition flex items-center gap-1.5" onclick="openLegalModal('privacy')"><i class="far fa-circle text-[8px]"></i> Privacy</button>
+                                <button class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/5 hover:text-[var(--brand-orange)] transition flex items-center gap-1.5" onclick="openLegalModal('terms')"><i class="far fa-file-alt text-[8px]"></i> Terms</button>
+                                <button class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/5 hover:text-[var(--brand-orange)] transition flex items-center gap-1.5" onclick="openLegalModal('credits')"><i class="far fa-heart text-[8px]"></i> Credits</button>
+                            </div>
                         </div>
                         <div class="code-font text-[9px] text-gray-600">
                             &copy; 2025 Hridyansh Dwivedi &bull; Made with <i class="fas fa-heart text-[var(--brand-orange)] mx-0.5"></i> & <i class="fas fa-coffee text-[#81a1c1] mx-0.5"></i>
@@ -732,6 +738,10 @@
                 <a href="celestial.html" class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" style="text-decoration: none;">
                     <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">launching</span>
                     <span class="nav-label text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">CELESTIAL</span>
+                </a>
+                <a href="flex.html" class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" style="text-decoration: none;">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">new</span>
+                    <span class="nav-label text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">FLEX</span>
                 </a>
 
                 <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-portfolio" data-theme="geo">
@@ -849,6 +859,10 @@
             const modal = document.getElementById('legal-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            const tabsMenu = document.getElementById('legal-tabs-menu');
+            const chevron = document.getElementById('legal-tabs-chevron');
+            if (tabsMenu) tabsMenu.classList.add('hidden');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
             
             // Allow CSS to register display change before fading in
             setTimeout(() => modal.classList.remove('opacity-0'), 10);
@@ -870,6 +884,23 @@
             
             // Close when clicking the dark background behind the modal
             document.getElementById('legal-modal-bg').addEventListener('click', closeLegalModal);
+
+            const tabsToggle = document.getElementById('legal-tabs-toggle');
+            const tabsMenu = document.getElementById('legal-tabs-menu');
+            const chevron = document.getElementById('legal-tabs-chevron');
+            if (tabsToggle && tabsMenu) {
+                tabsToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    tabsMenu.classList.toggle('hidden');
+                    if (chevron) chevron.style.transform = tabsMenu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+                });
+                document.addEventListener('click', (e) => {
+                    if (!document.getElementById('legal-tabs-wrap')?.contains(e.target)) {
+                        tabsMenu.classList.add('hidden');
+                        if (chevron) chevron.style.transform = 'rotate(0deg)';
+                    }
+                });
+            }
         });
     </script>
 
