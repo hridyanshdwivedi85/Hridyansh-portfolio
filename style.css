@@ -436,3 +436,33 @@ input:checked + .slider:before { transform: translateX(18px); }
     .compiler-scale-fix { transform: scale(0.90); transform-origin: center center; }
     .mobile-coffee-scale { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; }
 }
+
+/* ESSENCE Flip Card Module */
+.essence-stage { background: radial-gradient(circle at 50% 40%, rgba(217,119,6,0.12), transparent 55%); }
+.essence-flip-wrap { min-height: 420px; }
+.essence-card { position: relative; width: 100%; min-height: 420px; transform-style: preserve-3d; transition: transform 600ms cubic-bezier(0.4,0,0.2,1); }
+.essence-card.flipped { transform: rotateY(180deg); }
+.essence-face { position: absolute; inset: 0; border-top: 4px solid #d97706; border-radius: 20px; backface-visibility: hidden; overflow: hidden; box-shadow: 0 20px 40px -12px rgba(0,0,0,0.6); }
+.essence-front { background: #e8e0d5; color: #1c1917; }
+.essence-back { background: #0c0a09; color: #e8e0d5; padding: 1rem; transform: rotateY(180deg); }
+.essence-noise { position: absolute; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.12; mix-blend-mode: multiply; pointer-events: none; }
+.essence-grid { position: relative; display: grid; grid-template-columns: 38% 35% 27%; height: 100%; padding: 1rem; }
+.essence-col { border-right: 1px solid rgba(28,25,23,0.1); padding: 0 .75rem; }
+.essence-col:last-child { border-right: 0; }
+.segbar { margin-top: 4px; height: 5px; display:flex; gap:2px; }
+.segbar span { flex:1; background:#1c1917; opacity:.25; border-radius: 1px; }
+.segbar span.on { opacity: 1; background: #d97706; }
+.stack-item { position: relative; display:flex; justify-content: space-between; align-items:center; font-family:'Fira Code',monospace; font-size:9px; text-transform:uppercase; border-bottom:1px solid rgba(28,25,23,0.08); padding:4px 2px; overflow:hidden; }
+.stack-item::after { content:''; position:absolute; inset:0; background: linear-gradient(90deg,transparent, rgba(217,119,6,.15), transparent); transform: translateX(-110%); transition: transform 900ms ease; }
+.stack-item:hover::after { transform: translateX(110%); }
+.barcode { height: 36px; background: repeating-linear-gradient(90deg,#1c1917 0,#1c1917 2px,transparent 2px,transparent 4px); opacity: .7; }
+.tag { padding: 2px 6px; border:1px solid #444; border-radius: 3px; font-family:'Fira Code',monospace; font-size:10px; color:#a8a29e; }
+.tag:hover { color:#d97706; border-color:#d97706; }
+.essence-flip-btn { position:absolute; right:-3.25rem; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; align-items:center; gap:.4rem; color:#d97706; font-family:'Fira Code',monospace; font-size:8px; text-transform:uppercase; letter-spacing:.2em; }
+.essence-flip-btn span { width:44px; height:44px; border-radius:999px; border:2px solid #d97706; background:#0c0a09; display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(217,119,6,.2); }
+@media (max-width: 900px) {
+  .essence-grid { grid-template-columns: 1fr; gap: 10px; overflow-y:auto; }
+  .essence-col { border-right:0; border-bottom: 1px solid rgba(28,25,23,0.1); padding-bottom: .5rem; }
+  .essence-col:last-child { border-bottom: 0; }
+  .essence-flip-btn { right: 8px; top: 12px; transform:none; }
+}
