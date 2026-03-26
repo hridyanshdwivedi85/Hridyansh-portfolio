@@ -64,7 +64,62 @@ body, html {
 
 /* --- NEW CODE --- */
 /* Coffee Brewer V2 Live Animation Styling */
-.cozy-bg-layer { background: radial-gradient(circle at center, rgba(212, 165, 116, 0.15) 0%, transparent 70%); filter: blur(40px); transition: opacity 2s; }
+.lab-machine-shell {
+    border: 1px solid rgba(255, 153, 0, 0.18);
+    background:
+        radial-gradient(circle at 50% 65%, rgba(255, 165, 0, 0.12) 0%, rgba(255, 165, 0, 0.02) 38%, transparent 70%),
+        linear-gradient(180deg, rgba(12, 12, 15, 0.98), rgba(8, 7, 6, 0.98));
+    box-shadow: inset 0 0 0 1px rgba(255, 140, 0, 0.08), 0 22px 55px rgba(0, 0, 0, 0.75);
+}
+
+.lab-top-buttons { background: rgba(3, 6, 11, 0.88); border-color: rgba(65, 75, 95, 0.35); }
+.lab-control-btn {
+    width: 100px;
+    height: 126px;
+    border-radius: 6px;
+    padding: 14px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(180deg, #10141d, #080b13);
+    border: 1px solid rgba(66, 73, 91, 0.6);
+}
+.lab-control-btn i { color: #6b7280; font-size: 1.1rem; transition: color 0.25s ease, text-shadow 0.25s ease; }
+.lab-control-btn:hover i { color: #d1d5db; text-shadow: 0 0 9px rgba(255,255,255,0.35); }
+.lab-control-btn .hw-led { width: 34px; height: 8px; border-radius: 2px; background: #2a0707; box-shadow: inset 0 0 6px #000; }
+.lab-btn-label { font-size: 10px; letter-spacing: 0.2em; color: #9ca3af; font-weight: 700; }
+#brew-btn-brew { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2), inset 0 0 0 1px rgba(16, 185, 129, 0.3); }
+
+.lab-brand-panel {
+    background: linear-gradient(95deg, rgba(26, 17, 15, 0.95), rgba(15, 16, 19, 0.95));
+    border: 1px solid rgba(255, 140, 0, 0.22);
+}
+.lab-brand-title { font-size: clamp(1.6rem, 2.6vw, 2.1rem); letter-spacing: 0.01em; font-style: italic; font-weight: 800; line-height: 1; }
+.lab-brand-title span:first-child { color: #f3f4f6; }
+.lab-brand-title span:last-child { color: #f59e0b; margin-left: 2px; }
+.lab-brand-sub { font-size: 9px; letter-spacing: 0.34em; color: #9ca3af; margin-top: 6px; }
+.lab-status-row { margin-top: 14px; display: flex; align-items: center; gap: 7px; color: #4ade80; font-size: 10px; letter-spacing: 0.14em; }
+.lab-status-note { margin-top: 4px; color: #6b7280; font-size: 7px; letter-spacing: 0.22em; }
+
+.lab-gauge-wrap { width: 94px; height: 94px; border: 3px solid #4b5563; background: radial-gradient(circle at 50% 45%, #202733 0%, #080b12 70%); position: relative; }
+.lab-gauge-face { position: absolute; inset: 8px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
+.lab-gauge-tick { position: absolute; width: 2px; height: 12px; background: #cbd5e1; left: 50%; top: 6px; transform-origin: center 36px; }
+.lab-gauge-tick:nth-child(2) { transform: rotate(45deg); }
+.lab-gauge-tick:nth-child(3) { transform: rotate(90deg); }
+.lab-gauge-tick:nth-child(4) { transform: rotate(135deg); }
+.lab-gauge-needle { position: absolute; width: 2px; height: 30px; background: #e5e7eb; left: 50%; bottom: 50%; transform-origin: bottom; transform: rotate(36deg); box-shadow: 0 0 6px rgba(255,255,255,0.35); }
+
+.lab-metrics-grid .hw-screen { min-height: 128px; display: flex; flex-direction: column; justify-content: space-between; }
+.lab-pid-main { font-size: 2.1rem; color: #ef4444; text-shadow: 0 0 14px rgba(239,68,68,0.4); display: flex; justify-content: center; align-items: baseline; }
+.lab-red-bars { height: 6px; background: repeating-linear-gradient(90deg, #ef4444 0 10px, transparent 10px 12px); opacity: 0.85; }
+.lab-flow-main { font-size: 1.8rem; color: #f3f4f6; }
+.lab-flow-main span { font-size: 10px; color: #6b7280; }
+.lab-gridline { margin-top: 8px; height: 28px; border: 1px solid rgba(56, 189, 248, 0.3); background: linear-gradient(0deg, transparent 7px, rgba(16,185,129,0.15) 8px), linear-gradient(90deg, transparent 11px, rgba(16,185,129,0.15) 12px); background-size: 100% 8px, 12px 100%; }
+.lab-clock { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(148, 163, 184, 0.6); margin: 6px auto 0; position: relative; }
+.lab-clock::before, .lab-clock::after { content: ''; position: absolute; left: 50%; bottom: 50%; width: 2px; background: #e5e7eb; transform-origin: bottom; }
+.lab-clock::before { height: 14px; transform: translateX(-50%) rotate(35deg); }
+.lab-clock::after { height: 18px; transform: translateX(-50%) rotate(100deg); }
 
 /* Live Sim Portafilter & Cup Detailed CSS */
 .portafilter-group { display: flex; flex-direction: column; align-items: center; }
@@ -101,9 +156,7 @@ body, html {
 .surface-ripple { position: absolute; border: 2px solid rgba(201, 168, 108, 0.8); border-radius: 50%; transform: translate(-50%, -50%) scale(0); opacity: 1; pointer-events: none; z-index: 6; }
 
 /* Floating Decor Beans */
-.coffee-bean { position: absolute; width: 20px; height: 28px; background: linear-gradient(135deg, #5c4331, #2C1810); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; box-shadow: inset -3px -3px 6px rgba(0,0,0,0.8), inset 2px 2px 5px #7a5a43, 8px 8px 15px rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 10; cursor: pointer; transition: filter 0.3s; }
-.coffee-bean::after { content: ''; width: 3px; height: 20px; background: #1a0e09; border-radius: 50%; transform: rotate(-12deg); box-shadow: inset 1px 0 2px rgba(0,0,0,0.8); }
-.coffee-bean:hover { filter: brightness(1.2); }
+.coffee-bean { display: none; }
 
 /* Heat Haze Distortion */
 .heat-haze { position: absolute; inset: 0; backdrop-filter: blur(2px); opacity: 0; mask-image: linear-gradient(to top, rgba(0,0,0,1) 20%, transparent 80%); -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 20%, transparent 80%); z-index: 6; pointer-events: none; transition: opacity 1s; }
