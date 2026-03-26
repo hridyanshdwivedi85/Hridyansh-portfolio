@@ -597,9 +597,14 @@
                 entityMesh.getWorldPosition(targetPos);
                 
                 const dist = data.radius * (window.innerWidth < 768 ? 5.5 : 4.0);
-                this.targetCamOffset = new THREE.Vector3(dist, dist * 0.5, dist);
+                
+                // Shift planet UP on mobile screens so it doesn't hide behind the UI panel
+                const yOffset = window.innerWidth < 768 ? -dist * 0.3 : dist * 0.5;
+                this.targetCamOffset = new THREE.Vector3(dist, yOffset, dist);
+                
                 this.startTargetPos.copy(this.controls.target);
                 this.startCamOffset.copy(this.camera.position).sub(this.controls.target);
+
                 
                 this.transitionProgress.val = 0;
                 this.isCameraTransitioning = true;

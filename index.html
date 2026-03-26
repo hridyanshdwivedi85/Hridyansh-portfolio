@@ -194,35 +194,37 @@
                         </div>
 
                         <!-- "LIVE SIM" Area (Portafilter & Cup) -->
-                        <div class="relative flex-grow w-full border border-white/5 rounded-xl bg-gradient-to-b from-[#111] to-[#050505] flex flex-col items-center overflow-hidden z-20 shadow-[inset_0_20px_50px_rgba(0,0,0,0.8)]">
-                            <div class="absolute top-3 left-4 flex items-center gap-2 z-30"><div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" id="sim-live-dot"></div><span class="code-font text-[9px] text-gray-500 uppercase tracking-widest">Live Sim</span></div>
+						<div class="relative flex-grow w-full border border-white/5 rounded-xl bg-gradient-to-b from-[#111] to-[#050505] flex flex-col items-center overflow-hidden z-20 shadow-[inset_0_20px_50px_rgba(0,0,0,0.8)]">
+							<div class="absolute top-3 left-4 flex items-center gap-2 z-30"><div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" id="sim-live-dot"></div><span class="code-font text-[9px] text-gray-500 uppercase tracking-widest">Live Sim</span></div>
 
-                            <!-- Espresso Machine Group -->
-                            <div class="portafilter-group relative mt-12 z-20">
-                                <div class="pf-mount"></div>
-                                <div class="pf-handle"></div>
-                                <div class="pf-body">
-                                    <div class="pf-spout left"></div>
-                                    <div class="pf-spout right"></div>
-                                </div>
-                                <!-- Streams -->
-                                <div class="espresso-stream left" id="stream-l"></div>
-                                <div class="espresso-stream right" id="stream-r"></div>
-                            </div>
+							<div class="mobile-coffee-scale">
+								<!-- Espresso Machine Group -->
+								<div class="portafilter-group relative mt-12 z-20">
+									<div class="pf-mount"></div>
+									<div class="pf-handle"></div>
+									<div class="pf-body">
+										<div class="pf-spout left"></div>
+										<div class="pf-spout right"></div>
+									</div>
+									<!-- Streams -->
+									<div class="espresso-stream left" id="stream-l"></div>
+									<div class="espresso-stream right" id="stream-r"></div>
+								</div>
 
-                            <!-- Espresso Cup -->
-                            <div class="espresso-cup mt-[50px] mb-6 z-10">
-                                <div class="cup-handle"></div>
-                                <div class="cup-body">
-                                    <div class="cup-inner">
-                                        <div class="cup-liquid" id="cup-liquid">
-                                            <div class="cup-crema"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="cup-shadow"></div>
-                            </div>
-                        </div>
+								<!-- Espresso Cup -->
+								<div class="espresso-cup mt-[50px] mb-6 z-10">
+									<div class="cup-handle"></div>
+									<div class="cup-body">
+										<div class="cup-inner">
+											<div class="cup-liquid" id="cup-liquid">
+												<div class="cup-crema"></div>
+											</div>
+										</div>
+									</div>
+									<div class="cup-shadow"></div>
+								</div>
+							</div>
+						</div>
                     </div>
 
                 </div>
@@ -232,11 +234,11 @@
             <!-- MODULE 3: COMPILER V2 -->
 <div class="module" id="mod-compiler">
     <!-- SHIFTED LEFT: max-w-3xl and increased right padding to completely clear the menu -->
-    <div class="w-full max-w-3xl mx-auto flex flex-col gap-4 relative h-full justify-center pb-8 pr-20 md:pr-48 lg:pr-64">
+    <div class="w-full max-w-3xl mx-auto flex flex-col gap-4 relative h-full justify-center pb-8 px-2 md:px-0 md:pr-48 lg:pr-64">
         <div class="code-font text-[10px] text-[#3ddc84] tracking-widest uppercase text-center w-full mb-2 shrink-0">> UNIVERSAL DEPLOYMENT PIPELINE</div>
         
         <!-- Graph scaled down aggressively using CSS scale properties to fit tight spaces -->
-        <div class="flex-grow flex items-center justify-between relative px-2 md:px-6 scale-[0.70] md:scale-[0.80] lg:scale-[0.90] origin-center w-full shrink-0 min-h-[350px]">
+        <div class="flex-grow flex items-center justify-between relative px-2 md:px-6 compiler-scale-fix origin-center w-full shrink-0 min-h-[350px]">
             
             <!-- Nodes shrunk from w-48 to w-40 -->
             <div class="flex flex-col gap-6 z-20 w-40 relative">
