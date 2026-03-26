@@ -102,24 +102,29 @@ body, html {
 .lab-status-row { margin-top: 14px; display: flex; align-items: center; gap: 7px; color: #4ade80; font-size: 10px; letter-spacing: 0.14em; }
 .lab-status-note { margin-top: 4px; color: #6b7280; font-size: 7px; letter-spacing: 0.22em; }
 
-.lab-gauge-wrap { width: 94px; height: 94px; border: 3px solid #4b5563; background: radial-gradient(circle at 50% 45%, #202733 0%, #080b12 70%); position: relative; }
+.lab-gauge-wrap { width: 78px; height: 78px; border: 2px solid #4b5563; background: radial-gradient(circle at 50% 45%, #202733 0%, #080b12 70%); position: relative; }
 .lab-gauge-face { position: absolute; inset: 8px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
-.lab-gauge-tick { position: absolute; width: 2px; height: 12px; background: #cbd5e1; left: 50%; top: 6px; transform-origin: center 36px; }
+.lab-gauge-tick { position: absolute; width: 2px; height: 10px; background: #cbd5e1; left: 50%; top: 4px; transform-origin: center 28px; }
 .lab-gauge-tick:nth-child(2) { transform: rotate(45deg); }
 .lab-gauge-tick:nth-child(3) { transform: rotate(90deg); }
 .lab-gauge-tick:nth-child(4) { transform: rotate(135deg); }
-.lab-gauge-needle { position: absolute; width: 2px; height: 30px; background: #e5e7eb; left: 50%; bottom: 50%; transform-origin: bottom; transform: rotate(36deg); box-shadow: 0 0 6px rgba(255,255,255,0.35); }
+.lab-gauge-needle { position: absolute; width: 2px; height: 23px; background: #e5e7eb; left: 50%; bottom: 50%; transform-origin: bottom; transform: rotate(-90deg); box-shadow: 0 0 6px rgba(255,255,255,0.35); transition: transform 0.4s ease; }
+.lab-gauge-center { position: absolute; width: 8px; height: 8px; background: #d1d5db; border-radius: 50%; left: calc(50% - 4px); top: calc(50% - 4px); box-shadow: 0 0 4px rgba(255,255,255,0.35); }
+.lab-gauge-readout { position: absolute; width: 100%; bottom: 5px; text-align: center; font-size: 8px; color: #9ca3af; letter-spacing: 0.08em; }
+.lab-gauge-readout span:first-child { color: #e5e7eb; margin-right: 2px; }
 
-.lab-metrics-grid .hw-screen { min-height: 128px; display: flex; flex-direction: column; justify-content: space-between; }
-.lab-pid-main { font-size: 2.1rem; color: #ef4444; text-shadow: 0 0 14px rgba(239,68,68,0.4); display: flex; justify-content: center; align-items: baseline; }
+.lab-metrics-grid .hw-screen { min-height: 94px; display: flex; flex-direction: column; justify-content: space-between; padding: 0.55rem !important; }
+.lab-pid-main { font-size: 1.5rem; color: #ef4444; text-shadow: 0 0 14px rgba(239,68,68,0.4); display: flex; justify-content: center; align-items: baseline; }
 .lab-red-bars { height: 6px; background: repeating-linear-gradient(90deg, #ef4444 0 10px, transparent 10px 12px); opacity: 0.85; }
-.lab-flow-main { font-size: 1.8rem; color: #f3f4f6; }
-.lab-flow-main span { font-size: 10px; color: #6b7280; }
-.lab-gridline { margin-top: 8px; height: 28px; border: 1px solid rgba(56, 189, 248, 0.3); background: linear-gradient(0deg, transparent 7px, rgba(16,185,129,0.15) 8px), linear-gradient(90deg, transparent 11px, rgba(16,185,129,0.15) 12px); background-size: 100% 8px, 12px 100%; }
-.lab-clock { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(148, 163, 184, 0.6); margin: 6px auto 0; position: relative; }
-.lab-clock::before, .lab-clock::after { content: ''; position: absolute; left: 50%; bottom: 50%; width: 2px; background: #e5e7eb; transform-origin: bottom; }
-.lab-clock::before { height: 14px; transform: translateX(-50%) rotate(35deg); }
-.lab-clock::after { height: 18px; transform: translateX(-50%) rotate(100deg); }
+.lab-flow-main { font-size: 1.35rem; color: #f3f4f6; }
+.lab-flow-main span { font-size: 9px; color: #6b7280; }
+.lab-gridline { margin-top: 5px; height: 18px; border: 1px solid rgba(56, 189, 248, 0.3); background: linear-gradient(0deg, transparent 7px, rgba(16,185,129,0.15) 8px), linear-gradient(90deg, transparent 11px, rgba(16,185,129,0.15) 12px); background-size: 100% 8px, 12px 100%; }
+.lab-clock { width: 42px; height: 42px; border-radius: 50%; border: 2px solid rgba(148, 163, 184, 0.6); margin: 4px auto 0; position: relative; background: radial-gradient(circle at 50% 45%, rgba(255,255,255,0.14), rgba(0,0,0,0.45)); }
+.lab-clock-hand { position: absolute; left: 50%; bottom: 50%; transform-origin: 50% 100%; border-radius: 999px; }
+.lab-clock-hand.hour { width: 2px; height: 11px; background: #e5e7eb; margin-left: -1px; }
+.lab-clock-hand.minute { width: 2px; height: 15px; background: #d1d5db; margin-left: -1px; }
+.lab-clock-hand.second { width: 1px; height: 17px; background: #f87171; margin-left: 0; }
+.lab-clock-center { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #e5e7eb; left: calc(50% - 3px); top: calc(50% - 3px); z-index: 4; }
 
 /* Live Sim Portafilter & Cup Detailed CSS */
 .portafilter-group { display: flex; flex-direction: column; align-items: center; }
@@ -370,10 +375,10 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     #brew-machine-panel {
-        min-height: clamp(350px, 74vh, 500px) !important;
-        max-height: 78vh;
-        padding: 0.85rem 0.75rem !important;
-        overflow-y: auto;
+        min-height: clamp(300px, 67vh, 430px) !important;
+        max-height: 70vh;
+        padding: 0.7rem 0.65rem !important;
+        overflow-y: hidden;
         overflow-x: hidden;
     }
 
@@ -393,11 +398,11 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     .mobile-coffee-scale {
-        transform: scale(0.72) !important;
+        transform: scale(0.62) !important;
         transform-origin: center top !important;
-        min-height: 280px !important;
+        min-height: 230px !important;
         margin-bottom: 0 !important;
-        padding-top: 8px;
+        padding-top: 4px;
     }
 
     .espresso-cup {
@@ -464,12 +469,12 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (max-width: 414px) {
     .mobile-coffee-scale {
-        transform: scale(0.64) !important;
-        min-height: 250px !important;
+        transform: scale(0.57) !important;
+        min-height: 210px !important;
     }
 
     #brew-machine-panel {
-        max-height: 76vh;
+        max-height: 68vh;
     }
 }
 
@@ -487,7 +492,8 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (min-width: 1024px) {
     .compiler-scale-fix { transform: scale(0.90); transform-origin: center center; }
-    .mobile-coffee-scale { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; }
+    .mobile-coffee-scale { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; transform: scale(0.86); transform-origin: center top; min-height: 250px; }
+    #brew-machine-panel { max-width: 680px; gap: 0.65rem !important; padding: 0.7rem !important; }
 }
 
 /* ESSENCE Flip Card Module */

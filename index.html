@@ -146,7 +146,7 @@
                             </button>
                         </div>
 
-                        <div class="lab-brand-panel hw-panel rounded-xl p-4 md:p-5">
+                        <div class="lab-brand-panel hw-panel rounded-xl p-3 md:p-4">
                             <div class="flex items-start justify-between gap-4">
                                 <div>
                                     <div class="lab-brand-title heading-font"><span>GAGGIA.</span><span>GLS</span></div>
@@ -164,13 +164,15 @@
                                         <div class="lab-gauge-tick"></div>
                                         <div class="lab-gauge-tick"></div>
                                         <div class="lab-gauge-tick"></div>
-                                        <div class="lab-gauge-needle"></div>
+                                        <div class="lab-gauge-needle" id="lab-gauge-needle"></div>
+                                        <div class="lab-gauge-center"></div>
+                                        <div class="lab-gauge-readout code-font"><span id="lab-pressure">0.0</span><span>bar</span></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="lab-metrics-grid grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="lab-metrics-grid grid grid-cols-1 gap-2 max-w-[300px] w-full mx-auto">
                             <div class="hw-screen rounded-xl p-3 border border-[#2f2323]">
                                 <div class="scanline"></div>
                                 <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">PID.SYS</span><div class="w-1.5 h-1.5 rounded-full bg-red-900" id="pid-dot"></div></div>
@@ -182,14 +184,19 @@
                             <div class="hw-screen rounded-xl p-3 border border-[#1f2b2a]">
                                 <div class="scanline"></div>
                                 <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">FLOW</span><div class="w-1.5 h-1.5 rounded-full bg-[#14532d]"></div></div>
-                                <div class="lab-flow-main code-font z-10">0.00 <span>g/s</span></div>
+                                <div class="lab-flow-main code-font z-10"><span id="flow-rate">0.00</span> <span>g/s</span></div>
                                 <div class="lab-gridline"></div>
                             </div>
 
                             <div class="hw-screen rounded-xl p-3 border border-[#232629]">
                                 <div class="scanline"></div>
                                 <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">TIME</span><div class="w-1.5 h-1.5 rounded-full bg-gray-700" id="tmr-dot"></div></div>
-                                <div class="lab-clock"></div>
+                                <div class="lab-clock">
+                                    <div class="lab-clock-hand hour" id="lab-clock-hour"></div>
+                                    <div class="lab-clock-hand minute" id="lab-clock-minute"></div>
+                                    <div class="lab-clock-hand second" id="lab-clock-second"></div>
+                                    <div class="lab-clock-center"></div>
+                                </div>
                                 <div class="z-10 flex justify-between mt-2"><span class="code-font text-[9px] text-gray-300"><span id="shot-yield">0.0</span>g</span><span class="code-font text-[9px] text-gray-500"><span id="shot-timer" class="text-gray-700 transition-colors duration-300">00.0</span>s</span></div>
                             </div>
                         </div>
