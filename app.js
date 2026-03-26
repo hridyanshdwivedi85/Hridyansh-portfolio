@@ -414,6 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const BrewEngine = {
         state: 'OFF', // OFF, HEATING, READY, BREWING
         temp: 24.0, targetTemp: 93.0,
+        steamActive: false,
         timer: 0, yieldGrams: 0,
         intervals: { heat: null, brew: null, particles: null },
 
@@ -440,6 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 streamL: document.getElementById('stream-l'),
                 streamR: document.getElementById('stream-r'),
                 liquid: document.getElementById('cup-liquid'),
+                cup: document.querySelector('.espresso-cup'),
                 haze: document.getElementById('v2-haze'),
                 pContainer: document.getElementById('v2-particle-container')
             };
@@ -494,12 +496,15 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.btnSteam.addEventListener('click', () => {
                 if(this.state === 'READY' || this.state === 'BREWING') {
                     AudioEngine.playMech();
-                    AudioEngine.playSteamBurst();
-                    this.ui.ledSteam.classList.add('process');
-                    for(let i=0; i<15; i++) {
-                        setTimeout(() => this.spawnSteam(this.ui.pContainer, true), i * 100);
+                    this.steamActive = !this.steamActive;
+                    this.ui.ledSteam.classList.toggle('active', this.steamActive);
+                    this.ui.ledSteam.classList.toggle('process', this.steamActive);
+                    if(this.steamActive) {
+                        AudioEngine.playSteamBurst();
+                        for(let i=0; i<18; i++) {
+                            setTimeout(() => this.spawnSteam(this.ui.pContainer, true), i * 90);
+                        }
                     }
-                    setTimeout(() => this.ui.ledSteam.classList.remove('process'), 1500);
                 }
             });
 
@@ -594,7 +599,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             this.ui.ledPower.classList.remove('on', 'success');
             this.ui.ledBrew.classList.remove('process');
-            this.ui.ledSteam.classList.remove('process');
+            this.ui.ledSteam.classList.remove('process', 'active');
+            this.steamActive = false;
             
             this.ui.btnBrew.classList.add('opacity-50', 'pointer-events-none');
             this.ui.btnSteam.classList.add('opacity-50', 'pointer-events-none');
@@ -641,7 +647,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const mod = document.getElementById('mod-brew');
                 if(!mod.classList.contains('active')) return;
                 // Idle steam only if heated
-                if (this.state === 'READY' && Math.random() > 0.6) this.spawnSteam(this.ui.pContainer, false);
+                if ((this.state === 'READY' && Math.random() > 0.6) || (this.steamActive && Math.random() > 0.2)) {
+                    this.spawnSteam(this.ui.pContainer, this.steamActive);
+                }
             }, 800);
         },
 
@@ -650,14 +658,17 @@ document.addEventListener('DOMContentLoaded', () => {
             steam.className = 'steam-wisp-v2';
             
             const size = isHeavy ? (40 + Math.random() * 50) : (20 + Math.random() * 20);
-            // Center around portafilter
-            const leftOffset = 45 + (Math.random() * 10); 
+            const containerRect = container.getBoundingClientRect();
+            const cupRect = this.ui.cup?.getBoundingClientRect();
+            const cupCenterX = cupRect ? (cupRect.left - containerRect.left) + (cupRect.width / 2) : container.clientWidth * 0.5;
+            const cupTopY = cupRect ? (cupRect.top - containerRect.top) + 6 : container.clientHeight * 0.7;
+            const leftPx = cupCenterX - (size / 2) + ((Math.random() - 0.5) * 16);
+            const topPx = cupTopY - (Math.random() * 12);
             
             steam.style.width = `${size}px`;
             steam.style.height = `${size}px`;
-            steam.style.left = `${leftOffset}%`;
-            const dynamicTop = Math.max(120, Math.floor(container.clientHeight * 0.55));
-            steam.style.top = `${dynamicTop}px`; 
+            steam.style.left = `${Math.max(0, Math.min(container.clientWidth - size, leftPx))}px`;
+            steam.style.top = `${Math.max(0, topPx)}px`;
             
             container.appendChild(steam);
 

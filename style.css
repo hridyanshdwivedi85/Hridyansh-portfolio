@@ -95,11 +95,20 @@ body, html {
     background: linear-gradient(95deg, rgba(26, 17, 15, 0.95), rgba(15, 16, 19, 0.95));
     border: 1px solid rgba(255, 140, 0, 0.22);
 }
+.lab-brand-shell { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.lab-brand-left { display: flex; align-items: center; gap: 12px; }
+.lab-brand-accent {
+    width: 5px;
+    height: 46px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.55);
+}
 .lab-brand-title { font-size: clamp(1.6rem, 2.6vw, 2.1rem); letter-spacing: 0.01em; font-style: italic; font-weight: 800; line-height: 1; }
 .lab-brand-title span:first-child { color: #f3f4f6; }
 .lab-brand-title span:last-child { color: #f59e0b; margin-left: 2px; }
 .lab-brand-sub { font-size: 9px; letter-spacing: 0.34em; color: #9ca3af; margin-top: 6px; }
-.lab-status-row { margin-top: 14px; display: flex; align-items: center; gap: 7px; color: #4ade80; font-size: 10px; letter-spacing: 0.14em; }
+.lab-status-row { margin-top: 14px; display: flex; align-items: center; gap: 7px; color: #f59e0b; font-size: 10px; letter-spacing: 0.14em; }
 .lab-status-note { margin-top: 4px; color: #6b7280; font-size: 7px; letter-spacing: 0.22em; }
 
 .lab-gauge-wrap { width: 78px; height: 78px; border: 2px solid #4b5563; background: radial-gradient(circle at 50% 45%, #202733 0%, #080b12 70%); position: relative; }
@@ -113,7 +122,8 @@ body, html {
 .lab-gauge-readout { position: absolute; width: 100%; bottom: 5px; text-align: center; font-size: 8px; color: #9ca3af; letter-spacing: 0.08em; }
 .lab-gauge-readout span:first-child { color: #e5e7eb; margin-right: 2px; }
 
-.lab-metrics-grid .hw-screen { min-height: 94px; display: flex; flex-direction: column; justify-content: space-between; padding: 0.55rem !important; }
+.lab-metrics-grid { align-items: stretch; }
+.lab-metrics-grid .hw-screen { min-height: 98px; display: flex; flex-direction: column; justify-content: space-between; padding: 0.55rem !important; }
 .lab-pid-main { font-size: 1.5rem; color: #ef4444; text-shadow: 0 0 14px rgba(239,68,68,0.4); display: flex; justify-content: center; align-items: baseline; }
 .lab-red-bars { height: 6px; background: repeating-linear-gradient(90deg, #ef4444 0 10px, transparent 10px 12px); opacity: 0.85; }
 .lab-flow-main { font-size: 1.35rem; color: #f3f4f6; }
@@ -167,6 +177,19 @@ body, html {
 .heat-haze { position: absolute; inset: 0; backdrop-filter: blur(2px); opacity: 0; mask-image: linear-gradient(to top, rgba(0,0,0,1) 20%, transparent 80%); -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 20%, transparent 80%); z-index: 6; pointer-events: none; transition: opacity 1s; }
 .heat-haze.active { opacity: 1; animation: haze-wobble 2.5s infinite alternate ease-in-out; }
 @keyframes haze-wobble { 0% { transform: skewX(-1.5deg) translateY(0); } 100% { transform: skewX(1.5deg) translateY(-8px); } }
+
+@keyframes steam-led-blink {
+    0%, 100% { background: #ef4444; box-shadow: 0 0 8px #ef4444, inset 0 0 3px #fff; }
+    50% { background: #7f1d1d; box-shadow: 0 0 3px #7f1d1d, inset 0 0 1px #000; }
+}
+
+#led-steam.process,
+#led-steam.active {
+    background: #ef4444;
+    box-shadow: 0 0 10px #ef4444, inset 0 0 3px #fff;
+}
+
+#led-steam.process { animation: steam-led-blink 0.5s infinite; }
 
 /* Controls */
 .brew-btn-v2 { background: linear-gradient(145deg, #C9A86C, #9c7b48); color: #111; border: 1px solid rgba(255,255,255,0.2); padding: 14px 32px; border-radius: 40px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; letter-spacing: 2px; box-shadow: 0 10px 30px rgba(201, 168, 108, 0.2), inset 0 2px 5px rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; z-index: 30;}
@@ -398,20 +421,20 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     .mobile-coffee-scale {
-        transform: scale(0.62) !important;
+        transform: scale(0.67) !important;
         transform-origin: center top !important;
-        min-height: 230px !important;
+        min-height: 205px !important;
         margin-bottom: 0 !important;
-        padding-top: 4px;
+        padding-top: 0;
     }
 
     .espresso-cup {
-        margin-top: 3rem !important;
-        margin-bottom: 1rem !important;
+        margin-top: 1.8rem !important;
+        margin-bottom: 0 !important;
     }
 
     .portafilter-group {
-        margin-top: 1.5rem !important;
+        margin-top: 0.8rem !important;
     }
 
 
@@ -469,13 +492,25 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (max-width: 414px) {
     .mobile-coffee-scale {
-        transform: scale(0.57) !important;
-        min-height: 210px !important;
+        transform: scale(0.62) !important;
+        min-height: 190px !important;
     }
 
     #brew-machine-panel {
         max-height: 68vh;
     }
+    .lab-brand-shell { gap: 8px; }
+    .lab-brand-left { gap: 8px; }
+    .lab-brand-accent { height: 36px; }
+    .lab-brand-sub { letter-spacing: 0.2em; }
+    .lab-status-note { letter-spacing: 0.12em; }
+    .lab-metrics-grid .hw-screen { min-height: 86px; padding: 0.42rem !important; }
+    .lab-pid-main { font-size: 1.1rem; }
+    .lab-flow-main { font-size: 1rem; }
+    .lab-clock { width: 34px; height: 34px; margin-top: 2px; }
+    .lab-clock-hand.hour { height: 8px; }
+    .lab-clock-hand.minute { height: 11px; }
+    .lab-clock-hand.second { height: 13px; }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
@@ -492,7 +527,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (min-width: 1024px) {
     .compiler-scale-fix { transform: scale(0.90); transform-origin: center center; }
-    .mobile-coffee-scale { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; transform: scale(0.86); transform-origin: center top; min-height: 250px; }
+    .mobile-coffee-scale { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; transform: scale(0.9); transform-origin: center top; min-height: 215px; }
     #brew-machine-panel { max-width: 680px; gap: 0.65rem !important; padding: 0.7rem !important; }
 }
 
