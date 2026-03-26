@@ -336,29 +336,22 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     .mobile-coffee-scale {
-        transform: scale(0.84) !important;
+        transform: scale(0.62) !important;
         transform-origin: center top !important;
-        min-height: 290px !important;
-        width: min(100%, 340px);
-        margin: 8px auto 0 !important;
-    }
-
-    #brew-live-sim {
-        min-height: 310px;
+        min-height: 300px !important;
+        margin-bottom: -12px !important;
     }
 
     .compiler-scale-fix {
-        transform: none !important;
+        transform: scale(0.60) !important;
         transform-origin: center center !important;
-        margin: 0 auto 0 !important;
-        min-height: 460px !important;
+        margin: 0 auto -72px !important;
+        min-height: 280px !important;
         width: 100%;
         overflow-x: hidden;
         overflow-y: hidden;
         justify-content: center !important;
-        flex-direction: column !important;
-        gap: 16px;
-        padding-bottom: 4px;
+        gap: 14px;
     }
 
     #mod-compiler #pipeline-lines {
@@ -372,22 +365,9 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     #mod-compiler .compiler-node,
     #mod-compiler .output-node {
-        width: 92px !important;
-        min-width: 92px;
-        padding: 10px 6px !important;
-    }
-
-    #mod-compiler .compiler-col {
-        width: 100% !important;
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: center !important;
-        gap: 10px !important;
-    }
-
-    #mod-compiler .compiler-core-wrap {
-        order: -1;
-        margin-bottom: 4px;
+        width: 72px !important;
+        min-width: 72px;
+        padding: 8px 4px !important;
     }
 
     #mod-compiler .compiler-node i,
