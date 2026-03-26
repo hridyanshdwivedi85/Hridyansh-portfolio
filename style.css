@@ -317,7 +317,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     #brew-machine-panel {
-        min-height: 620px !important;
+        min-height: 560px !important;
         padding: 0.9rem !important;
     }
 
@@ -338,8 +338,9 @@ input:checked + .slider:before { transform: translateX(18px); }
     .mobile-coffee-scale {
         transform: scale(0.62) !important;
         transform-origin: center top !important;
-        min-height: 300px !important;
-        margin-bottom: -12px !important;
+        min-height: 240px !important;
+        margin-bottom: 0 !important;
+        padding-top: 4px;
     }
 
     .compiler-scale-fix {
