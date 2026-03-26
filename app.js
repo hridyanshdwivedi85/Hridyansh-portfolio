@@ -883,33 +883,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * 7. ESSENCE FLIP CARD
-     */
-    const EssenceCard = {
-        uptimeCounter: null,
-        init() {
-            this.card = document.getElementById('essence-card');
-            this.flipBtn = document.getElementById('essence-flip-btn');
-            this.openBtn = document.getElementById('essence-open');
-            this.closeBtn = document.getElementById('essence-close');
-            this.uptime = document.getElementById('essence-uptime');
-            if(!this.card || !this.flipBtn) return;
-
-            const toggle = () => this.card.classList.toggle('flipped');
-            this.flipBtn.addEventListener('click', toggle);
-            if(this.openBtn) this.openBtn.addEventListener('click', () => this.card.classList.add('flipped'));
-            if(this.closeBtn) this.closeBtn.addEventListener('click', () => this.card.classList.remove('flipped'));
-
-            // Light "system uptime" pulse animation.
-            let ms = 3723;
-            this.uptimeCounter = setInterval(() => {
-                ms += Math.floor(15 + Math.random() * 40);
-                if(this.uptime) this.uptime.textContent = String(ms).padStart(5, '0');
-            }, 120);
-        }
-    };
-
-    /**
      * 8. SOCIAL CARD
      */
     const SocialCard = {
@@ -934,7 +907,6 @@ document.addEventListener('DOMContentLoaded', () => {
     NeuralCore.init();
     BrewEngine.init();
     CompilerArena.init();
-    EssenceCard.init();
     SocialCard.init();
 
 });
