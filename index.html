@@ -128,7 +128,7 @@
                     <!-- Cozy Coffee Shop Atmosphere Background -->
                     <div class="absolute inset-0 cozy-bg-layer pointer-events-none"></div>
 
-                    <div class="relative w-full max-w-3xl h-auto min-h-[480px] md:h-[550px] flex flex-col p-4 md:p-6 rounded-3xl overflow-hidden border border-white/5 bg-[#110a07]/90 shadow-2xl backdrop-blur-sm z-10">
+                    <div id="brew-machine-panel" class="relative w-full max-w-3xl h-auto min-h-[480px] md:h-[550px] flex flex-col p-4 md:p-6 rounded-3xl overflow-hidden border border-white/5 bg-[#110a07]/90 shadow-2xl backdrop-blur-sm z-10">
                         
                         <!-- Heat Haze & Particle Container -->
                         <div id="v2-haze" class="heat-haze"></div>
@@ -192,7 +192,7 @@
                         </div>
 
                         <!-- "LIVE SIM" Area (Portafilter & Cup) -->
-						<div class="relative flex-grow w-full border border-white/5 rounded-xl bg-gradient-to-b from-[#111] to-[#050505] flex flex-col items-center overflow-hidden z-20 shadow-[inset_0_20px_50px_rgba(0,0,0,0.8)]">
+						<div id="brew-live-sim" class="relative flex-grow w-full border border-white/5 rounded-xl bg-gradient-to-b from-[#111] to-[#050505] flex flex-col items-center overflow-hidden z-20 shadow-[inset_0_20px_50px_rgba(0,0,0,0.8)]">
 							<div class="absolute top-3 left-4 flex items-center gap-2 z-30"><div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" id="sim-live-dot"></div><span class="code-font text-[9px] text-gray-500 uppercase tracking-widest">Live Sim</span></div>
 
 							<div class="mobile-coffee-scale">
@@ -229,17 +229,23 @@
             </div>
 
             <!-- --- NEW CODE --- -->
-            <!-- MODULE 3: COMPILER V2 -->
+                        <!-- MODULE 3: COMPILER V2 -->
 <div class="module" id="mod-compiler">
-    <!-- SHIFTED LEFT: max-w-3xl and increased right padding to completely clear the menu -->
-    <div class="w-full max-w-3xl mx-auto flex flex-col gap-4 relative h-full justify-start pt-8 md:justify-center pb-32 px-2 md:px-0 md:pr-48 lg:pr-64">
-        <div class="code-font text-[10px] text-[#3ddc84] tracking-widest uppercase text-center w-full mb-2 shrink-0">> UNIVERSAL DEPLOYMENT PIPELINE</div>
+    <div class="w-full max-w-4xl mx-auto flex flex-col gap-4 relative h-full justify-start pt-8 md:justify-center pb-32 px-2 md:px-0 md:pr-44 lg:pr-56">
+        <div class="code-font text-[10px] text-[#3ddc84] tracking-widest uppercase text-center w-full mb-1 shrink-0">> UNIVERSAL DEPLOYMENT PIPELINE</div>
+        <div class="flex flex-wrap justify-center gap-2 mb-1">
+            <span class="build-stage" id="stage-parse">Parse</span>
+            <span class="build-stage" id="stage-compile">Compile</span>
+            <span class="build-stage" id="stage-bundle">Bundle</span>
+            <span class="build-stage" id="stage-sign">Sign</span>
+            <span class="build-stage" id="stage-deploy">Deploy</span>
+        </div>
+        <div class="build-progress-wrap mb-2">
+            <div id="compiler-progress-bar" class="build-progress-bar"></div>
+        </div>
         
-        <!-- Graph scaled down aggressively using CSS scale properties to fit tight spaces -->
         <div class="flex-grow flex items-center justify-between relative px-2 md:px-6 compiler-scale-fix origin-center w-full shrink-0 min-h-[350px]">
-            
-            <!-- Nodes shrunk from w-48 to w-40 -->
-            <div class="flex flex-col gap-6 z-20 w-40 relative">
+            <div class="compiler-col compiler-col--input flex flex-col gap-6 z-20 w-40 relative">
                 <div class="compiler-node" id="node-src-1">
                     <i class="fab fa-js text-yellow-400 text-2xl mb-2"></i>
                     <div class="code-font text-[8px] text-gray-400">Main.js</div>
@@ -254,7 +260,7 @@
                 </div>
             </div>
 
-            <div class="relative z-30 flex flex-col items-center">
+            <div class="relative z-30 flex flex-col items-center compiler-core-wrap">
                 <div class="forge-container group" id="forge-core">
                     <div class="forge-ring ring-1"></div>
                     <div class="forge-ring ring-2"></div>
@@ -268,8 +274,7 @@
                 </button>
             </div>
 
-            <!-- Output nodes shrunk from w-48 to w-40 -->
-            <div class="flex flex-col gap-12 z-20 w-40">
+            <div class="compiler-col compiler-col--output flex flex-col gap-12 z-20 w-40">
                 <div class="output-node opacity-30 scale-90" id="out-apple">
                     <i class="fab fa-apple text-white text-5xl"></i>
                     <div class="code-font text-[10px] text-white mt-4 font-bold tracking-widest">iOS BUILD</div>
@@ -289,12 +294,13 @@
                 <path class="pipe-line" id="pipe-out-1" d="M 650 350 L 850 200" />
                 <path class="pipe-line" id="pipe-out-2" d="M 650 350 L 850 500" />
             </svg>
+            <div id="compiler-dataflow" class="absolute inset-0 pointer-events-none z-20 overflow-hidden"></div>
         </div>
 
         <div class="hw-screen h-28 rounded-xl p-4 border-[#222] mt-2 z-20 shrink-0">
             <div class="scanline"></div>
             <div class="code-font text-[10px] text-gray-400" id="compiler-terminal">
-                > SYSTEM IDLE.<br>> AWAITING BUILD COMMAND.
+                > SYSTEM IDLE.<br>> WAITING FOR BUILD TRIGGER.<br>> TARGETS: IOS, ANDROID.
             </div>
         </div>
     </div>
@@ -721,11 +727,9 @@
                 </div>
                 
                 <!-- Celestial Link -->
-                <a href="celestial.html" class="flex items-center gap-3 sound-hover group cursor-pointer" style="text-decoration: none;">
+                <a href="celestial.html" class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" style="text-decoration: none;">
                     <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">launching</span>
                     <span class="nav-label text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">CELESTIAL</span>
-                    <span class="font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">launching</span>
-                    <span class="text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">CELESTIAL</span>
                 </a>
 
                 <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-portfolio" data-theme="geo">
