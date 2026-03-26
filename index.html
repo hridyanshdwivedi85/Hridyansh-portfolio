@@ -53,7 +53,7 @@
     <canvas id="bg-canvas"></canvas>
 
     <!-- Global Header -->
-    <div class="absolute top-8 left-12 z-50 text-white mix-blend-difference pointer-events-none">
+    <div class="global-header absolute top-8 left-12 z-50 text-white mix-blend-difference pointer-events-none">
         <div class="heading-font text-2xl font-bold tracking-tighter">HD.</div>
         <div class="code-font text-[8px] text-gray-500 uppercase tracking-widest mt-1">Sys.Online</div>
     </div>
@@ -700,7 +700,7 @@
                 </div>
             </div>
         <!-- Right Navigation Menu (FORCED TO BOTTOM RIGHT) -->
-<div class="nav-area fixed z-[999] flex flex-col items-end pointer-events-auto" style="bottom: 40px !important; right: 40px !important; top: auto !important; height: auto !important; justify-content: flex-end !important;">
+<div class="nav-area fixed z-[999] flex flex-col items-end pointer-events-auto">
             <div class="text-[8px] md:text-[9px] text-gray-500 tracking-[0.2em] uppercase mb-4 pr-4 code-font font-semibold">InSeconds</div>
             <nav id="main-nav" class="flex flex-col items-end gap-3 relative border-r border-white/20 pr-4 py-1">
                 <div class="nav-item active flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-origin" data-theme="galaxy">
@@ -722,8 +722,8 @@
                 
                 <!-- Celestial Link -->
                 <a href="celestial.html" class="flex items-center gap-3 sound-hover group cursor-pointer" style="text-decoration: none;">
-                    <span class="font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">launching</span>
-                    <span class="text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">CELESTIAL</span>
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">launching</span>
+                    <span class="nav-label text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">CELESTIAL</span>
                 </a>
 
                 <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-portfolio" data-theme="geo">
