@@ -429,6 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pidTemp: document.getElementById('pid-temp'),
                 pidDot: document.getElementById('pid-dot'),
                 pidStatus: document.getElementById('pid-status-text'),
+                liveStatus: document.getElementById('lab-live-status'),
                 flowRate: document.getElementById('flow-rate'),
                 shotTimer: document.getElementById('shot-timer'),
                 shotYield: document.getElementById('shot-yield'),
@@ -449,8 +450,29 @@ document.addEventListener('DOMContentLoaded', () => {
             this.updateClock();
             setInterval(() => this.updateClock(), 1000);
             this.updateGauge(0);
+            this.setLiveStatus('MACHINE OFF');
             this.startAmbientParticles();
             this.bindEvents();
+        },
+
+        setLiveStatus(text) {
+            if (this.ui.liveStatus) this.ui.liveStatus.innerText = text;
+        },
+
+        animateBeanDose() {
+            const container = this.ui.pContainer;
+            if (!container) return;
+            for (let i = 0; i < 18; i++) {
+                const bean = document.createElement('div');
+                bean.className = 'coffee-bean-shot';
+                bean.style.left = `${50 + (Math.random() * 12 - 6)}%`;
+                bean.style.top = `${42 + (Math.random() * 3)}%`;
+                container.appendChild(bean);
+                gsap.fromTo(bean, 
+                    { y: -20 - Math.random() * 30, x: (Math.random() - 0.5) * 20, opacity: 0, scale: 0.8 },
+                    { y: 0, x: 0, opacity: 0.95, scale: 1, duration: 0.35 + Math.random() * 0.25, ease: "power2.in", onComplete: () => bean.remove() }
+                );
+            }
         },
 
         bindEvents() {
@@ -460,6 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(this.state === 'OFF') {
                     this.state = 'HEATING';
                     AudioEngine.playBoot();
+                    this.setLiveStatus('BOILER HEATING');
                     this.ui.ledPower.classList.add('on');
                     this.ui.btnPower.classList.add('active');
                     this.ui.pidDot.classList.replace('bg-red-900', 'bg-red-500');
@@ -501,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.ui.ledSteam.classList.toggle('active', this.steamActive);
                     this.ui.ledSteam.classList.toggle('process', this.steamActive);
                     this.ui.btnSteam.classList.toggle('active', this.steamActive);
+                    this.setLiveStatus(this.steamActive ? 'STEAM PURGE ACTIVE' : (this.state === 'BREWING' ? 'EXTRACTING SHOT...' : 'READY TO BREW'));
                     if(this.steamActive) {
                         AudioEngine.playSteamBurst();
                         for(let i=0; i<18; i++) {
@@ -518,6 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setReady() {
             this.state = 'READY';
+            this.setLiveStatus('READY TO BREW');
             this.ui.pidDot.classList.replace('bg-red-500', 'bg-green-500');
             this.ui.pidStatus.innerText = "READY";
             this.updateGauge(9.0);
@@ -532,6 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.state = 'BREWING';
             AudioEngine.playMech();
             this.brewSound = AudioEngine.startBrew();
+            this.setLiveStatus('ADDING BEANS...');
             
             // UI Updates
             this.ui.ledBrew.classList.add('process');
@@ -548,7 +574,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const tl = gsap.timeline();
             
-            // Start Streams (Pre-infusion delay)
+            // Beans-in pre-step then extraction
+            tl.add(() => this.animateBeanDose());
+            tl.to({}, { duration: 1.0 });
+            tl.add(() => this.setLiveStatus('EXTRACTING SHOT...'));
             tl.to([this.ui.streamL, this.ui.streamR], { scaleY: 1, duration: 0.8, ease: "power2.in" });
             tl.add(() => {
                 this.ui.streamL.classList.add('stream-wobble');
@@ -594,6 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.haze.classList.remove('active');
             this.ui.flowRate.innerText = '0.00';
             this.updateGauge(9.0);
+            this.setLiveStatus('READY TO BREW');
             AudioEngine.playSuccess();
         },
 
@@ -623,6 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.pidStatus.innerText = "OFFLINE";
             this.ui.flowRate.innerText = "0.00";
             this.updateGauge(0);
+            this.setLiveStatus('MACHINE OFF');
             
             gsap.to([this.ui.streamL, this.ui.streamR], { scaleY: 0, duration: 0.2 });
             gsap.to(this.ui.liquid, { height: "0%", duration: 1.5 });
