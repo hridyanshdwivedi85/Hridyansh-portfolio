@@ -124,107 +124,105 @@
 <!-- MODULE 2: LAB (Interactive Coffee Brewing Simulator) -->
             <div class="module" id="mod-brew">
                 <div class="w-full max-w-5xl mx-auto h-full flex flex-col justify-start md:justify-center items-center relative pt-4 md:pt-0 pb-10">
-                    
-                    <!-- Cozy Coffee Shop Atmosphere Background -->
-                    <div class="absolute inset-0 cozy-bg-layer pointer-events-none"></div>
-
-                    <div id="brew-machine-panel" class="relative w-full max-w-3xl h-auto min-h-[350px] md:h-[550px] flex flex-col px-3 py-4 md:p-6 rounded-3xl overflow-y-auto overflow-x-hidden border border-white/5 bg-[#110a07]/90 shadow-2xl backdrop-blur-sm z-10">
-                        
-                        <!-- Heat Haze & Particle Container -->
+                    <div id="brew-machine-panel" class="lab-machine-shell relative w-full max-w-[760px] flex flex-col gap-4 md:gap-5 p-3 md:p-4 rounded-2xl z-10">
                         <div id="v2-haze" class="heat-haze"></div>
-                        <!-- NEW CODE -->
-<div id="v2-particle-container" class="absolute inset-0 pointer-events-none overflow-hidden z-40"></div>
+                        <div id="v2-particle-container" class="absolute inset-0 pointer-events-none overflow-hidden z-40"></div>
 
-                        <!-- Floating Coffee Beans -->
-                        <div class="coffee-bean" style="top: 15%; left: 85%; transform: rotate(15deg) scale(1.2);"></div>
-                        <div class="coffee-bean" style="bottom: 10%; right: 10%; transform: rotate(-45deg) scale(0.9);"></div>
-                        <div class="coffee-bean" style="top: 50%; left: 5%; transform: rotate(70deg) scale(1.1);"></div>
+                        <div class="lab-top-buttons hw-panel p-3 md:p-4 flex justify-center gap-3 md:gap-6">
+                            <button id="brew-btn-power" aria-label="Power on Coffee Machine" class="lab-control-btn hw-btn sound-click group">
+                                <i class="fas fa-power-off"></i>
+                                <div class="hw-led" id="led-power"></div>
+                                <div class="lab-btn-label">POWER</div>
+                            </button>
+                            <button id="brew-btn-brew" class="lab-control-btn hw-btn sound-click group opacity-50 pointer-events-none">
+                                <i class="fas fa-mug-hot"></i>
+                                <div class="hw-led" id="led-brew"></div>
+                                <div class="lab-btn-label">BREW</div>
+                            </button>
+                            <button id="brew-btn-steam" class="lab-control-btn hw-btn sound-click group opacity-50 pointer-events-none">
+                                <i class="fas fa-wind"></i>
+                                <div class="hw-led" id="led-steam"></div>
+                                <div class="lab-btn-label">STEAM</div>
+                            </button>
+                        </div>
 
-                        <!-- Top Dashboard Area -->
-                        <div class="w-full flex flex-wrap md:flex-nowrap justify-between gap-4 mb-4 z-30">
-                            
-                            <!-- Context Text & Hardware Buttons -->
-                            <div class="flex flex-col gap-4">
+                        <div class="lab-brand-panel hw-panel rounded-xl p-4 md:p-5">
+                            <div class="flex items-start justify-between gap-4">
                                 <div>
-                                    <div class="heading-font text-2xl font-extrabold text-white tracking-tighter flex items-center gap-2">
-                                        <span class="text-white">GAGGIA.</span><span style="color: #d97706;">GLS</span>
+                                    <div class="lab-brand-title heading-font"><span>GAGGIA.</span><span>GLS</span></div>
+                                    <div class="lab-brand-sub code-font">PRO-MOD SERIES</div>
+                                    <div class="lab-status-row code-font">
+                                        <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]"></div>
+                                        <span>READY TO BREW</span>
                                     </div>
-                                    <div class="code-font text-[8px] text-gray-500 tracking-[0.2em] mt-1 uppercase">Pro-Mod Series</div>
+                                    <div class="lab-status-note code-font">TAP STEAM • CLICK BREW</div>
                                 </div>
 
-                                <div class="hw-panel p-2 sm:p-3 flex flex-wrap gap-2 sm:gap-3 w-full sm:w-max justify-between sm:justify-start bg-black/50">
-                                    <button id="brew-btn-power" aria-label="Power on Coffee Machine" class="hw-btn sound-click w-12 h-[4.5rem] sm:w-14 sm:h-20 rounded-lg flex flex-col items-center justify-between py-2 group">
-                                        <i class="fas fa-power-off text-gray-600 text-sm group-hover:text-white transition"></i>
-                                        <div class="hw-led" id="led-power"></div>
-                                        <div class="text-[10px] sm:text-[7px] font-bold text-gray-500 tracking-widest uppercase">Power</div>
-                                    </button>
-                                    <button id="brew-btn-brew" class="hw-btn sound-click w-12 h-[4.5rem] sm:w-14 sm:h-20 rounded-lg flex flex-col items-center justify-between py-2 group opacity-50 pointer-events-none">
-                                        <i class="fas fa-coffee text-gray-600 text-sm group-hover:text-[var(--brand-orange)] transition"></i>
-                                        <div class="hw-led" id="led-brew"></div>
-                                        <div class="text-[10px] sm:text-[7px] font-bold text-gray-500 tracking-widest uppercase">Brew</div>
-                                    </button>
-                                    <button id="brew-btn-steam" class="hw-btn sound-click w-12 h-[4.5rem] sm:w-14 sm:h-20 rounded-lg flex flex-col items-center justify-between py-2 group opacity-50 pointer-events-none">
-                                        <i class="fas fa-wind text-gray-600 text-sm group-hover:text-white transition"></i>
-                                        <div class="hw-led" id="led-steam"></div>
-                                        <div class="text-[10px] sm:text-[7px] font-bold text-gray-500 tracking-widest uppercase">Steam</div>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Telemetry Screens -->
-                            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-end w-full sm:w-auto">
-                                <!-- PID Screen -->
-                                <div class="hw-screen rounded-xl w-full sm:w-32 h-24 p-2 flex flex-col justify-between border border-[#333]">
-                                    <div class="scanline"></div>
-                                    <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">PID.SYS</span><div class="w-1.5 h-1.5 rounded-full bg-red-900" id="pid-dot"></div></div>
-                                    <div class="z-10 text-center"><span id="pid-temp" class="code-font text-3xl text-gray-700 font-bold transition-colors duration-500">24.0</span><span class="text-[10px] text-gray-600 ml-1">°C</span></div>
-                                    <div class="z-10 flex justify-between"><span class="code-font text-[6px] text-gray-600" id="pid-status-text">OFFLINE</span><span class="code-font text-[6px] text-gray-600">SV:93.0</span></div>
-                                </div>
-                                
-                                <!-- Timer Screen -->
-                                <div class="hw-screen rounded-xl w-full sm:w-32 h-24 p-2 flex flex-col justify-between border border-[#333]">
-                                    <div class="scanline"></div>
-                                    <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">TIME</span><div class="w-1.5 h-1.5 rounded-full bg-gray-700" id="tmr-dot"></div></div>
-                                    <div class="z-10 text-center"><span id="shot-timer" class="code-font text-3xl text-gray-700 font-bold transition-colors duration-300">00.0</span><span class="text-[10px] text-gray-600 ml-1">s</span></div>
-                                    <div class="z-10 flex justify-between"><span class="code-font text-[6px] text-gray-600">YIELD: <span id="shot-yield">0.0</span>g</span><span class="code-font text-[6px] text-gray-600">RATIO 1:2.0</span></div>
+                                <div class="lab-gauge-wrap hw-screen rounded-full">
+                                    <div class="lab-gauge-face">
+                                        <div class="lab-gauge-tick"></div>
+                                        <div class="lab-gauge-tick"></div>
+                                        <div class="lab-gauge-tick"></div>
+                                        <div class="lab-gauge-tick"></div>
+                                        <div class="lab-gauge-needle"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- "LIVE SIM" Area (Portafilter & Cup) -->
-						<div id="brew-live-sim" class="relative flex-grow w-full border border-white/5 rounded-xl bg-gradient-to-b from-[#111] to-[#050505] flex flex-col items-center overflow-hidden z-20 py-4 md:py-2 shadow-[inset_0_20px_50px_rgba(0,0,0,0.8)]">
-							<div class="absolute top-3 left-4 flex items-center gap-2 z-30"><div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" id="sim-live-dot"></div><span class="code-font text-[9px] text-gray-500 uppercase tracking-widest">Live Sim</span></div>
+                        <div class="lab-metrics-grid grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="hw-screen rounded-xl p-3 border border-[#2f2323]">
+                                <div class="scanline"></div>
+                                <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">PID.SYS</span><div class="w-1.5 h-1.5 rounded-full bg-red-900" id="pid-dot"></div></div>
+                                <div class="lab-pid-main z-10"><span id="pid-temp" class="code-font text-gray-700 font-bold transition-colors duration-500">24.0</span><span class="text-[10px] text-gray-500 ml-1">°C</span></div>
+                                <div class="z-10 flex justify-between"><span class="code-font text-[6px] text-gray-600" id="pid-status-text">OFFLINE</span><span class="code-font text-[6px] text-gray-600">SV:93.0</span></div>
+                                <div class="lab-red-bars"></div>
+                            </div>
 
-							<div class="mobile-coffee-scale">
-								<!-- Espresso Machine Group -->
-								<div class="portafilter-group relative mt-6 sm:mt-8 md:mt-12 z-20">
-									<div class="pf-mount"></div>
-									<div class="pf-handle"></div>
-									<div class="pf-body">
-										<div class="pf-spout left"></div>
-										<div class="pf-spout right"></div>
-									</div>
-									<!-- Streams -->
-									<div class="espresso-stream left" id="stream-l"></div>
-									<div class="espresso-stream right" id="stream-r"></div>
-								</div>
+                            <div class="hw-screen rounded-xl p-3 border border-[#1f2b2a]">
+                                <div class="scanline"></div>
+                                <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">FLOW</span><div class="w-1.5 h-1.5 rounded-full bg-[#14532d]"></div></div>
+                                <div class="lab-flow-main code-font z-10">0.00 <span>g/s</span></div>
+                                <div class="lab-gridline"></div>
+                            </div>
 
-								<!-- Espresso Cup -->
-								<div class="espresso-cup mt-12 sm:mt-14 md:mt-[50px] mb-4 md:mb-6 z-10">
-									<div class="cup-handle"></div>
-									<div class="cup-body">
-										<div class="cup-inner">
-											<div class="cup-liquid" id="cup-liquid">
-												<div class="cup-crema"></div>
-											</div>
-										</div>
-									</div>
-									<div class="cup-shadow"></div>
-								</div>
-							</div>
-						</div>
+                            <div class="hw-screen rounded-xl p-3 border border-[#232629]">
+                                <div class="scanline"></div>
+                                <div class="flex justify-between items-center z-10"><span class="code-font text-[8px] text-gray-500">TIME</span><div class="w-1.5 h-1.5 rounded-full bg-gray-700" id="tmr-dot"></div></div>
+                                <div class="lab-clock"></div>
+                                <div class="z-10 flex justify-between mt-2"><span class="code-font text-[9px] text-gray-300"><span id="shot-yield">0.0</span>g</span><span class="code-font text-[9px] text-gray-500"><span id="shot-timer" class="text-gray-700 transition-colors duration-300">00.0</span>s</span></div>
+                            </div>
+                        </div>
+
+                        <div id="brew-live-sim" class="relative w-full border border-white/10 rounded-xl bg-gradient-to-b from-[#0a0d14] via-[#07090f] to-[#05070c] flex flex-col items-center overflow-hidden z-20 py-6 shadow-[inset_0_40px_80px_rgba(255,255,255,0.06)]">
+                            <div class="absolute top-3 left-4 flex items-center gap-2 z-30"><div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#22c55e]" id="sim-live-dot"></div><span class="code-font text-[8px] text-gray-500 uppercase tracking-widest">Live Sim</span></div>
+
+                            <div class="mobile-coffee-scale">
+                                <div class="portafilter-group relative mt-4 sm:mt-6 md:mt-8 z-20">
+                                    <div class="pf-mount"></div>
+                                    <div class="pf-handle"></div>
+                                    <div class="pf-body">
+                                        <div class="pf-spout left"></div>
+                                        <div class="pf-spout right"></div>
+                                    </div>
+                                    <div class="espresso-stream left" id="stream-l"></div>
+                                    <div class="espresso-stream right" id="stream-r"></div>
+                                </div>
+
+                                <div class="espresso-cup mt-12 sm:mt-14 md:mt-[52px] mb-2 z-10">
+                                    <div class="cup-handle"></div>
+                                    <div class="cup-body">
+                                        <div class="cup-inner">
+                                            <div class="cup-liquid" id="cup-liquid">
+                                                <div class="cup-crema"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="cup-shadow"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
             </div>
 
