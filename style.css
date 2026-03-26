@@ -151,45 +151,52 @@ body, html {
 .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
 input:checked + .slider { background-color: #0ea5e9; border-color: #0ea5e9; box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);}
 input:checked + .slider:before { transform: translateX(18px); }
-/* --- MOBILE RESPONSIVENESS FIXES --- */
-
-/* 1. Coffee Machine Scale Fix */
-.mobile-coffee-scale {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    transform-origin: top center;
-}
+/* --- MOBILE RESPONSIVENESS FIXES (UPDATED) --- */
 @media (max-width: 767px) {
-    .mobile-coffee-scale { transform: scale(0.75); }
-    .espresso-cup { margin-bottom: 0 !important; margin-top: 30px !important; }
-}
+    /* General scroll fix so users can scroll past the menu */
+    .module { padding-bottom: 180px !important; }
 
-/* 2. Compiler Pipeline Scale Fix */
-.compiler-scale-fix {
-    transform-origin: center center;
-    width: 100%;
-}
-@media (max-width: 380px) {
-    .compiler-scale-fix { transform: scale(0.45); }
-}
-@media (min-width: 381px) and (max-width: 767px) {
-    .compiler-scale-fix { transform: scale(0.55); }
-}
-@media (min-width: 768px) {
-    .compiler-scale-fix { transform: scale(0.80); }
-}
-@media (min-width: 1024px) {
-    .compiler-scale-fix { transform: scale(0.90); }
-}
-
-/* 3. Celestial Panel Fix */
-@media (max-width: 767px) {
+    /* 1. Coffee Machine Scale Fix */
+    .mobile-coffee-scale {
+        transform: scale(0.7);
+        transform-origin: top center;
+        height: 320px; 
+        margin-top: 10px;
+    }
+    .espresso-cup { margin-bottom: 0 !important; margin-top: 10px !important; }
+    
+    /* 2. Compiler Pipeline Scale Fix */
+    .compiler-scale-fix {
+        transform: scale(0.55);
+        transform-origin: top center;
+        margin-top: 0px;
+        margin-bottom: -100px; /* Pulls the terminal box up closer to the graph */
+    }
+    
+    /* 3. Celestial Panel Fix */
     #telemetry-panel {
         top: auto !important;
-        bottom: 80px !important; /* Moves it above the time slider */
-        max-height: 45vh; /* Prevents it from covering the planet */
+        bottom: 80px !important; 
+        max-height: 40vh; 
     }
+
+    /* 4. Nav Menu Fix (Creates a dark floating island so it never blends with content) */
+    .nav-area {
+        background: rgba(5, 5, 5, 0.85) !important;
+        backdrop-filter: blur(12px) !important;
+        padding: 15px 20px 15px 15px !important;
+        border-radius: 20px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+}
+
+@media (min-width: 768px) {
+    .compiler-scale-fix { transform: scale(0.80); transform-origin: center center; }
+    .mobile-coffee-scale { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; }
+}
+@media (min-width: 1024px) {
+    .compiler-scale-fix { transform: scale(0.90); transform-origin: center center; }
 }
