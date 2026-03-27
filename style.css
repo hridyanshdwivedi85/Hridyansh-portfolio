@@ -1159,36 +1159,52 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     #mod-music {
-        --music-top-offset: max(66px, env(safe-area-inset-top));
-        --music-bottom-offset: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
-        top: var(--music-top-offset);
-        bottom: var(--music-bottom-offset);
-        height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset));
-        max-height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset));
+        --music-content-top: max(58px, env(safe-area-inset-top));
+        --music-content-bottom: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
+        --music-content-height: calc(100dvh - var(--music-content-top) - var(--music-content-bottom));
+        top: 0;
+        bottom: 0;
+        height: 100dvh;
+        max-height: 100dvh;
     }
 
     .music-player-wrap {
         align-items: center;
         justify-content: center;
-        padding: 0.25rem 0.5rem 0.35rem;
+        padding:
+            calc(var(--music-content-top) + 0.15rem)
+            0.4rem
+            calc(var(--music-content-bottom) + 0.3rem);
     }
 
     .iphone17-shell {
         transform: none;
         transform-origin: center;
-        max-height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset) - 0.6rem);
+        width: min(100%, 290px);
+        max-height: calc(var(--music-content-height) - 0.45rem);
+        gap: 0.24rem;
+    }
+
+    .iphone17-label {
+        font-size: 0.48rem;
     }
 
     .iphone17-device {
-        height: 100%;
+        width: min(100%, 226px);
+        height: auto;
         max-height: 100%;
-        width: auto;
     }
 
     .music-player-card {
         justify-content: space-between;
         gap: 0.48rem;
         padding: 1.95rem 0.76rem 0.66rem;
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+
+    .music-player-card::-webkit-scrollbar {
+        display: none;
     }
 
     #audio-unlock .heading-font {
@@ -1477,22 +1493,20 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (max-width: 414px) {
     #mod-music {
-        --music-top-offset: max(58px, env(safe-area-inset-top));
-        --music-bottom-offset: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
-        top: var(--music-top-offset);
-        bottom: var(--music-bottom-offset);
-        height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset));
-        max-height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset));
+        --music-content-top: max(52px, env(safe-area-inset-top));
+        --music-content-bottom: calc(var(--mobile-nav-height) + max(8px, env(safe-area-inset-bottom)));
+        --music-content-height: calc(100dvh - var(--music-content-top) - var(--music-content-bottom));
     }
 
     .iphone17-shell {
-        max-height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset) - 0.4rem);
+        width: min(100%, 274px);
+        max-height: calc(var(--music-content-height) - 0.3rem);
     }
 
     .iphone17-device {
-        height: 100%;
+        width: min(100%, 214px);
+        height: auto;
         max-height: 100%;
-        width: auto;
     }
 
     .music-player-card {
