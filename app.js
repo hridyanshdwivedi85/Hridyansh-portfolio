@@ -689,7 +689,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     scaleY: 1,
                     duration: Math.max(0.38, 0.35 + (addAmount / 240)),
                     ease: "power1.out",
-                    onComplete: () => gsap.to(this.ui.stream, { scaleY: 0, duration: 0.22, ease: "power1.in" })
+                    onStart: () => { this.ui.stream.style.opacity = '1'; },
+                    onComplete: () => gsap.to(this.ui.stream, { scaleY: 0, opacity: 0, duration: 0.22, ease: "power1.in" })
                 }
             );
             this.animateLiquidToCurrentVolume(0.9);
@@ -710,17 +711,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetFill = this.computeFillPercent(targetMl);
             this.syncStreamHeight();
 
-            // Stream Styling (mix color if water added)
-            const pureColor = this.drinks[this.drink].colorBase;
-            this.ui.stream.style.background = pendingWater > 0
-                ? "linear-gradient(180deg, rgba(165,226,255,0.95) 0%, rgba(105,170,255,0.52) 100%)"
-                : pureColor;
+            // Stream styling follows currently selected spirit and dilution ratio.
+            const pendingWaterRatio = pendingWater / Math.max(1, pendingSpirit + pendingWater);
+            const pourTint = this.mixDrinkWithWater(this.drink, pendingWaterRatio);
+            this.ui.stream.style.setProperty('--stream-top', pourTint.top);
+            this.ui.stream.style.setProperty('--stream-mid', pourTint.mid);
+            this.ui.stream.style.setProperty('--stream-bottom', pourTint.bottom);
             this.ui.stream.style.boxShadow = `0 0 15px ${this.drinks[this.drink].glow}`;
             
             const tl = gsap.timeline();
             
             // 1. Stream shoots down
-            tl.to(this.ui.stream, { scaleY: 1, duration: 0.3, ease: "power2.in" });
+            tl.to(this.ui.stream, {
+                scaleY: 1,
+                opacity: 1,
+                duration: 0.3,
+                ease: "power2.in",
+                onStart: () => this.ui.liquid.classList.add('is-pouring')
+            });
             
             // 2. Liquid Rises
             this.applyLiquidAppearance(targetMl, this.pouredSpiritMl + pendingSpirit);
@@ -737,7 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // 3. Stream stops
-            tl.to(this.ui.stream, { scaleY: 0, transformOrigin: "top", duration: 0.3 }, "-=0.2");
+            tl.to(this.ui.stream, { scaleY: 0, opacity: 0, transformOrigin: "top", duration: 0.3 }, "-=0.2");
             
             tl.call(() => {
                 this.pouredSpiritMl += pendingSpirit;
@@ -751,6 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.state = 'READY';
                 this.ui.statusText.innerText = "READY TO SERVE";
                 this.ui.statusText.style.color = "#4ade80";
+                this.ui.liquid.classList.remove('is-pouring');
                 this.applyLiquidAppearance();
                 this.updateMetrics(1);
                 this.updateStatusLights();
@@ -773,9 +782,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             gsap.killTweensOf(this.ui.liquid);
             gsap.to(this.ui.liquid, { height: "0%", duration: 0.5, ease: "power2.inOut" });
-            gsap.to(this.ui.stream, { scaleY: 0, duration: 0.2 });
+            gsap.to(this.ui.stream, { scaleY: 0, opacity: 0, duration: 0.2 });
             this.ui.liquid.style.background = 'transparent';
             this.ui.liquid.style.opacity = '0';
+            this.ui.liquid.classList.remove('is-pouring');
             
             this.updateMetrics(0);
             this.ui.statusText.innerText = "SYSTEM FLUSHED";
@@ -867,8 +877,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            this.ui.liquid.style.background = this.drinks[this.drink].colorGradient;
+            const mixGradient = this.mixDrinkWithWater(this.drink, waterRatio);
+            this.ui.liquid.style.background = `linear-gradient(to right, ${mixGradient.bottom} 0%, ${mixGradient.mid} 50%, ${mixGradient.bottom} 100%)`;
             this.ui.liquid.style.opacity = `${Math.max(0.56, 1 - (waterRatio * 0.42))}`;
+        },
+
+        mixDrinkWithWater(drinkKey, waterRatio = 0) {
+            const basePalette = {
+                whiskey: { top: [232, 138, 36], mid: [184, 86, 16], bottom: [105, 43, 6] },
+                wine: { top: [154, 34, 58], mid: [104, 12, 35], bottom: [55, 5, 20] },
+                vodka: { top: [230, 247, 255], mid: [188, 221, 244], bottom: [124, 172, 207] }
+            };
+            const palette = basePalette[drinkKey] || basePalette.whiskey;
+            const blend = (rgb, alpha) => {
+                const ratio = Math.max(0, Math.min(1, waterRatio));
+                const out = rgb.map((channel) => Math.round(channel + (255 - channel) * ratio * 0.75));
+                return `rgba(${out[0]}, ${out[1]}, ${out[2]}, ${alpha})`;
+            };
+            return {
+                top: blend(palette.top, 0.95),
+                mid: blend(palette.mid, 0.88),
+                bottom: blend(palette.bottom, 0.82)
+            };
         },
 
         syncStreamHeight() {
