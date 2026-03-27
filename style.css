@@ -1159,29 +1159,36 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     #mod-music {
-        top: max(66px, env(safe-area-inset-top));
-        bottom: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
-        height: auto;
+        --music-top-offset: max(66px, env(safe-area-inset-top));
+        --music-bottom-offset: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
+        top: var(--music-top-offset);
+        bottom: var(--music-bottom-offset);
+        height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset));
+        max-height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset));
     }
 
     .music-player-wrap {
-        align-items: flex-start;
-        padding: 0.45rem 0.55rem 0.65rem;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem 0.5rem 0.35rem;
     }
 
     .iphone17-shell {
-        transform: scale(0.72);
-        transform-origin: top center;
+        transform: none;
+        transform-origin: center;
+        max-height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset) - 0.6rem);
     }
 
     .iphone17-device {
-        width: min(236px, 67vw);
+        height: 100%;
+        max-height: 100%;
+        width: auto;
     }
 
     .music-player-card {
         justify-content: space-between;
-        gap: 0.55rem;
-        padding: 2.2rem 0.8rem 0.75rem;
+        gap: 0.48rem;
+        padding: 1.95rem 0.76rem 0.66rem;
     }
 
     #audio-unlock .heading-font {
@@ -1470,20 +1477,27 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (max-width: 414px) {
     #mod-music {
-        top: max(58px, env(safe-area-inset-top));
+        --music-top-offset: max(58px, env(safe-area-inset-top));
+        --music-bottom-offset: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
+        top: var(--music-top-offset);
+        bottom: var(--music-bottom-offset);
+        height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset));
+        max-height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset));
     }
 
     .iphone17-shell {
-        transform: scale(0.66);
+        max-height: calc(100dvh - var(--music-top-offset) - var(--music-bottom-offset) - 0.4rem);
     }
 
     .iphone17-device {
-        width: min(220px, 66vw);
+        height: 100%;
+        max-height: 100%;
+        width: auto;
     }
 
     .music-player-card {
-        gap: 0.5rem;
-        padding: 2.05rem 0.72rem 0.68rem;
+        gap: 0.43rem;
+        padding: 1.82rem 0.7rem 0.6rem;
     }
 
     .music-profile-image-wrap {
