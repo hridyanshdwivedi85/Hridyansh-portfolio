@@ -155,38 +155,6 @@
             </div>
             <div id="data-drops" class="absolute inset-0 pointer-events-none z-0"></div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 shrink-0">
-            <div class="hw-panel p-4 md:p-5">
-                <h3 class="code-font text-[10px] uppercase tracking-[0.14em] text-[var(--brand-orange)] mb-3">Runtime Architecture</h3>
-                <ul class="space-y-2 text-gray-300 text-xs leading-relaxed">
-                    <li class="flex gap-2"><i class="fas fa-circle-notch text-[8px] text-[var(--brand-orange)] mt-1"></i><span>Pipeline flow: <span class="text-white">Power → Ingest → Train</span> with clear state-locking to prevent accidental multi-triggering.</span></li>
-                    <li class="flex gap-2"><i class="fas fa-circle-notch text-[8px] text-[var(--brand-orange)] mt-1"></i><span>Live status channel updates terminal logs, indicator LEDs, gauge progress, and orb state in sync.</span></li>
-                    <li class="flex gap-2"><i class="fas fa-circle-notch text-[8px] text-[var(--brand-orange)] mt-1"></i><span>Animation + audio are event-driven so transitions feel immediate without blocking UI interactions.</span></li>
-                </ul>
-            </div>
-            <div class="hw-panel p-4 md:p-5">
-                <h3 class="code-font text-[10px] uppercase tracking-[0.14em] text-[var(--brand-orange)] mb-3">Model Telemetry</h3>
-                <div class="grid grid-cols-2 gap-2 text-[10px] code-font">
-                    <div class="rounded-lg border border-white/10 bg-black/40 p-2">
-                        <div class="text-gray-500 uppercase tracking-widest">Dataset</div>
-                        <div class="text-white mt-1">1.4 TB Simulated</div>
-                    </div>
-                    <div class="rounded-lg border border-white/10 bg-black/40 p-2">
-                        <div class="text-gray-500 uppercase tracking-widest">Epoch Loop</div>
-                        <div class="text-white mt-1">0 → 100%</div>
-                    </div>
-                    <div class="rounded-lg border border-white/10 bg-black/40 p-2">
-                        <div class="text-gray-500 uppercase tracking-widest">Inference Mode</div>
-                        <div class="text-white mt-1">Adaptive</div>
-                    </div>
-                    <div class="rounded-lg border border-white/10 bg-black/40 p-2">
-                        <div class="text-gray-500 uppercase tracking-widest">Safety Gate</div>
-                        <div class="text-white mt-1">State Verified</div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -411,33 +379,6 @@
             <div class="scanline"></div>
             <div class="code-font text-[10px] text-gray-400" id="compiler-terminal">
                 > SYSTEM IDLE.<br>> WAITING FOR BUILD TRIGGER.<br>> TARGETS: IOS, ANDROID.
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mt-1 shrink-0">
-            <div class="hw-panel p-4">
-                <h3 class="code-font text-[10px] uppercase tracking-[0.14em] text-[#3ddc84] mb-3">Build Stages</h3>
-                <ul class="space-y-2 text-[11px] text-gray-300 leading-relaxed">
-                    <li><span class="text-white">Parse:</span> validates modules and resolves imports.</li>
-                    <li><span class="text-white">Compile:</span> emits optimized bytecode for each runtime.</li>
-                    <li><span class="text-white">Bundle/Sign:</span> packages artifacts and applies release signatures.</li>
-                </ul>
-            </div>
-            <div class="hw-panel p-4">
-                <h3 class="code-font text-[10px] uppercase tracking-[0.14em] text-[#3ddc84] mb-3">Output Matrix</h3>
-                <div class="space-y-2 text-[11px] text-gray-300">
-                    <div class="rounded-lg border border-white/10 bg-black/40 p-2"><span class="text-white">iOS:</span> arm64 release + simulator build targets.</div>
-                    <div class="rounded-lg border border-white/10 bg-black/40 p-2"><span class="text-white">Android:</span> AAB + universal APK artifacts.</div>
-                    <div class="rounded-lg border border-white/10 bg-black/40 p-2"><span class="text-white">Status:</span> auto-updates from awaiting → deployed.</div>
-                </div>
-            </div>
-            <div class="hw-panel p-4">
-                <h3 class="code-font text-[10px] uppercase tracking-[0.14em] text-[#3ddc84] mb-3">Mobile Readiness</h3>
-                <ul class="space-y-2 text-[11px] text-gray-300 leading-relaxed">
-                    <li>Adaptive scale locks node layout on small screens.</li>
-                    <li>SVG pipes are hidden on phones for better clarity.</li>
-                    <li>Terminal, controls, and status badges stay touch-friendly.</li>
-                </ul>
             </div>
         </div>
     </div>
