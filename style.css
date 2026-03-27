@@ -772,7 +772,11 @@ input:checked + .slider:before { transform: translateX(18px); }
         background: transparent;
         border: 0;
         box-shadow: none;
-        overflow: visible;
+        max-height: calc(100dvh - var(--mobile-nav-height) - max(18px, env(safe-area-inset-top)));
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
         gap: 0.65rem;
     }
 
@@ -811,7 +815,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     #mod-brew .machine-stage {
         order: 3;
-        min-height: clamp(250px, 44vh, 360px);
+        min-height: clamp(290px, 52vh, 420px);
         overflow: visible;
     }
 
@@ -1261,6 +1265,19 @@ input:checked + .slider:before { transform: translateX(18px); }
     opacity: 0;
     transition: transform 0.25s ease, opacity 0.18s ease;
     overflow: hidden;
+}
+
+.stream-droplet {
+    position: absolute;
+    width: 7px;
+    height: 11px;
+    border-radius: 999px 999px 999px 999px / 70% 70% 100% 100%;
+    background: radial-gradient(circle at 50% 16%, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.32) 24%, transparent 38%),
+        linear-gradient(180deg, var(--stream-top, rgba(214, 117, 20, 0.95)) 0%, var(--stream-bottom, rgba(96, 36, 0, 0.82)) 100%);
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
+    pointer-events: none;
+    z-index: 28;
+    opacity: 0;
 }
 
 #pour-stream::before {
