@@ -1158,6 +1158,32 @@ input:checked + .slider:before { transform: translateX(18px); }
         padding-bottom: 20px;
     }
 
+    #mod-music {
+        top: max(66px, env(safe-area-inset-top));
+        bottom: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
+        height: auto;
+    }
+
+    .music-player-wrap {
+        align-items: flex-start;
+        padding: 0.45rem 0.55rem 0.65rem;
+    }
+
+    .iphone17-shell {
+        transform: scale(0.72);
+        transform-origin: top center;
+    }
+
+    .iphone17-device {
+        width: min(236px, 67vw);
+    }
+
+    .music-player-card {
+        justify-content: space-between;
+        gap: 0.55rem;
+        padding: 2.2rem 0.8rem 0.75rem;
+    }
+
     #audio-unlock .heading-font {
         font-size: 0.95rem !important;
         letter-spacing: 0.12em !important;
@@ -1443,6 +1469,40 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 
 @media (max-width: 414px) {
+    #mod-music {
+        top: max(58px, env(safe-area-inset-top));
+    }
+
+    .iphone17-shell {
+        transform: scale(0.66);
+    }
+
+    .iphone17-device {
+        width: min(220px, 66vw);
+    }
+
+    .music-player-card {
+        gap: 0.5rem;
+        padding: 2.05rem 0.72rem 0.68rem;
+    }
+
+    .music-profile-image-wrap {
+        border-radius: 12px;
+    }
+
+    .music-profile-image {
+        border-radius: 10px;
+    }
+
+    .music-profile-sub {
+        font-size: 0.62rem;
+        line-height: 1.35;
+    }
+
+    .music-track-title {
+        font-size: 0.8rem;
+    }
+
     .mobile-coffee-scale {
         transform: scale(0.68) !important;
         min-height: 178px !important;
