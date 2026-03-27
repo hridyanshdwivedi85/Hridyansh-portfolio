@@ -689,6 +689,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalLiquidAfterWater = Math.max(1, totalSpirit + this.pouredWaterMl);
             const waterRatio = Math.max(0, Math.min(1, 1 - (totalSpirit / totalLiquidAfterWater)));
             const selectionTint = this.mixDrinkWithWater(this.drink, waterRatio);
+            this.ui.stream.style.setProperty('--stream-top', selectionTint.top);
+            this.ui.stream.style.setProperty('--stream-mid', selectionTint.mid);
+            this.ui.stream.style.setProperty('--stream-bottom', selectionTint.bottom);
             this.animateDropletLeadIn(selectionTint, Math.max(0.38, 0.35 + (addAmount / 240)));
             this.animateLiquidToCurrentVolume(0.9);
             this.updateMetrics();
@@ -913,6 +916,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const drop = document.createElement('span');
                 drop.className = 'stream-droplet';
                 drop.style.setProperty('--stream-top', tint.top);
+                drop.style.setProperty('--stream-mid', tint.mid || tint.top);
                 drop.style.setProperty('--stream-bottom', tint.bottom);
                 const baseLeft = (streamRect.left - stageRect.left) + (streamRect.width / 2);
                 drop.style.left = `${baseLeft + ((Math.random() - 0.5) * 9)}px`;
@@ -1258,13 +1262,13 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ambientLoop = null;
             this.ambientGain = null;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
-            this.wordExplosionEnabled = !this.isMobile;
+            this.wordExplosionEnabled = false;
             this.lineConnectCooldown = 0;
             this.lastTrailSpawn = 0;
             this.lastVibrateAt = 0;
             this.spaceStars = [];
             this.starFov = 520;
-            this.spaceSpeed = 9;
+            this.spaceSpeed = this.isMobile ? 12 : 15;
 
             this.resize();
             window.addEventListener('resize', () => this.resize());
@@ -1318,12 +1322,13 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.width = this.width;
             this.canvas.height = this.height;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
-            this.wordExplosionEnabled = !this.isMobile;
+            this.wordExplosionEnabled = false;
+            this.spaceSpeed = this.isMobile ? 12 : 15;
             this.createSpaceField();
         },
 
         createSpaceField() {
-            const starCount = this.isMobile ? 150 : 280;
+            const starCount = this.isMobile ? 220 : 420;
             this.spaceStars = [];
             for (let i = 0; i < starCount; i++) {
                 this.spaceStars.push(this.makeStar(true));
@@ -1335,14 +1340,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: (Math.random() - 0.5) * this.width,
                 y: (Math.random() - 0.5) * this.height,
                 z: randomDepth ? (Math.random() * this.width) : this.width,
-                size: Math.random() * 1.6 + 0.4,
-                hue: 190 + Math.random() * 45
+                size: Math.random() * 2.2 + 0.35,
+                hue: 200 + Math.random() * 28,
+                twinkle: Math.random() * Math.PI * 2
             };
         },
 
         drawSpaceField() {
             this.ctx.globalCompositeOperation = 'source-over';
-            this.ctx.fillStyle = 'rgba(2, 6, 16, 0.62)';
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.84)';
             this.ctx.fillRect(0, 0, this.width, this.height);
 
             for (let i = 0; i < this.spaceStars.length; i++) {
@@ -1368,20 +1374,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     continue;
                 }
 
-                const alpha = Math.max(0.2, 1 - (star.z / this.width));
-                const lineWidth = Math.max(0.6, star.size * proj * 1.2);
+                const alpha = Math.max(0.15, 1 - (star.z / this.width));
+                const twinklePulse = 0.65 + (Math.sin((performance.now() * 0.003) + star.twinkle) * 0.35);
+                const lineWidth = Math.max(0.5, star.size * proj * 1.35);
+                const starAlpha = Math.min(0.95, alpha * twinklePulse);
 
-                this.ctx.strokeStyle = `hsla(${star.hue}, 100%, 85%, ${Math.min(0.85, alpha)})`;
+                this.ctx.strokeStyle = `hsla(${star.hue}, 95%, 88%, ${Math.min(0.8, starAlpha)})`;
                 this.ctx.lineWidth = lineWidth;
                 this.ctx.beginPath();
                 this.ctx.moveTo(px, py);
                 this.ctx.lineTo(sx, sy);
                 this.ctx.stroke();
 
-                this.ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, alpha + 0.2)})`;
+                this.ctx.shadowBlur = 9;
+                this.ctx.shadowColor = `rgba(255,255,255,${Math.min(0.55, starAlpha)})`;
+                this.ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, starAlpha + 0.18)})`;
                 this.ctx.beginPath();
-                this.ctx.arc(sx, sy, Math.max(0.7, star.size * proj), 0, Math.PI * 2);
+                this.ctx.arc(sx, sy, Math.max(0.65, star.size * proj), 0, Math.PI * 2);
                 this.ctx.fill();
+                this.ctx.shadowBlur = 0;
             }
         },
 
@@ -1466,9 +1477,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.playSteamBurst === 'function') {
                       AudioEngine.playSteamBurst();
                   }
-                  if (this.wordExplosionEnabled) {
-                      this.explodeText("Coding means creativity. Systems become art.");
-                  }
+                  // Removed exploding text particle words for a cleaner entropy experience.
                   // Stage 4: Calm ambient phase
                   setTimeout(() => this.startAmbientLoop(), 900);
               });
