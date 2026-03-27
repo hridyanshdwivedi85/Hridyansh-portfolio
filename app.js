@@ -417,7 +417,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isAnimating: false,
         wheelLock: false,
         touchStartY: null,
+        touchStartX: null,
         touchStartedOnRail: false,
+        touchCanSwitchTabs: false,
         navRailThreshold: 18,
         navIndicator: document.querySelector('.nav-rail-highlight'),
         init() {
@@ -486,6 +488,30 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         bindScrollTabSwitch() {
             const portraitMedia = window.matchMedia('(max-width: 1023px)');
+            const isInteractiveElement = (element) => {
+                if (!element) return false;
+                return Boolean(
+                    element.closest('a, button, input, select, textarea, label, summary, [role="button"], [data-no-tab-swipe]')
+                );
+            };
+
+            const canSwipeSwitchOnElement = (targetElement, deltaY) => {
+                if (!targetElement) return true;
+                const activeModule = document.querySelector('.module.active');
+                if (!activeModule || !activeModule.contains(targetElement)) return true;
+                if (isInteractiveElement(targetElement)) return false;
+
+                const scrollContainer = targetElement.closest('[data-scroll-lock], .module');
+                if (!scrollContainer) return true;
+                const canScroll = scrollContainer.scrollHeight > (scrollContainer.clientHeight + 4);
+                if (!canScroll) return true;
+
+                const nearTop = scrollContainer.scrollTop <= 4;
+                const nearBottom = (scrollContainer.scrollTop + scrollContainer.clientHeight) >= (scrollContainer.scrollHeight - 4);
+                if (deltaY > 0 && !nearBottom) return false;
+                if (deltaY < 0 && !nearTop) return false;
+                return true;
+            };
 
             const trySwitchByDelta = (deltaY) => {
                 if (!portraitMedia.matches || this.isAnimating || this.wheelLock) return;
@@ -517,26 +543,38 @@ document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener('touchstart', (event) => {
                 if (!portraitMedia.matches) return;
                 const touch = event.touches?.[0];
+                const target = event.target;
                 this.touchStartedOnRail = this.isOnNavRail(touch?.clientX);
-                this.touchStartY = event.touches?.[0]?.clientY ?? null;
+                this.touchCanSwitchTabs = this.touchStartedOnRail || !isInteractiveElement(target);
+                this.touchStartY = touch?.clientY ?? null;
+                this.touchStartX = touch?.clientX ?? null;
             }, { passive: true });
 
             window.addEventListener('touchmove', (event) => {
-                if (!portraitMedia.matches || this.touchStartY === null || !this.touchStartedOnRail) return;
-                const currentY = event.touches?.[0]?.clientY;
-                if (typeof currentY !== 'number') return;
+                if (!portraitMedia.matches || this.touchStartY === null || !this.touchCanSwitchTabs) return;
+                const touch = event.touches?.[0];
+                const currentY = touch?.clientY;
+                const currentX = touch?.clientX;
+                if (typeof currentY !== 'number' || typeof currentX !== 'number') return;
+
+                const deltaX = currentX - this.touchStartX;
+                if (Math.abs(deltaX) > 28) return;
 
                 const deltaY = this.touchStartY - currentY;
                 if (Math.abs(deltaY) < 35) return;
+                if (!canSwipeSwitchOnElement(event.target, deltaY)) return;
 
                 event.preventDefault();
                 trySwitchByDelta(deltaY);
                 this.touchStartY = currentY;
+                this.touchStartX = currentX;
             }, { passive: false });
 
             window.addEventListener('touchend', () => {
                 this.touchStartY = null;
+                this.touchStartX = null;
                 this.touchStartedOnRail = false;
+                this.touchCanSwitchTabs = false;
             }, { passive: true });
         },
         switchTab(navElement, targetId, theme, updateHash = true) {

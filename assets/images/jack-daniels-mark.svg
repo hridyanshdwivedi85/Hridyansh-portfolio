@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Jack Daniel's Monogram</title>
+  <desc id="desc">Stylized JD initials in a circular crest</desc>
+  <defs>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5f5f5" />
+      <stop offset="100%" stop-color="#9ca3af" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="64" fill="#050505" />
+  <circle cx="64" cy="64" r="56" fill="none" stroke="url(#ring)" stroke-width="4" />
+  <circle cx="64" cy="64" r="45" fill="none" stroke="#2b2b2b" stroke-width="1.5" />
+  <path d="M39 38h28v8H47v34c0 5 2 8 8 8 4 0 8-1 12-3v9c-4 2-9 3-15 3-12 0-17-6-17-16V38z" fill="#f8fafc"/>
+  <path d="M78 38h10c13 0 21 7 21 19 0 13-8 20-22 20h-7v19H78V38zm10 30c8 0 12-4 12-11 0-7-4-10-12-10h-8v21h8z" fill="#d1d5db"/>
+  <path d="M32 100h64" stroke="#3f3f46" stroke-width="2" stroke-linecap="round"/>
+</svg>
