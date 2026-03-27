@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.navIndicator.style.opacity = '1';
         },
         bindScrollTabSwitch() {
-            const portraitMedia = window.matchMedia('(max-width: 767px) and (orientation: portrait)');
+            const portraitMedia = window.matchMedia('(max-width: 1023px)');
 
             const trySwitchByDelta = (deltaY) => {
                 if (!portraitMedia.matches || this.isAnimating || this.wheelLock) return;
