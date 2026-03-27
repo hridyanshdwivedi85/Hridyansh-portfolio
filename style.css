@@ -680,12 +680,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 /* 🥃 MIXOLOGY ENGINE V3: STRUCTURAL & PHOTOREALISTIC CSS    */
 /* ========================================================= */
 
-/* --- 1. CUSTOM GRID LAYOUT (Fixes the vertical stacking issue) --- */
-.bottle-grid {
-    display: flex;
-    flex-direction: column; /* Stack on mobile */
-    gap: 1rem;
-}
+/* --- 1. CUSTOM GRID LAYOUT --- */
 .machine-layout {
     display: flex;
     flex-direction: column; /* Stack on mobile */
@@ -705,11 +700,6 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 /* Desktop Layout Override */
 @media (min-width: 768px) {
-    .bottle-grid {
-        flex-direction: row; /* 3 Columns on Desktop */
-    }
-    .bottle-slot { flex: 1; } /* Make bottles equal width */
-    
     .machine-layout {
         flex-direction: row; /* Row layout for the machine */
     }
@@ -733,66 +723,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     height: 260px;
 }
 
-
-/* --- 2. BOTTLE RESERVE STYLING --- */
-.bottle-slot {
-    position: relative;
-    height: 160px; /* Taller for better visibility */
-    background: linear-gradient(to top, rgba(20,20,25,0.9), transparent);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    padding-bottom: 15px;
-    overflow: hidden;
-    box-shadow: inset 0 -10px 20px rgba(0,0,0,0.8);
-    transition: all 0.3s ease;
-}
-.bottle-img {
-    height: 120px;
-    object-fit: contain;
-    z-index: 2;
-    mix-blend-mode: screen; /* Blends images seamlessly */
-    opacity: 0.6;
-    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
-    transition: opacity 0.3s, transform 0.3s;
-}
-.bottle-slot.active .bottle-img { opacity: 1; transform: scale(1.05); }
-
-.bottle-glow {
-    position: absolute;
-    bottom: -20px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    filter: blur(25px);
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 0.4s;
-}
-.bottle-slot.active .bottle-glow { opacity: 0.7; }
-.bottle-glow.whiskey { background: #d97706; }
-.bottle-glow.wine { background: #9f1239; }
-.bottle-glow.vodka { background: #38bdf8; }
-
-.bottle-label {
-    position: absolute;
-    top: 10px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-family: 'Fira Code', monospace;
-    font-size: 8px;
-    color: white;
-    font-weight: bold;
-    letter-spacing: 1px;
-    z-index: 3;
-}
-.bottle-label span { color: #888; font-size: 6px; }
-
-
-/* --- 3. MODERN HARDWARE BUTTONS --- */
+/* --- 2. MODERN HARDWARE BUTTONS --- */
 .neo-btn {
     background: #111115;
     border: 1px solid rgba(255,255,255,0.1);
@@ -818,7 +749,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 
-/* --- 4. DRIP TRAY --- */
+/* --- 3. DRIP TRAY --- */
 .drip-tray {
     background: repeating-linear-gradient(90deg, #111 0px, #111 5px, #222 5px, #222 10px);
     border-top: 3px solid #444;
@@ -826,7 +757,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 
-/* --- 5. PHOTOREALISTIC GLASS ENGINE --- */
+/* --- 4. PHOTOREALISTIC GLASS ENGINE --- */
 .realistic-glass {
     position: relative;
     border: 3px solid rgba(255, 255, 255, 0.2);
