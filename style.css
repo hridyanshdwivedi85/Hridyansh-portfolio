@@ -593,7 +593,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 /* --- RESPONSIVE FIXES --- */
 @media (max-width: 1023px) {
     :root {
-        --mobile-nav-height: 112px;
+        --mobile-nav-height: 92px;
     }
 
     .module {
@@ -631,8 +631,8 @@ input:checked + .slider:before { transform: translateX(18px); }
         background: rgba(5, 5, 5, 0.92) !important;
         backdrop-filter: blur(16px) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 14px !important;
-        padding: 8px 10px !important;
+        border-radius: 12px !important;
+        padding: 6px 8px !important;
         box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     }
 
@@ -652,15 +652,15 @@ input:checked + .slider:before { transform: translateX(18px); }
         width: 100%;
         display: flex !important;
         flex-wrap: nowrap !important;
-        gap: 10px !important;
-        overflow-x: auto;
+        gap: 6px !important;
+        overflow-x: hidden;
         overflow-y: hidden;
         scrollbar-width: none;
         -ms-overflow-style: none;
-        scroll-snap-type: x proximity;
+        scroll-snap-type: none;
         -webkit-overflow-scrolling: touch;
-        padding-bottom: 2px;
-        min-height: 56px;
+        padding-bottom: 0;
+        min-height: 48px;
     }
 
     .nav-area nav::-webkit-scrollbar {
@@ -669,17 +669,17 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     .nav-area .nav-item,
     .nav-area nav > a {
-        flex: 0 0 auto;
+        flex: 1 1 0;
         justify-content: center;
         align-items: center;
         margin: 0 !important;
-        min-height: 52px;
+        min-height: 44px;
         border: 1px solid rgba(255, 255, 255, 0.09);
-        border-radius: 11px;
+        border-radius: 10px;
         background: rgba(255,255,255,0.02);
-        padding: 10px 16px;
-        scroll-snap-align: center;
-        min-width: max-content;
+        padding: 8px 6px;
+        scroll-snap-align: none;
+        min-width: 0;
     }
 
     .nav-active-text {
@@ -688,8 +688,8 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     .nav-area .nav-label,
     .nav-area nav > a span:last-child {
-        font-size: 10px !important;
-        letter-spacing: 0.08em !important;
+        font-size: 8px !important;
+        letter-spacing: 0.05em !important;
         text-align: center;
         white-space: nowrap;
         overflow: visible;
@@ -710,7 +710,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (max-width: 767px) {
     :root {
-        --mobile-nav-height: 124px;
+        --mobile-nav-height: 96px;
     }
 
     .module {
@@ -903,6 +903,13 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
     .entropy-mobile-hint {
         display: inline-flex;
+    }
+
+    .cursor-outline.entropy-cursor {
+        width: 46px !important;
+        height: 46px !important;
+        border-width: 1.5px !important;
+        backdrop-filter: blur(1.5px);
     }
 }
 

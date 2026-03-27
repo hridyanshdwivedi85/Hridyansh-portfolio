@@ -185,14 +185,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const cursorDot = document.getElementById("cursor-dot");
     const cursorOutline = document.getElementById("cursor-outline");
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
+    const updateCursorPosition = (x, y, instant = false) => {
+        if (!cursorDot || !cursorOutline) return;
+        cursorDot.style.left = `${x}px`;
+        cursorDot.style.top = `${y}px`;
+
+        if (instant || !window.matchMedia("(pointer: fine)").matches) {
+            cursorOutline.style.left = `${x}px`;
+            cursorOutline.style.top = `${y}px`;
+            return;
+        }
+
+        cursorOutline.animate(
+            { left: `${x}px`, top: `${y}px` },
+            { duration: 500, fill: "forwards" }
+        );
+    };
+
     window.addEventListener("mousemove", (e) => {
         // Only run if the device has a mouse pointer (ignores touch screens)
         if (window.matchMedia("(pointer: fine)").matches) {
-            cursorDot.style.left = `${e.clientX}px`; 
-            cursorDot.style.top = `${e.clientY}px`;
-            cursorOutline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+            updateCursorPosition(e.clientX, e.clientY);
         }
     });
+
+    window.addEventListener("touchstart", (e) => {
+        if (!isTouchDevice) return;
+        const touch = e.touches?.[0];
+        if (!touch) return;
+        updateCursorPosition(touch.clientX, touch.clientY, true);
+    }, { passive: true });
+
+    window.addEventListener("touchmove", (e) => {
+        if (!isTouchDevice) return;
+        const touch = e.touches?.[0];
+        if (!touch) return;
+        updateCursorPosition(touch.clientX, touch.clientY, true);
+    }, { passive: true });
 
     /**
      * 2. GENERAL BACKGROUND ENGINE (For standard tabs)
@@ -307,8 +337,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 cursorOutline.classList.add('entropy-cursor');
                 cursorDot.classList.add('entropy-cursor-dot');
                 if (isTouchDevice) {
-                    cursorOutline.style.opacity = '0';
+                    cursorOutline.style.opacity = '1';
                     cursorDot.style.opacity = '0';
+                    cursorOutline.style.left = `${window.innerWidth / 2}px`;
+                    cursorOutline.style.top = `${window.innerHeight / 2}px`;
                 }
             } else {
                 cursorOutline.classList.remove('entropy-cursor');
@@ -825,7 +857,8 @@ document.addEventListener('DOMContentLoaded', () => {
         syncStreamHeight() {
             const nozzleRect = this.ui.stream.parentElement.getBoundingClientRect();
             const glassRect = this.ui.glass.getBoundingClientRect();
-            const streamHeight = Math.max(120, Math.min(350, Math.round(glassRect.top - nozzleRect.bottom + (glassRect.height * 0.76))));
+            const gapToBase = Math.max(0, Math.round(glassRect.bottom - nozzleRect.bottom - 2));
+            const streamHeight = Math.max(0, Math.min(420, gapToBase));
             this.ui.stream.style.height = `${streamHeight}px`;
         }
     };
@@ -1120,6 +1153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.wordExplosionEnabled = !this.isMobile;
             this.lineConnectCooldown = 0;
             this.lastTrailSpawn = 0;
+            this.lastVibrateAt = 0;
 
             this.resize();
             window.addEventListener('resize', () => this.resize());
@@ -1139,7 +1173,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.y = touch.clientY;
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
-                    if (navigator.vibrate) navigator.vibrate(10);
+                    this.vibratePulse(12);
                 }
             }, { passive: true });
             window.addEventListener('touchmove', (e) => {
@@ -1149,7 +1183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.y = touch.clientY;
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
-                    if (navigator.vibrate) navigator.vibrate(8);
+                    this.vibratePulse(7);
                 }
             }, { passive: true });
 
@@ -1197,6 +1231,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     maxLife: this.isMobile ? 80 : 120
                 });
             }
+        },
+
+        vibratePulse(duration = 10) {
+            if (!navigator.vibrate) return;
+            const now = performance.now();
+            if (now - this.lastVibrateAt < 55) return;
+            this.lastVibrateAt = now;
+            navigator.vibrate(duration);
         },
 
         runSequence() {
