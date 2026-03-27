@@ -1637,6 +1637,13 @@ input:checked + .slider:before { transform: translateX(18px); }
 .origin-ios-terminal .origin-line {
     color: #e2e8f0;
     white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+}
+
+.origin-ios-terminal .origin-line::-webkit-scrollbar {
+    display: none;
 }
 
 .origin-ios-terminal .prompt {
@@ -1675,8 +1682,34 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 @media (max-width: 640px) {
+    .origin-ios-terminal {
+        width: 100%;
+        border-radius: 14px;
+    }
+
+    .origin-ios-terminal__topbar {
+        padding: 0.48rem 0.7rem;
+    }
+
+    .origin-ios-terminal__title {
+        font-size: 9px;
+        letter-spacing: 0.11em;
+    }
+
     .origin-ios-terminal__body {
-        font-size: 11px;
-        min-height: 116px;
+        font-size: 10px;
+        line-height: 1.5;
+        min-height: 108px;
+        padding: 0.75rem 0.72rem 0.85rem;
+    }
+
+    .origin-ios-terminal .origin-line {
+        white-space: normal;
+        overflow: visible;
+        word-break: break-word;
+    }
+
+    .origin-ios-terminal .command {
+        overflow-wrap: anywhere;
     }
 }
