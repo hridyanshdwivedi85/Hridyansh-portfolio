@@ -478,13 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 statusText: document.getElementById('mix-status-text'),
                 readoutVol: document.getElementById('readout-vol'),
-                readoutAbv: document.getElementById('readout-abv'),
-                
-                slots: {
-                    whiskey: document.getElementById('slot-whiskey'),
-                    wine: document.getElementById('slot-wine'),
-                    vodka: document.getElementById('slot-vodka')
-                }
+                readoutAbv: document.getElementById('readout-abv')
             };
 
             this.bindEvents();
@@ -524,10 +518,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if(type === 'whiskey') this.ui.btnWhiskey.classList.add('active');
             if(type === 'wine') this.ui.btnWine.classList.add('active');
             if(type === 'vodka') this.ui.btnVodka.classList.add('active');
-
-            // Toggle Bottle Glow UI
-            Object.values(this.ui.slots).forEach(slot => slot.classList.remove('active'));
-            this.ui.slots[type].classList.add('active');
 
             this.drink = type;
             this.resetGlass();
