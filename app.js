@@ -343,6 +343,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             if(targetId === 'mod-identity') {
                                 this.simulateLinkedInSync();
                             }
+                            if(targetId === 'mod-entropy' && window.EntropyEngine) {
+                                EntropyEngine.sequenceStarted = true;
+                                EntropyEngine.runSequence();
+                            }
                         }});
                     }
                 });
@@ -365,7 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Audio Cue for syncing
             if(window.AudioEngine && window.AudioEngine.unlocked) {
-                AudioEngine.playDataProcess();
+                if (typeof AudioEngine.playDataProcess === 'function') AudioEngine.playDataProcess();
+                else AudioEngine.playClick();
             }
 
             // Simulate Network Request Delay
@@ -1007,6 +1012,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.spawnTrailParticles(e.clientX, e.clientY);
                 }
             });
+            window.addEventListener('touchstart', (e) => {
+                const touch = e.touches?.[0];
+                if (!touch) return;
+                this.mouse.x = touch.clientX;
+                this.mouse.y = touch.clientY;
+                if(document.getElementById('mod-entropy').classList.contains('active')) {
+                    this.spawnTrailParticles(touch.clientX, touch.clientY);
+                }
+            }, { passive: true });
+            window.addEventListener('touchmove', (e) => {
+                const touch = e.touches?.[0];
+                if (!touch) return;
+                this.mouse.x = touch.clientX;
+                this.mouse.y = touch.clientY;
+                if(document.getElementById('mod-entropy').classList.contains('active')) {
+                    this.spawnTrailParticles(touch.clientX, touch.clientY);
+                }
+            }, { passive: true });
 
             // Bind observer to start sequence only when tab is opened
             const observer = new MutationObserver((mutations) => {
@@ -1103,7 +1126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.playSteamBurst === 'function') {
                       AudioEngine.playSteamBurst();
                   }
-                  this.explodeText("Coding means creativity.");
+                  this.explodeText(this.isMobile ? "Create. Code. Evolve." : "Coding means creativity. Systems become art.");
                   // Stage 4: Calm ambient phase
                   setTimeout(() => this.startAmbientLoop(), 900);
               });
