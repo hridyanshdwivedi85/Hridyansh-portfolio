@@ -7,134 +7,110 @@
   <style>
     :root { color-scheme: dark; }
     * { box-sizing: border-box; }
-    body {
+    html, body {
       margin: 0;
-      min-height: 100vh;
+      width: 100%;
+      height: 100%;
       background: #000;
-      color: #fff;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       overflow: hidden;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     }
-    .video-page {
+
+    .video-shell {
       position: fixed;
       inset: 0;
       background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
+      isolation: isolate;
     }
+
     #player {
+      position: absolute;
+      inset: 0;
       width: 100vw;
       height: 100vh;
+      pointer-events: none;
+      border: 0;
       background: #000;
     }
-    .overlay {
+
+    .cover-strip {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 88px;
+      background: #000;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .cover-strip.top { top: 0; }
+    .cover-strip.bottom { bottom: 0; }
+
+    .start-overlay {
       position: fixed;
       inset: 0;
+      z-index: 20;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at center, rgba(10,10,10,0.5), rgba(0,0,0,0.92));
-      z-index: 20;
       text-align: center;
-      padding: 1.5rem;
-    }
-    .overlay-card {
-      max-width: 480px;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 1rem;
       padding: 1.25rem;
-      background: rgba(0,0,0,0.58);
+      background: radial-gradient(circle at center, rgba(20, 20, 20, 0.45), rgba(0, 0, 0, 0.9));
+    }
+
+    .start-card {
+      max-width: 420px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(8px);
+      padding: 1rem 1.1rem;
+      color: rgba(255, 255, 255, 0.95);
     }
-    .overlay-card h1 {
-      margin: 0 0 0.8rem;
-      font-size: 1.2rem;
-      letter-spacing: 0.02em;
-    }
-    .overlay-card p {
-      margin: 0 0 1rem;
-      color: rgba(255,255,255,0.82);
-      line-height: 1.45;
-      font-size: 0.95rem;
-    }
-    .start-btn,
-    .control-btn {
-      border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 999px;
-      padding: 0.72rem 1rem;
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-      cursor: pointer;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-    }
-    .controls {
-      position: fixed;
-      right: 1rem;
-      bottom: 1rem;
-      display: flex;
-      gap: 0.65rem;
-      z-index: 12;
-    }
-    .hint {
-      position: fixed;
-      top: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 12;
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 999px;
-      padding: 0.48rem 0.8rem;
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
+
+    .start-card h1 {
+      margin: 0 0 0.55rem;
+      font-size: 1.05rem;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      background: rgba(0,0,0,0.55);
-      display: none;
     }
-    .hint.show { display: inline-flex; }
+
+    .start-card p {
+      margin: 0;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <main class="video-page" aria-label="Video playback page">
-    <div id="player" aria-label="YouTube player"></div>
+  <main class="video-shell" aria-label="Full screen video playback">
+    <div id="player" aria-label="Video player"></div>
+    <div class="cover-strip top" aria-hidden="true"></div>
+    <div class="cover-strip bottom" aria-hidden="true"></div>
   </main>
 
-  <div id="mobile-hint" class="hint">Switch to landscape for best view</div>
-
-  <div id="start-overlay" class="overlay" role="dialog" aria-modal="true" aria-label="Start video playback">
-    <div class="overlay-card">
-      <h1>Ready to play</h1>
-      <p>The video opens in full-screen mode, subtitles stay off, and playback stops 15 seconds before the end.</p>
-      <button id="start-playback" class="start-btn" type="button">Start Full Screen Video</button>
+  <div id="start-overlay" class="start-overlay" role="dialog" aria-modal="true" aria-label="Start video">
+    <div class="start-card">
+      <h1>Tap to start video</h1>
+      <p>Landscape mode enters full screen automatically for distraction-free playback.</p>
     </div>
-  </div>
-
-  <div class="controls" aria-label="Video controls">
-    <button id="ff-btn" class="control-btn" type="button" aria-label="Fast forward 10 seconds">Fast Forward +10s</button>
-    <button id="mute-btn" class="control-btn" type="button" aria-label="Toggle mute">Volume Off</button>
   </div>
 
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     const VIDEO_ID = 'TBikbn5XJhg';
-    const STOP_BEFORE_SECONDS = 15;
-    const startOverlay = document.getElementById('start-overlay');
-    const startBtn = document.getElementById('start-playback');
-    const ffBtn = document.getElementById('ff-btn');
-    const muteBtn = document.getElementById('mute-btn');
-    const mobileHint = document.getElementById('mobile-hint');
+    const START_OVERLAY = document.getElementById('start-overlay');
 
     let player;
-    let stopCheckInterval;
 
-    function isPortraitMobile() {
-      return window.matchMedia('(max-width: 900px) and (orientation: portrait)').matches;
-    }
-
-    function toggleMobileHint() {
-      mobileHint.classList.toggle('show', isPortraitMobile());
+    function isLandscapeMobile() {
+      return window.matchMedia('(max-width: 1024px) and (orientation: landscape)').matches;
     }
 
     function requestFullscreen() {
@@ -145,87 +121,53 @@
       return Promise.resolve();
     }
 
-    function startStopBeforeEndGuard() {
-      clearInterval(stopCheckInterval);
-      stopCheckInterval = setInterval(() => {
-        if (!player || typeof player.getDuration !== 'function') return;
-        const duration = player.getDuration();
-        const current = player.getCurrentTime();
-        if (!duration || !current) return;
-        if (duration - current <= STOP_BEFORE_SECONDS) {
-          player.pauseVideo();
-          clearInterval(stopCheckInterval);
-        }
-      }, 250);
+    async function startPlayback() {
+      await requestFullscreen().catch(() => {});
+      if (!player) return;
+      player.unMute();
+      player.playVideo();
+      START_OVERLAY.classList.add('hidden');
     }
 
-    function updateMuteButtonLabel() {
+    function playMutedAutostart() {
       if (!player) return;
-      muteBtn.textContent = player.isMuted() ? 'Volume On' : 'Volume Off';
+      player.mute();
+      player.playVideo();
+    }
+
+    async function syncLandscapeFullscreen() {
+      if (isLandscapeMobile()) {
+        await requestFullscreen().catch(() => {});
+      }
     }
 
     window.onYouTubeIframeAPIReady = function() {
       player = new YT.Player('player', {
         videoId: VIDEO_ID,
         playerVars: {
-          autoplay: 0,
+          autoplay: 1,
           controls: 0,
-          rel: 0,
+          disablekb: 1,
           fs: 0,
           iv_load_policy: 3,
           modestbranding: 1,
-          cc_load_policy: 0,
-          disablekb: 1,
+          rel: 0,
           playsinline: 1,
+          cc_load_policy: 0,
           origin: window.location.origin
         },
         events: {
-          onReady: () => {
-            player.unMute();
-            player.setVolume(100);
-            updateMuteButtonLabel();
-          },
-          onStateChange: (event) => {
-            if (event.data === YT.PlayerState.PLAYING) {
-              startStopBeforeEndGuard();
-            }
-            if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-              clearInterval(stopCheckInterval);
-            }
+          onReady: async () => {
+            playMutedAutostart();
+            await syncLandscapeFullscreen();
           }
         }
       });
     };
 
-    startBtn.addEventListener('click', async () => {
-      await requestFullscreen().catch(() => {});
-      if (player && typeof player.playVideo === 'function') {
-        player.playVideo();
-      }
-      startOverlay.classList.add('hidden');
-    });
-
-    ffBtn.addEventListener('click', () => {
-      if (!player || typeof player.getCurrentTime !== 'function') return;
-      const now = player.getCurrentTime();
-      const duration = player.getDuration() || now + 10;
-      const limit = Math.max(0, duration - STOP_BEFORE_SECONDS - 0.25);
-      player.seekTo(Math.min(now + 10, limit), true);
-    });
-
-    muteBtn.addEventListener('click', () => {
-      if (!player) return;
-      if (player.isMuted()) {
-        player.unMute();
-      } else {
-        player.mute();
-      }
-      updateMuteButtonLabel();
-    });
-
-    window.addEventListener('resize', toggleMobileHint);
-    window.addEventListener('orientationchange', toggleMobileHint);
-    toggleMobileHint();
+    START_OVERLAY.addEventListener('click', startPlayback, { passive: true });
+    window.addEventListener('resize', syncLandscapeFullscreen);
+    window.addEventListener('orientationchange', syncLandscapeFullscreen);
   </script>
 </body>
 </html>
