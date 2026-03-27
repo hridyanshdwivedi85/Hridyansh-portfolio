@@ -692,7 +692,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 .machine-controls-left, .machine-controls-right { padding: 1.25rem; }
 .machine-stage {
-    min-height: 400px;
+    min-height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -714,8 +714,23 @@ input:checked + .slider:before { transform: translateX(18px); }
         flex-direction: row; /* Row layout for the machine */
     }
     .machine-controls-left { width: 25%; border-right: 1px solid rgba(255,255,255,0.05); }
-    .machine-stage { width: 50%; min-height: 480px; }
+    .machine-stage { width: 50%; min-height: 340px; }
     .machine-controls-right { width: 25%; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: space-between;}
+}
+
+#mod-brew {
+    top: 3vh;
+    bottom: 2vh;
+    overflow-y: hidden;
+    padding-bottom: 0;
+}
+
+#mod-brew #mixology-panel {
+    max-height: calc(100dvh - 8vh);
+}
+
+#mod-brew .glass-stage-area {
+    height: 260px;
 }
 
 
