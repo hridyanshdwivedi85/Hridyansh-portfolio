@@ -329,6 +329,45 @@ body, html {
 .nav-label { 
     font-family: 'Inter', sans-serif; 
 }
+
+@media (max-width: 767px) and (orientation: portrait) {
+    .nav-area {
+        right: 0.85rem !important;
+        bottom: 50%;
+        transform: translateY(50%);
+    }
+
+    #main-nav {
+        border-right: none !important;
+        padding-right: 0 !important;
+    }
+
+    #main-nav .nav-item {
+        display: none;
+    }
+
+    #main-nav .nav-item.active {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    #main-nav .nav-item.active .nav-label {
+        color: rgba(255, 255, 255, 0.78) !important;
+        font-size: 0.55rem !important;
+        letter-spacing: 0.18em !important;
+    }
+
+    #main-nav .nav-item.active .nav-active-text {
+        opacity: 1 !important;
+        font-size: 0;
+        width: 36px;
+        height: 2px;
+        background: var(--brand-orange);
+        box-shadow: 0 0 12px rgba(217, 119, 6, 0.72);
+        border-radius: 999px;
+    }
+}
 /* NEW CODE */
 /* Module System - SCROLL FIX */
 .module { position: absolute; top: 10vh; bottom: 5vh; left: 0; right: 0; margin: auto; width: 85%; max-width: 1200px; overflow-y: auto; overflow-x: hidden; padding-bottom: 80px; scrollbar-width: none; opacity: 0; pointer-events: none; visibility: hidden; transform: translateY(30px) scale(0.98); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
