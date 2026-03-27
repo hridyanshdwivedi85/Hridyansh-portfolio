@@ -654,13 +654,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.ui.iceContainer.appendChild(ice);
 
+            ice.style.left = '50%';
             ice.style.width = `${cubeSize}px`;
             ice.style.height = `${cubeSize}px`;
 
             // Realistic Drop Animation
             gsap.fromTo(ice, 
-                { y: -230, x: dropSlot.x, rotation: rot + 150, opacity: 0, scale: 0.65 },
-                { y: `${Math.max(6, glassHeight - cubeSize - dropSlot.yOffset)}px`, x: dropSlot.x, rotation: rot, opacity: 1, scale: 1, duration: 0.95, ease: "bounce.out" }
+                { y: -230, x: dropSlot.x, xPercent: -50, rotation: rot + 150, opacity: 0, scale: 0.65 },
+                { y: `${Math.max(6, glassHeight - cubeSize - dropSlot.yOffset)}px`, x: dropSlot.x, xPercent: -50, rotation: rot, opacity: 1, scale: 1, duration: 0.95, ease: "bounce.out" }
             );
 
             // Displace liquid if already poured (Archimedes principle)
@@ -713,7 +714,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Stream Styling (mix color if water added)
             const pureColor = this.drinks[this.drink].colorBase;
-            this.ui.stream.style.background = this.waterMl > baseVol ? "rgba(200,240,255,0.7)" : pureColor;
+            this.ui.stream.style.background = pendingWater > 0
+                ? "linear-gradient(180deg, rgba(165,226,255,0.95) 0%, rgba(105,170,255,0.52) 100%)"
+                : pureColor;
             this.ui.stream.style.boxShadow = `0 0 15px ${this.drinks[this.drink].glow}`;
             
             const tl = gsap.timeline();
@@ -857,8 +860,8 @@ document.addEventListener('DOMContentLoaded', () => {
         syncStreamHeight() {
             const nozzleRect = this.ui.stream.parentElement.getBoundingClientRect();
             const glassRect = this.ui.glass.getBoundingClientRect();
-            const gapToBase = Math.max(0, Math.round(glassRect.bottom - nozzleRect.bottom - 2));
-            const streamHeight = Math.max(0, Math.min(420, gapToBase));
+            const gapToRim = Math.max(0, Math.round(glassRect.top - nozzleRect.bottom + 10));
+            const streamHeight = Math.max(0, Math.min(420, gapToRim));
             this.ui.stream.style.height = `${streamHeight}px`;
         }
     };
