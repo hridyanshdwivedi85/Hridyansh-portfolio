@@ -1583,36 +1583,44 @@ document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener('mousemove', (e) => {
                 this.mouse.x = e.clientX;
                 this.mouse.y = e.clientY;
-                
-                // Spawn fast motion line particles around cursor movement
-                if(document.getElementById('mod-entropy').classList.contains('active')) {
+
+                // Spawn fast motion line particles around cursor movement.
+                if (this.isEntropyActive()) {
                     this.spawnTrailParticles(e.clientX, e.clientY);
-                    this.vibratePulse(4);
                 }
             });
-            window.addEventListener('mousedown', () => {
-                if(document.getElementById('mod-entropy').classList.contains('active')) {
-                    this.vibratePulse(14);
-                }
+
+            // Explicit interaction haptics: click on laptop, touch on mobile.
+            const triggerInteractionPulse = (x, y, duration) => {
+                if (!this.isEntropyActive()) return;
+                this.mouse.x = x;
+                this.mouse.y = y;
+                this.spawnTrailParticles(x, y);
+                this.vibratePulse(duration, true);
+            };
+
+            window.addEventListener('pointerdown', (e) => {
+                const x = e.clientX ?? this.mouse.x;
+                const y = e.clientY ?? this.mouse.y;
+                const duration = e.pointerType === 'touch' ? 16 : 14;
+                triggerInteractionPulse(x, y, duration);
             });
-            window.addEventListener('touchstart', (e) => {
-                const touch = e.touches?.[0];
-                if (!touch) return;
-                this.mouse.x = touch.clientX;
-                this.mouse.y = touch.clientY;
-                if(document.getElementById('mod-entropy').classList.contains('active')) {
-                    this.spawnTrailParticles(touch.clientX, touch.clientY);
-                    this.vibratePulse(15);
-                }
-            }, { passive: true });
+
+            if (!window.PointerEvent) {
+                window.addEventListener('touchstart', (e) => {
+                    const touch = e.touches?.[0];
+                    if (!touch) return;
+                    triggerInteractionPulse(touch.clientX, touch.clientY, 16);
+                }, { passive: true });
+            }
+
             window.addEventListener('touchmove', (e) => {
                 const touch = e.touches?.[0];
                 if (!touch) return;
                 this.mouse.x = touch.clientX;
                 this.mouse.y = touch.clientY;
-                if(document.getElementById('mod-entropy').classList.contains('active')) {
+                if (this.isEntropyActive()) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
-                    this.vibratePulse(7);
                 }
             }, { passive: true });
 
@@ -1748,10 +1756,15 @@ document.addEventListener('DOMContentLoaded', () => {
             this.prevMouse.y = y;
         },
 
-        vibratePulse(duration = 10) {
+        isEntropyActive() {
+            const entropyModule = document.getElementById('mod-entropy');
+            return !!entropyModule && entropyModule.classList.contains('active');
+        },
+
+        vibratePulse(duration = 10, force = false) {
             if (!navigator.vibrate) return;
             const now = performance.now();
-            if (now - this.lastVibrateAt < 55) return;
+            if (!force && now - this.lastVibrateAt < 55) return;
             this.lastVibrateAt = now;
             navigator.vibrate(duration);
         },
@@ -1887,7 +1900,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animate() {
             requestAnimationFrame(() => this.animate());
             
-            if(!document.getElementById('mod-entropy').classList.contains('active')) return;
+            if (!this.isEntropyActive()) return;
 
             // Infinite deep-space motion background (always fast FPS-travel effect).
             this.drawSpaceField();
@@ -1996,11 +2009,12 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         microVibrate() {
+            if (!this.isEntropyActive()) return;
             if (!navigator.vibrate) return;
             const now = performance.now();
-            if (now - this.lastMicroPulseAt < 180) return;
+            if (now - this.lastMicroPulseAt < 220) return;
             this.lastMicroPulseAt = now;
-            navigator.vibrate(4);
+            this.vibratePulse(4);
         }
     };
 
