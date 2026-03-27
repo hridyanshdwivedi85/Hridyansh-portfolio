@@ -298,8 +298,17 @@ document.addEventListener('DOMContentLoaded', () => {
      * 3. APP / TAB CONTROLLER
      */
     const AppController = {
-        navItems: document.querySelectorAll('.nav-item'), modules: document.querySelectorAll('.module'), isAnimating: false,
+        navItems: document.querySelectorAll('.nav-item'),
+        tabNavItems: [],
+        modules: document.querySelectorAll('.module'),
+        isAnimating: false,
+        wheelLock: false,
+        touchStartY: null,
         init() {
+            this.tabNavItems = Array.from(this.navItems).filter(
+                nav => nav.getAttribute('data-target')
+            );
+
             this.navItems.forEach(nav => {
                 nav.addEventListener('click', (e) => {
                     // Let the browser handle standard link navigation (like Celestial Tab)
@@ -327,6 +336,59 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.switchTab(targetNav, `mod-${currentHash}`, targetNav.getAttribute('data-theme'), false);
                 }
             });
+
+            this.bindScrollTabSwitch();
+        },
+        bindScrollTabSwitch() {
+            const portraitMedia = window.matchMedia('(max-width: 767px) and (orientation: portrait)');
+
+            const trySwitchByDelta = (deltaY) => {
+                if (!portraitMedia.matches || this.isAnimating || this.wheelLock) return;
+                const activeIndex = this.tabNavItems.findIndex(nav => nav.classList.contains('active'));
+                if (activeIndex === -1) return;
+
+                const direction = deltaY > 0 ? 1 : -1;
+                const nextIndex = activeIndex + direction;
+                if (nextIndex < 0 || nextIndex >= this.tabNavItems.length) return;
+
+                const nextNav = this.tabNavItems[nextIndex];
+                const targetId = nextNav.getAttribute('data-target');
+                const theme = nextNav.getAttribute('data-theme');
+                if (!targetId || !theme) return;
+
+                this.wheelLock = true;
+                this.switchTab(nextNav, targetId, theme, true);
+                setTimeout(() => { this.wheelLock = false; }, 550);
+            };
+
+            window.addEventListener('wheel', (event) => {
+                if (!portraitMedia.matches) return;
+                if (Math.abs(event.deltaY) < 20) return;
+                event.preventDefault();
+                trySwitchByDelta(event.deltaY);
+            }, { passive: false });
+
+            window.addEventListener('touchstart', (event) => {
+                if (!portraitMedia.matches) return;
+                this.touchStartY = event.touches?.[0]?.clientY ?? null;
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (event) => {
+                if (!portraitMedia.matches || this.touchStartY === null) return;
+                const currentY = event.touches?.[0]?.clientY;
+                if (typeof currentY !== 'number') return;
+
+                const deltaY = this.touchStartY - currentY;
+                if (Math.abs(deltaY) < 35) return;
+
+                event.preventDefault();
+                trySwitchByDelta(deltaY);
+                this.touchStartY = currentY;
+            }, { passive: false });
+
+            window.addEventListener('touchend', () => {
+                this.touchStartY = null;
+            }, { passive: true });
         },
         switchTab(navElement, targetId, theme, updateHash = true) {
             this.isAnimating = true;
@@ -1256,9 +1318,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 src: 'assets/media/Tum Hi Ho Aashiqui 2 320 Kbps.mp3'
             },
             {
-                title: 'Music Track',
+                title: 'Meri Aashiqui',
                 artist: 'Local MP3',
-                src: 'assets/media/music-track.mp3'
+                src: 'assets/media/Meri Aashiqui Aashiqui 2 320 Kbps.mp3'
+            },
+            {
+                title: 'Sunn Raha Hai',
+                artist: 'Local MP3',
+                src: 'assets/media/Sunn Raha Hai Male Aashiqui 2 320 Kbps.mp3'
             }
         ],
         currentIndex: 0,
