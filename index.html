@@ -603,52 +603,63 @@
             </div>
 			
             <!-- MODULE: MUSIC PLAYER -->
-            <div class="module !top-0 !bottom-0 !left-0 !right-0 !w-[100vw] !max-w-none !h-[100dvh] !m-0 !p-0 overflow-hidden" id="mod-music">
+            <div class="module overflow-hidden" id="mod-music">
                 <div class="music-wallpaper-layer"></div>
                 <div class="music-overlay-layer"></div>
                 <div class="music-rain-layer" id="music-rain-layer" aria-hidden="true"></div>
                 <div class="music-reflection-layer" id="music-reflection-layer" aria-hidden="true"></div>
 
                 <div class="music-player-wrap">
-                    <div class="music-player-card">
-                        <div class="music-player-head">
-                            <p class="code-font text-[10px] tracking-[0.22em] text-gray-400 uppercase">Ambient System</p>
-                            <h2 class="heading-font music-player-title">Apple Music Deck</h2>
-                        </div>
+                    <div class="iphone17-shell">
+                        <div class="iphone17-label code-font">iPhone 17</div>
+                        <div class="iphone17-device">
+                            <div class="iphone17-side-button iphone17-side-button-top" aria-hidden="true"></div>
+                            <div class="iphone17-side-button iphone17-side-button-mid" aria-hidden="true"></div>
+                            <div class="iphone17-side-button iphone17-side-button-btm" aria-hidden="true"></div>
+                            <div class="iphone17-screen">
+                                <div class="iphone17-notch" aria-hidden="true"></div>
+                                <div class="music-player-card">
+                                    <div class="music-player-head">
+                                        <p class="code-font text-[10px] tracking-[0.22em] text-gray-400 uppercase">Ambient System</p>
+                                        <h2 class="heading-font music-player-title">Apple Music Deck</h2>
+                                    </div>
 
-                        <div class="music-ios-surface">
-                            <div class="music-profile">
-                                <div class="music-profile-image-wrap">
-                                    <img class="music-profile-image" src="https://i.pinimg.com/236x/bd/4e/28/bd4e286c1c94726f01bd84820286f1a5.jpg" alt="Music player profile">
-                                </div>
-                                <div class="music-profile-text">
-                                    <p class="music-profile-label code-font">Spatial Audio</p>
-                                    <p class="music-profile-sub">Immersive local playback with iOS-inspired controls.</p>
+                                    <div class="music-ios-surface">
+                                        <div class="music-profile">
+                                            <div class="music-profile-image-wrap">
+                                                <img class="music-profile-image" src="https://i.pinimg.com/236x/bd/4e/28/bd4e286c1c94726f01bd84820286f1a5.jpg" alt="Music player profile">
+                                            </div>
+                                            <div class="music-profile-text">
+                                                <p class="music-profile-label code-font">Spatial Audio</p>
+                                                <p class="music-profile-sub">Immersive local playback with iOS-inspired controls.</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="music-meta">
+                                            <p id="music-track-title" class="music-track-title">Local Track Ready</p>
+                                            <p id="music-track-artist" class="music-track-artist">Local MP3 Library</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="music-progress-wrap">
+                                        <span id="music-current-time" class="music-time code-font">00:00</span>
+                                        <input id="music-progress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Music progress">
+                                        <span id="music-duration" class="music-time code-font">00:00</span>
+                                    </div>
+
+                                    <div class="music-controls">
+                                        <button id="music-prev" class="music-control-btn sound-click" aria-label="Previous track"><i class="fas fa-backward-step"></i></button>
+                                        <button id="music-play" class="music-control-btn music-play-btn sound-click" aria-label="Play or pause"><i id="music-play-icon" class="fas fa-play"></i></button>
+                                        <button id="music-next" class="music-control-btn sound-click" aria-label="Next track"><i class="fas fa-forward-step"></i></button>
+                                    </div>
+
+                                    <div class="music-volume-wrap">
+                                        <i class="fas fa-volume-low text-gray-500 text-xs"></i>
+                                        <input id="music-volume" type="range" min="0" max="1" value="0.65" step="0.01" aria-label="Music volume">
+                                        <i class="fas fa-volume-high text-gray-500 text-xs"></i>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="music-meta">
-                                <p id="music-track-title" class="music-track-title">Local Track Ready</p>
-                                <p id="music-track-artist" class="music-track-artist">Local MP3 Library</p>
-                            </div>
-                        </div>
-
-                        <div class="music-progress-wrap">
-                            <span id="music-current-time" class="music-time code-font">00:00</span>
-                            <input id="music-progress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Music progress">
-                            <span id="music-duration" class="music-time code-font">00:00</span>
-                        </div>
-
-                        <div class="music-controls">
-                            <button id="music-prev" class="music-control-btn sound-click" aria-label="Previous track"><i class="fas fa-backward-step"></i></button>
-                            <button id="music-play" class="music-control-btn music-play-btn sound-click" aria-label="Play or pause"><i id="music-play-icon" class="fas fa-play"></i></button>
-                            <button id="music-next" class="music-control-btn sound-click" aria-label="Next track"><i class="fas fa-forward-step"></i></button>
-                        </div>
-
-                        <div class="music-volume-wrap">
-                            <i class="fas fa-volume-low text-gray-500 text-xs"></i>
-                            <input id="music-volume" type="range" min="0" max="1" value="0.65" step="0.01" aria-label="Music volume">
-                            <i class="fas fa-volume-high text-gray-500 text-xs"></i>
                         </div>
                     </div>
                 </div>
