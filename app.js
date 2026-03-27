@@ -1574,8 +1574,13 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lastVibrateAt = 0;
             this.lastMicroPulseAt = 0;
             this.spaceStars = [];
+            this.spaceDust = [];
             this.starFov = 520;
-            this.spaceTravelSpeed = this.isMobile ? 100 : 130;
+            this.spaceTravelSpeed = this.isMobile ? 92 : 126;
+            this.baseTravelSpeed = this.spaceTravelSpeed;
+            this.travelBoost = 1;
+            this.cameraDrift = { x: 0, y: 0 };
+            this.lastFrameTime = performance.now();
             this.prevMouse = { x: this.mouse.x, y: this.mouse.y };
 
             this.resize();
@@ -1645,15 +1650,31 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.height = this.height;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
             this.wordExplosionEnabled = false;
-            this.spaceTravelSpeed = this.isMobile ? 100 : 130;
+            this.spaceTravelSpeed = this.isMobile ? 92 : 126;
+            this.baseTravelSpeed = this.spaceTravelSpeed;
             this.createSpaceField();
         },
 
         createSpaceField() {
-            const starCount = this.isMobile ? 320 : 680;
+            const starCount = this.isMobile ? 460 : 1100;
             this.spaceStars = [];
             for (let i = 0; i < starCount; i++) {
                 this.spaceStars.push(this.makeStar(true));
+            }
+            this.createDustField();
+        },
+
+        createDustField() {
+            const dustCount = this.isMobile ? 170 : 340;
+            this.spaceDust = [];
+            for (let i = 0; i < dustCount; i++) {
+                this.spaceDust.push({
+                    x: Math.random() * this.width,
+                    y: Math.random() * this.height,
+                    z: Math.random() * this.width,
+                    size: Math.random() * 0.65 + 0.15,
+                    drift: (Math.random() - 0.5) * 0.12
+                });
             }
         },
 
@@ -1662,7 +1683,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: (Math.random() - 0.5) * this.width,
                 y: (Math.random() - 0.5) * this.height,
                 z: randomDepth ? (Math.random() * this.width) : this.width,
-                size: this.isMobile ? (Math.random() * 0.25 + 0.08) : (Math.random() * 0.5 + 0.1),
+                size: this.isMobile ? (Math.random() * 0.18 + 0.05) : (Math.random() * 0.26 + 0.06),
                 hue: 200 + Math.random() * 28,
                 twinkle: Math.random() * Math.PI * 2
             };
@@ -1670,13 +1691,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         drawSpaceField() {
             this.ctx.globalCompositeOperation = 'source-over';
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.84)';
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
             this.ctx.fillRect(0, 0, this.width, this.height);
+
+            const now = performance.now();
+            const boostPulse = 0.88 + Math.sin(now * 0.0012) * 0.12;
+            this.travelBoost += (boostPulse - this.travelBoost) * 0.08;
+            const pointerInfluenceX = ((this.mouse.x / this.width) - 0.5) * 0.85;
+            const pointerInfluenceY = ((this.mouse.y / this.height) - 0.5) * 0.85;
+            this.cameraDrift.x += (pointerInfluenceX - this.cameraDrift.x) * 0.04;
+            this.cameraDrift.y += (pointerInfluenceY - this.cameraDrift.y) * 0.04;
+            const speed = this.baseTravelSpeed * this.travelBoost * this.frameDelta;
 
             for (let i = 0; i < this.spaceStars.length; i++) {
                 const star = this.spaceStars[i];
                 const prevZ = star.z;
-                star.z -= this.spaceTravelSpeed;
+                star.z -= speed;
 
                 if (star.z <= 1) {
                     this.spaceStars[i] = this.makeStar(false);
@@ -1686,20 +1716,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const proj = this.starFov / star.z;
                 const prevProj = this.starFov / prevZ;
 
-                const sx = (star.x * proj) + (this.width / 2);
-                const sy = (star.y * proj) + (this.height / 2);
-                const px = (star.x * prevProj) + (this.width / 2);
-                const py = (star.y * prevProj) + (this.height / 2);
+                const sx = (star.x * proj) + (this.width / 2) + (this.cameraDrift.x * 80 * proj);
+                const sy = (star.y * proj) + (this.height / 2) + (this.cameraDrift.y * 80 * proj);
+                const px = (star.x * prevProj) + (this.width / 2) + (this.cameraDrift.x * 80 * prevProj);
+                const py = (star.y * prevProj) + (this.height / 2) + (this.cameraDrift.y * 80 * prevProj);
 
                 if (sx < 0 || sx > this.width || sy < 0 || sy > this.height) {
                     this.spaceStars[i] = this.makeStar(false);
                     continue;
                 }
 
-                const alpha = Math.max(0.15, 1 - (star.z / this.width));
+                const alpha = Math.max(0.08, 1 - (star.z / this.width));
                 const twinklePulse = 0.65 + (Math.sin((performance.now() * 0.003) + star.twinkle) * 0.35);
                 const lineWidth = Math.max(0.5, star.size * proj * 1.35);
-                const starAlpha = Math.min(0.95, alpha * twinklePulse);
+                const starAlpha = Math.min(0.9, alpha * twinklePulse);
 
                 this.ctx.strokeStyle = `hsla(${star.hue}, 95%, 88%, ${Math.min(0.8, starAlpha)})`;
                 this.ctx.lineWidth = lineWidth;
@@ -1715,6 +1745,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ctx.arc(sx, sy, Math.max(0.35, star.size * proj), 0, Math.PI * 2);
                 this.ctx.fill();
                 this.ctx.shadowBlur = 0;
+            }
+
+            this.drawDustField(speed);
+
+            const vignette = this.ctx.createRadialGradient(
+                this.width / 2,
+                this.height / 2,
+                this.width * 0.1,
+                this.width / 2,
+                this.height / 2,
+                this.width * 0.78
+            );
+            vignette.addColorStop(0, 'rgba(20, 26, 42, 0)');
+            vignette.addColorStop(0.72, 'rgba(6, 10, 18, 0.24)');
+            vignette.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
+            this.ctx.fillStyle = vignette;
+            this.ctx.fillRect(0, 0, this.width, this.height);
+        },
+
+        drawDustField(speed) {
+            this.ctx.globalCompositeOperation = 'lighter';
+            for (let i = 0; i < this.spaceDust.length; i++) {
+                const dust = this.spaceDust[i];
+                dust.z -= speed * 0.56;
+                dust.y += dust.drift;
+                if (dust.z <= 1 || dust.y < -20 || dust.y > this.height + 20) {
+                    dust.x = Math.random() * this.width;
+                    dust.y = Math.random() * this.height;
+                    dust.z = this.width;
+                    dust.drift = (Math.random() - 0.5) * 0.12;
+                }
+
+                const depth = this.starFov / Math.max(1, dust.z);
+                const x = ((dust.x - this.width / 2) * depth) + (this.width / 2) + (this.cameraDrift.x * 30 * depth);
+                const y = ((dust.y - this.height / 2) * depth) + (this.height / 2) + (this.cameraDrift.y * 30 * depth);
+                const alpha = Math.max(0.05, 1 - (dust.z / this.width));
+
+                this.ctx.fillStyle = `rgba(238, 244, 255, ${alpha * 0.36})`;
+                this.ctx.fillRect(x, y, dust.size * depth, dust.size * depth);
             }
         },
 
@@ -1901,6 +1970,9 @@ document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(() => this.animate());
             
             if (!this.isEntropyActive()) return;
+            const now = performance.now();
+            this.frameDelta = Math.min(2.1, Math.max(0.55, (now - this.lastFrameTime) / 16.67));
+            this.lastFrameTime = now;
 
             // Infinite deep-space motion background (always fast FPS-travel effect).
             this.drawSpaceField();
