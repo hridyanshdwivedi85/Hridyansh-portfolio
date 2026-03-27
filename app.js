@@ -685,12 +685,11 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.statusText.innerText = `WATER DOSING +${this.waterMl}ml`;
             this.ui.statusText.style.color = "#60a5fa";
             this.syncStreamHeight();
-            const waterTint = {
-                top: 'rgba(188,236,255,0.95)',
-                mid: 'rgba(130,194,255,0.8)',
-                bottom: 'rgba(88,156,224,0.72)'
-            };
-            this.animateDropletLeadIn(waterTint, Math.max(0.38, 0.35 + (addAmount / 240)));
+            const totalSpirit = this.pouredSpiritMl;
+            const totalLiquidAfterWater = Math.max(1, totalSpirit + this.pouredWaterMl);
+            const waterRatio = Math.max(0, Math.min(1, 1 - (totalSpirit / totalLiquidAfterWater)));
+            const selectionTint = this.mixDrinkWithWater(this.drink, waterRatio);
+            this.animateDropletLeadIn(selectionTint, Math.max(0.38, 0.35 + (addAmount / 240)));
             this.animateLiquidToCurrentVolume(0.9);
             this.updateMetrics();
             this.updateStatusLights();
@@ -1263,6 +1262,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lineConnectCooldown = 0;
             this.lastTrailSpawn = 0;
             this.lastVibrateAt = 0;
+            this.spaceStars = [];
+            this.starFov = 520;
+            this.spaceSpeed = 9;
 
             this.resize();
             window.addEventListener('resize', () => this.resize());
@@ -1317,6 +1319,70 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.height = this.height;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
             this.wordExplosionEnabled = !this.isMobile;
+            this.createSpaceField();
+        },
+
+        createSpaceField() {
+            const starCount = this.isMobile ? 150 : 280;
+            this.spaceStars = [];
+            for (let i = 0; i < starCount; i++) {
+                this.spaceStars.push(this.makeStar(true));
+            }
+        },
+
+        makeStar(randomDepth = false) {
+            return {
+                x: (Math.random() - 0.5) * this.width,
+                y: (Math.random() - 0.5) * this.height,
+                z: randomDepth ? (Math.random() * this.width) : this.width,
+                size: Math.random() * 1.6 + 0.4,
+                hue: 190 + Math.random() * 45
+            };
+        },
+
+        drawSpaceField() {
+            this.ctx.globalCompositeOperation = 'source-over';
+            this.ctx.fillStyle = 'rgba(2, 6, 16, 0.62)';
+            this.ctx.fillRect(0, 0, this.width, this.height);
+
+            for (let i = 0; i < this.spaceStars.length; i++) {
+                const star = this.spaceStars[i];
+                const prevZ = star.z;
+                star.z -= this.spaceSpeed;
+
+                if (star.z <= 1) {
+                    this.spaceStars[i] = this.makeStar(false);
+                    continue;
+                }
+
+                const proj = this.starFov / star.z;
+                const prevProj = this.starFov / prevZ;
+
+                const sx = (star.x * proj) + (this.width / 2);
+                const sy = (star.y * proj) + (this.height / 2);
+                const px = (star.x * prevProj) + (this.width / 2);
+                const py = (star.y * prevProj) + (this.height / 2);
+
+                if (sx < 0 || sx > this.width || sy < 0 || sy > this.height) {
+                    this.spaceStars[i] = this.makeStar(false);
+                    continue;
+                }
+
+                const alpha = Math.max(0.2, 1 - (star.z / this.width));
+                const lineWidth = Math.max(0.6, star.size * proj * 1.2);
+
+                this.ctx.strokeStyle = `hsla(${star.hue}, 100%, 85%, ${Math.min(0.85, alpha)})`;
+                this.ctx.lineWidth = lineWidth;
+                this.ctx.beginPath();
+                this.ctx.moveTo(px, py);
+                this.ctx.lineTo(sx, sy);
+                this.ctx.stroke();
+
+                this.ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, alpha + 0.2)})`;
+                this.ctx.beginPath();
+                this.ctx.arc(sx, sy, Math.max(0.7, star.size * proj), 0, Math.PI * 2);
+                this.ctx.fill();
+            }
         },
 
         spawnTrailParticles(x, y) {
@@ -1485,10 +1551,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if(!document.getElementById('mod-entropy').classList.contains('active')) return;
 
-            // Smoky background clear for long trails
-            this.ctx.globalCompositeOperation = 'source-over';
-            this.ctx.fillStyle = 'rgba(2, 4, 2, 0.25)'; // Dark clear for trails
-            this.ctx.fillRect(0, 0, this.width, this.height);
+            // Infinite deep-space motion background (FPS travel effect).
+            this.drawSpaceField();
 
             // Draw Bokeh Trail Particles
             this.ctx.globalCompositeOperation = 'screen';
