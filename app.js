@@ -599,6 +599,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.btnReset.addEventListener('click', () => {
                 if(this.state !== 'POURING') this.resetGlass();
             });
+
+            window.addEventListener('resize', () => this.syncStreamHeight());
         },
 
         setDrink(type) {
@@ -683,16 +685,12 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ui.statusText.innerText = `WATER DOSING +${this.waterMl}ml`;
             this.ui.statusText.style.color = "#60a5fa";
             this.syncStreamHeight();
-            gsap.fromTo(this.ui.stream,
-                { scaleY: 0, background: 'linear-gradient(180deg, rgba(160,225,255,0.95) 0%, rgba(112,178,255,0.55) 100%)' },
-                {
-                    scaleY: 1,
-                    duration: Math.max(0.38, 0.35 + (addAmount / 240)),
-                    ease: "power1.out",
-                    onStart: () => { this.ui.stream.style.opacity = '1'; },
-                    onComplete: () => gsap.to(this.ui.stream, { scaleY: 0, opacity: 0, duration: 0.22, ease: "power1.in" })
-                }
-            );
+            const waterTint = {
+                top: 'rgba(188,236,255,0.95)',
+                mid: 'rgba(130,194,255,0.8)',
+                bottom: 'rgba(88,156,224,0.72)'
+            };
+            this.animateDropletLeadIn(waterTint, Math.max(0.38, 0.35 + (addAmount / 240)));
             this.animateLiquidToCurrentVolume(0.9);
             this.updateMetrics();
             this.updateStatusLights();
@@ -721,14 +719,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const tl = gsap.timeline();
             
-            // 1. Stream shoots down
-            tl.to(this.ui.stream, {
-                scaleY: 1,
-                opacity: 1,
-                duration: 0.3,
-                ease: "power2.in",
-                onStart: () => this.ui.liquid.classList.add('is-pouring')
-            });
+            // 1. Droplets lead in, then stream starts.
+            tl.add(this.animateDropletLeadIn(pourTint, 0.3, true, false));
             
             // 2. Liquid Rises
             this.applyLiquidAppearance(targetMl, this.pouredSpiritMl + pendingSpirit);
@@ -904,9 +896,79 @@ document.addEventListener('DOMContentLoaded', () => {
         syncStreamHeight() {
             const nozzleRect = this.ui.stream.parentElement.getBoundingClientRect();
             const glassRect = this.ui.glass.getBoundingClientRect();
-            const gapToRim = Math.max(0, Math.round(glassRect.top - nozzleRect.bottom + 10));
-            const streamHeight = Math.max(0, Math.min(420, gapToRim));
+            const safetyInset = 5;
+            const gapToBase = Math.max(0, Math.round(glassRect.bottom - nozzleRect.bottom - safetyInset));
+            const streamHeight = Math.max(0, Math.min(520, gapToBase));
             this.ui.stream.style.height = `${streamHeight}px`;
+        },
+
+        spawnDroplets(tint) {
+            const streamRect = this.ui.stream.getBoundingClientRect();
+            const stage = this.ui.stream.closest('.machine-stage');
+            if(!stage) return [];
+            const stageRect = stage.getBoundingClientRect();
+            const droplets = [];
+            const dropletCount = 4;
+
+            for(let i = 0; i < dropletCount; i++) {
+                const drop = document.createElement('span');
+                drop.className = 'stream-droplet';
+                drop.style.setProperty('--stream-top', tint.top);
+                drop.style.setProperty('--stream-bottom', tint.bottom);
+                const baseLeft = (streamRect.left - stageRect.left) + (streamRect.width / 2);
+                drop.style.left = `${baseLeft + ((Math.random() - 0.5) * 9)}px`;
+                drop.style.top = `${Math.max(0, streamRect.top - stageRect.top)}px`;
+                stage.appendChild(drop);
+                droplets.push(drop);
+            }
+
+            return droplets;
+        },
+
+        animateDropletLeadIn(tint, flowDuration = 0.5, markPouring = false, autoStop = true) {
+            const droplets = this.spawnDroplets(tint);
+            const leadTl = gsap.timeline();
+
+            leadTl.to(droplets, {
+                y: () => 18 + (Math.random() * 14),
+                x: () => (Math.random() - 0.5) * 8,
+                scaleY: 1.14,
+                opacity: 0.95,
+                duration: 0.16,
+                stagger: 0.04,
+                ease: "power1.out"
+            });
+
+            leadTl.to(droplets, {
+                y: () => 58 + (Math.random() * 20),
+                scaleX: 0.88,
+                opacity: 0,
+                duration: 0.18,
+                stagger: 0.03,
+                ease: "power1.in",
+                onComplete: () => droplets.forEach((drop) => drop.remove())
+            });
+
+            leadTl.to(this.ui.stream, {
+                scaleY: 1,
+                opacity: 1,
+                duration: 0.22,
+                ease: "power2.in",
+                onStart: () => {
+                    if(markPouring) this.ui.liquid.classList.add('is-pouring');
+                }
+            });
+
+            if(autoStop) {
+                leadTl.to(this.ui.stream, {
+                    scaleY: 0,
+                    opacity: 0,
+                    duration: 0.22,
+                    ease: "power1.in"
+                }, `+=${Math.max(0.2, flowDuration)}`);
+            }
+
+            return leadTl;
         }
     };
 	
