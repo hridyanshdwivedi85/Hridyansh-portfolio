@@ -818,49 +818,6 @@ body, html {
     box-shadow: 0 0 14px rgba(61,220,132,0.5);
     transition: width 0.35s ease;
 }
-.build-options-desktop {
-    width: 100%;
-    justify-content: center;
-    gap: 0.55rem;
-    flex-wrap: wrap;
-}
-.build-option-row {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 999px;
-    background: rgba(6, 12, 8, 0.72);
-    padding: 0.3rem 0.7rem;
-    font-family: 'Fira Code', monospace;
-    font-size: 9px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: #6b7280;
-    transition: all 0.25s ease;
-}
-.build-option-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: #374151;
-    box-shadow: 0 0 0 transparent;
-    transition: all 0.25s ease;
-}
-.build-option-row.active {
-    color: #d8ffe8;
-    border-color: rgba(61,220,132,0.66);
-    box-shadow: 0 0 16px rgba(61,220,132,0.2);
-}
-.build-option-row.active .build-option-dot {
-    background: #3ddc84;
-    box-shadow: 0 0 8px rgba(61,220,132,0.8);
-    animation: build-option-pulse 0.9s ease-in-out infinite alternate;
-}
-@keyframes build-option-pulse {
-    0% { transform: scale(1); opacity: 0.7; }
-    100% { transform: scale(1.16); opacity: 1; }
-}
 .compiler-node {
     background: rgba(20, 20, 25, 0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px;
     display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
@@ -1512,18 +1469,6 @@ input:checked + .slider:before { transform: translateX(18px); }
     #mod-compiler #compiler-terminal {
         font-size: 8px !important;
         line-height: 1.35 !important;
-    }
-
-    #mod-compiler #compiler-desktop-options {
-        display: flex !important;
-        gap: 0.35rem;
-        margin-bottom: 0.5rem;
-    }
-
-    #mod-compiler #compiler-desktop-options .build-option-row {
-        padding: 0.22rem 0.5rem;
-        font-size: 7px;
-        letter-spacing: 0.04em;
     }
 
     #mod-portfolio .heading-font {
