@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="Carlsberg logo">
+  <defs>
+    <linearGradient id="g" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#7fff9a"/>
+      <stop offset="100%" stop-color="#0f7a35"/>
+    </linearGradient>
+  </defs>
+  <circle cx="110" cy="110" r="104" fill="#04130a" stroke="#1db954" stroke-width="6"/>
+  <text x="110" y="88" text-anchor="middle" fill="url(#g)" font-size="24" font-family="Georgia, serif" font-style="italic">Carlsberg</text>
+  <text x="110" y="117" text-anchor="middle" fill="#d6ffe2" font-size="10" font-family="Arial, sans-serif" letter-spacing="3">BREW LAB</text>
+  <path d="M62 135c12 13 29 20 48 20 19 0 37-7 49-20" fill="none" stroke="#73ffab" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="110" cy="52" r="6" fill="#73ffab"/>
+</svg>
