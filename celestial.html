@@ -23,7 +23,54 @@
         .sys-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
         .sys-button:active { transform: translateY(1px); }
         
-        #loading-screen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1s; }
+        #loading-screen { position: fixed; inset: 0; background: radial-gradient(circle at 50% 65%, #040912, #000); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1s; overflow: hidden; }
+        #space-warp {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        #space-warp::before,
+        #space-warp::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 2px;
+            height: 2px;
+            background: rgba(103, 232, 249, 0.9);
+            border-radius: 999px;
+            box-shadow:
+                -44vw -38vh 0 1px rgba(148, 223, 255, 0.7),
+                -31vw -22vh 0 1px rgba(34, 211, 238, 0.65),
+                -24vw 8vh 0 1px rgba(125, 211, 252, 0.6),
+                -11vw 33vh 0 1px rgba(56, 189, 248, 0.55),
+                8vw -36vh 0 1px rgba(125, 211, 252, 0.75),
+                18vw -8vh 0 1px rgba(6, 182, 212, 0.7),
+                27vw 17vh 0 1px rgba(125, 211, 252, 0.6),
+                40vw 31vh 0 1px rgba(165, 243, 252, 0.65);
+            transform-origin: center;
+        }
+        #space-warp.warping::before {
+            animation: warp-stars 5s cubic-bezier(.18, .7, .2, 1) forwards;
+        }
+        #space-warp.warping::after {
+            animation: warp-stars 5s cubic-bezier(.12, .74, .15, 1) 0.12s forwards;
+            opacity: 0.8;
+        }
+        #loading-screen .loader-shell {
+            position: relative;
+            z-index: 2;
+        }
+        #welcome-quote {
+            min-height: 1.6rem;
+            transition: opacity 0.45s ease;
+        }
+        @keyframes warp-stars {
+            0% { transform: translate(-50%, -50%) scale(0.4); filter: blur(0); opacity: 0.45; }
+            35% { opacity: 0.95; }
+            100% { transform: translate(-50%, -50%) scale(8.5); filter: blur(1px); opacity: 0; }
+        }
         
         * { user-select: none; -webkit-user-select: none; }
 
@@ -142,10 +189,15 @@
 <body>
 
     <!-- Loading Screen -->
-    <div id="loading-screen" class="cursor-pointer">
-        <div class="w-20 h-20 border-t-4 border-cyan-500 rounded-full animate-spin mb-6 shadow-[0_0_15px_#06b6d4]"></div>
-        <div class="font-[Syne] tracking-[0.4em] text-cyan-400 font-bold text-lg md:text-2xl animate-pulse text-center px-4">CLICK TO INITIALIZE SIMULATION</div>
-        <div class="font-[Fira\ Code] text-xs text-gray-500 mt-3 text-center">Compiling Volumetric Shaders & Textures...</div>
+    <div id="loading-screen">
+        <div id="space-warp" class="warping"></div>
+        <div class="loader-shell flex flex-col items-center justify-center px-4 text-center">
+            <div class="w-20 h-20 border-t-4 border-cyan-500 rounded-full animate-spin mb-6 shadow-[0_0_15px_#06b6d4]"></div>
+            <div class="font-[Syne] tracking-[0.28em] text-cyan-300 font-bold text-lg md:text-2xl animate-pulse">ENTERING CELESTIAL MODE</div>
+            <div class="font-[Fira\ Code] text-xs text-gray-400 mt-3">Calibrating gravitation cores and deep-space shaders...</div>
+            <div id="welcome-quote" class="font-[Fira\ Code] text-[10px] md:text-xs text-cyan-200 mt-4 max-w-xl">"Welcome, Commander. Stars are only the beginning."</div>
+            <div class="font-[Fira\ Code] text-[10px] text-gray-500 mt-1">Auto-launch in 6 seconds</div>
+        </div>
     </div>
 
     <!-- WebGL Canvas Container -->
@@ -912,11 +964,38 @@
         };
 
         const loadScreen = document.getElementById('loading-screen');
-        loadScreen.addEventListener('click', () => {
+        const quoteEl = document.getElementById('welcome-quote');
+        const spaceWarp = document.getElementById('space-warp');
+        const welcomeQuotes = [
+            '"Welcome, Commander. Stars are only the beginning."',
+            '"Every orbit is a story. Every light is a destination."',
+            '"Hold steady — hyperspace alignment is in progress."',
+            '"You are now approaching the frontier of infinite motion."'
+        ];
+        let quoteIndex = 0;
+        const quoteInterval = setInterval(() => {
+            if (!quoteEl) return;
+            quoteEl.style.opacity = '0';
+            setTimeout(() => {
+                quoteIndex = (quoteIndex + 1) % welcomeQuotes.length;
+                quoteEl.textContent = welcomeQuotes[quoteIndex];
+                quoteEl.style.opacity = '1';
+            }, 220);
+        }, 1450);
+
+        setTimeout(() => {
+            if (spaceWarp) spaceWarp.classList.remove('warping');
+        }, 5000);
+
+        setTimeout(() => {
+            clearInterval(quoteInterval);
             AudioEngine.init();
             loadScreen.style.opacity = '0';
-            setTimeout(() => { loadScreen.style.display = 'none'; CelestialEngine.init(); }, 1000);
-        });
+            setTimeout(() => {
+                loadScreen.style.display = 'none';
+                CelestialEngine.init();
+            }, 1000);
+        }, 6000);
 
     </script>
 </body>
