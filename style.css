@@ -41,7 +41,7 @@ body, html {
 }
 .entropy-cursor-dot {
     opacity: 0 !important; /* Hide dot inside crosshair */
-}}
+}
 
 /* ENTROPY 3D Flip Card Utility Classes */
 .perspective-\[1500px\] { perspective: 1500px; }
