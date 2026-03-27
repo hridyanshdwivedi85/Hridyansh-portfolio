@@ -73,14 +73,44 @@
                     <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed max-w-xl opacity-80">
                         Engineering aggressive business growth through deep technical execution. Select a subsystem to initialize.
                     </p>
-                    <a href="celestial.html" class="mobile-celestial-enter sound-click" aria-label="Enter Celestial Mode">
-                        <span>ENTER SPACE</span>
-                        <i class="fas fa-arrow-right-long" aria-hidden="true"></i>
-                    </a>
-                </div>
-                <div id="scroll-tab-popup" class="scroll-tab-popup">
-                    <i class="fas fa-hand-pointer text-[10px] mr-2"></i>
-                    Swipe the tab bar to explore all sections on mobile
+                    <div class="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-3xl">
+                        <div class="border border-white/10 rounded-xl bg-black/35 px-4 py-3 backdrop-blur-sm">
+                            <p class="code-font text-[10px] uppercase tracking-[0.2em] text-[var(--brand-orange)]">Focus</p>
+                            <p class="text-[13px] text-gray-300 mt-1 leading-relaxed">Product systems, growth automation, and conversion-led UX.</p>
+                        </div>
+                        <div class="border border-white/10 rounded-xl bg-black/35 px-4 py-3 backdrop-blur-sm">
+                            <p class="code-font text-[10px] uppercase tracking-[0.2em] text-[var(--brand-orange)]">Build Stack</p>
+                            <p class="text-[13px] text-gray-300 mt-1 leading-relaxed">Web apps, AI workflows, funnel infrastructure, and analytics loops.</p>
+                        </div>
+                        <div class="border border-white/10 rounded-xl bg-black/35 px-4 py-3 backdrop-blur-sm">
+                            <p class="code-font text-[10px] uppercase tracking-[0.2em] text-[var(--brand-orange)]">Engagement</p>
+                            <p class="text-[13px] text-gray-300 mt-1 leading-relaxed">Open for founder teams that want fast experimentation and real revenue lift.</p>
+                        </div>
+                    </div>
+
+                    <div class="origin-ios-terminal" aria-live="polite" aria-label="Live iOS command prompt simulation">
+                        <div class="origin-ios-terminal__topbar">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                            <span class="origin-ios-terminal__title code-font">ios://build-shell</span>
+                        </div>
+                        <div class="origin-ios-terminal__body code-font" id="origin-code-terminal">
+                            <div class="origin-line"><span class="prompt">hridyansh@iphone</span><span class="sign"> % </span><span class="command" id="origin-terminal-command"></span><span class="cursor"></span></div>
+                            <div class="origin-output" id="origin-terminal-output"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 mt-6">
+                        <a href="celestial.html" class="mobile-celestial-enter sound-click" aria-label="Enter Celestial Mode">
+                            <span>ENTER SPACE</span>
+                            <i class="fas fa-arrow-right-long" aria-hidden="true"></i>
+                        </a>
+                        <a href="video.html" class="mobile-celestial-enter sound-click" aria-label="Open custom video experience">
+                            <span>WATCH VIDEO</span>
+                            <i class="fas fa-play" aria-hidden="true"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -573,50 +603,63 @@
             </div>
 			
             <!-- MODULE: MUSIC PLAYER -->
-            <div class="module !top-0 !bottom-0 !left-0 !right-0 !w-[100vw] !max-w-none !h-[100dvh] !m-0 !p-0 overflow-hidden" id="mod-music">
+            <div class="module overflow-hidden" id="mod-music">
                 <div class="music-wallpaper-layer"></div>
                 <div class="music-overlay-layer"></div>
                 <div class="music-rain-layer" id="music-rain-layer" aria-hidden="true"></div>
                 <div class="music-reflection-layer" id="music-reflection-layer" aria-hidden="true"></div>
 
                 <div class="music-player-wrap">
-                    <div class="music-player-card">
-                        <div class="music-player-head">
-                            <p class="code-font text-[10px] tracking-[0.22em] text-gray-400 uppercase">Ambient System</p>
-                            <h2 class="heading-font music-player-title">Music Console</h2>
-                        </div>
+                    <div class="iphone17-shell">
+                        <div class="iphone17-label code-font">iPhone 17</div>
+                        <div class="iphone17-device">
+                            <div class="iphone17-side-button iphone17-side-button-top" aria-hidden="true"></div>
+                            <div class="iphone17-side-button iphone17-side-button-mid" aria-hidden="true"></div>
+                            <div class="iphone17-side-button iphone17-side-button-btm" aria-hidden="true"></div>
+                            <div class="iphone17-screen">
+                                <div class="iphone17-notch" aria-hidden="true"></div>
+                                <div class="music-player-card">
+                                    <div class="music-player-head">
+                                        <p class="code-font text-[10px] tracking-[0.22em] text-gray-400 uppercase">Ambient System</p>
+                                        <h2 class="heading-font music-player-title">Apple Music Deck</h2>
+                                    </div>
 
-                        <div class="music-profile">
-                            <div class="music-profile-image-wrap">
-                                <img class="music-profile-image" src="https://i.pinimg.com/236x/bd/4e/28/bd4e286c1c94726f01bd84820286f1a5.jpg" alt="Music player profile">
+                                    <div class="music-ios-surface">
+                                        <div class="music-profile">
+                                            <div class="music-profile-image-wrap">
+                                                <img class="music-profile-image" src="https://i.pinimg.com/236x/bd/4e/28/bd4e286c1c94726f01bd84820286f1a5.jpg" alt="Music player profile">
+                                            </div>
+                                            <div class="music-profile-text">
+                                                <p class="music-profile-label code-font">Spatial Audio</p>
+                                                <p class="music-profile-sub">Immersive local playback with iOS-inspired controls.</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="music-meta">
+                                            <p id="music-track-title" class="music-track-title">Local Track Ready</p>
+                                            <p id="music-track-artist" class="music-track-artist">Local MP3 Library</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="music-progress-wrap">
+                                        <span id="music-current-time" class="music-time code-font">00:00</span>
+                                        <input id="music-progress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Music progress">
+                                        <span id="music-duration" class="music-time code-font">00:00</span>
+                                    </div>
+
+                                    <div class="music-controls">
+                                        <button id="music-prev" class="music-control-btn sound-click" aria-label="Previous track"><i class="fas fa-backward-step"></i></button>
+                                        <button id="music-play" class="music-control-btn music-play-btn sound-click" aria-label="Play or pause"><i id="music-play-icon" class="fas fa-play"></i></button>
+                                        <button id="music-next" class="music-control-btn sound-click" aria-label="Next track"><i class="fas fa-forward-step"></i></button>
+                                    </div>
+
+                                    <div class="music-volume-wrap">
+                                        <i class="fas fa-volume-low text-gray-500 text-xs"></i>
+                                        <input id="music-volume" type="range" min="0" max="1" value="0.65" step="0.01" aria-label="Music volume">
+                                        <i class="fas fa-volume-high text-gray-500 text-xs"></i>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="music-profile-text">
-                                <p class="music-profile-label code-font">Rain Profile</p>
-                                <p class="music-profile-sub">All local MP3 tracks detected for playback.</p>
-                            </div>
-                        </div>
-
-                        <div class="music-meta">
-                            <p id="music-track-title" class="music-track-title">Local Track Ready</p>
-                            <p id="music-track-artist" class="music-track-artist">Local MP3 Library</p>
-                        </div>
-
-                        <div class="music-progress-wrap">
-                            <span id="music-current-time" class="music-time code-font">00:00</span>
-                            <input id="music-progress" type="range" min="0" max="100" value="0" step="0.1" aria-label="Music progress">
-                            <span id="music-duration" class="music-time code-font">00:00</span>
-                        </div>
-
-                        <div class="music-controls">
-                            <button id="music-prev" class="music-control-btn sound-click" aria-label="Previous track"><i class="fas fa-backward-step"></i></button>
-                            <button id="music-play" class="music-control-btn music-play-btn sound-click" aria-label="Play or pause"><i id="music-play-icon" class="fas fa-play"></i></button>
-                            <button id="music-next" class="music-control-btn sound-click" aria-label="Next track"><i class="fas fa-forward-step"></i></button>
-                        </div>
-
-                        <div class="music-volume-wrap">
-                            <i class="fas fa-volume-low text-gray-500 text-xs"></i>
-                            <input id="music-volume" type="range" min="0" max="1" value="0.65" step="0.01" aria-label="Music volume">
-                            <i class="fas fa-volume-high text-gray-500 text-xs"></i>
                         </div>
                     </div>
                 </div>

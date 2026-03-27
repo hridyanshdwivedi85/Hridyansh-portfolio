@@ -64,6 +64,38 @@ document.addEventListener('DOMContentLoaded', () => {
             osc.connect(gain).connect(this.ctx.destination);
             osc.start(t); osc.stop(t + 0.1);
         },
+        playIceDropSequence() {
+            if (!this.unlocked || !this.ctx) return;
+            const t = this.ctx.currentTime;
+
+            // Three small collisions make the ice feel physical instead of a single click.
+            [0, 0.07, 0.13].forEach((offset) => {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(1700 + Math.random() * 1300, t + offset);
+                osc.frequency.exponentialRampToValueAtTime(480 + Math.random() * 240, t + offset + 0.08);
+                gain.gain.setValueAtTime(0.0001, t + offset);
+                gain.gain.exponentialRampToValueAtTime(0.11, t + offset + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + offset + 0.09);
+                osc.connect(gain).connect(this.ctx.destination);
+                osc.start(t + offset);
+                osc.stop(t + offset + 0.1);
+            });
+
+            // A brief low tap for glass/body resonance.
+            const body = this.ctx.createOscillator();
+            const bodyGain = this.ctx.createGain();
+            body.type = 'sine';
+            body.frequency.setValueAtTime(180, t);
+            body.frequency.exponentialRampToValueAtTime(90, t + 0.18);
+            bodyGain.gain.setValueAtTime(0.0001, t);
+            bodyGain.gain.exponentialRampToValueAtTime(0.04, t + 0.03);
+            bodyGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+            body.connect(bodyGain).connect(this.ctx.destination);
+            body.start(t);
+            body.stop(t + 0.24);
+        },
         playSteamBurst() {
             if (!this.unlocked || !this.ctx) return;
             const t = this.ctx.currentTime;
@@ -105,20 +137,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const noise = this.ctx.createBufferSource(); noise.buffer = buf; noise.loop = true;
             
             const filter = this.ctx.createBiquadFilter(); filter.type = 'bandpass'; 
-            filter.frequency.setValueAtTime(800, t);
-            filter.frequency.linearRampToValueAtTime(1500, t + 3); // Pitch goes up as glass fills
-            filter.Q.value = 1.5;
+            filter.frequency.setValueAtTime(620, t);
+            filter.frequency.linearRampToValueAtTime(1700, t + 3); // Pitch rises as glass fills.
+            filter.Q.value = 1.2;
+
+            const gurgle = this.ctx.createOscillator();
+            gurgle.type = 'triangle';
+            gurgle.frequency.setValueAtTime(122, t);
+            gurgle.frequency.linearRampToValueAtTime(148, t + 2.4);
+            const gurgleGain = this.ctx.createGain();
+            gurgleGain.gain.setValueAtTime(0.0001, t);
+            gurgleGain.gain.exponentialRampToValueAtTime(0.026, t + 0.24);
 
             const gain = this.ctx.createGain(); 
-            gain.gain.setValueAtTime(0, t); 
-            gain.gain.linearRampToValueAtTime(0.15, t + 0.2);
+            gain.gain.setValueAtTime(0.0001, t); 
+            gain.gain.exponentialRampToValueAtTime(0.17, t + 0.2);
             
-            noise.connect(filter).connect(gain).connect(this.ctx.destination); noise.start(t);
+            noise.connect(filter).connect(gain).connect(this.ctx.destination);
+            gurgle.connect(gurgleGain).connect(this.ctx.destination);
+            noise.start(t);
+            gurgle.start(t);
 
             return {
                 stop: () => {
-                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
-                    setTimeout(() => noise.stop(), 400);
+                    const now = this.ctx.currentTime;
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+                    gurgleGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+                    setTimeout(() => { noise.stop(); gurgle.stop(); }, 340);
                 }
             };
         },
@@ -178,6 +223,74 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.sound-click, .hw-btn').forEach(el => {
         el.addEventListener('click', () => AudioEngine.playClick());
     });
+
+    const OriginPrompt = {
+        commands: [
+            {
+                cmd: 'npm run build:ios --release',
+                output: [
+                    'Analyzing dependency graph... done.',
+                    'Compiling UI layer with typed modules... done.',
+                    'Signing artifact: build/ios/Hridyansh.app',
+                    'Build completed in 3.2s.'
+                ]
+            },
+            {
+                cmd: 'git commit -m "feat: realtime growth systems"',
+                output: [
+                    '9 files changed, 344 insertions(+), 27 deletions(-).',
+                    'Lint check passed with zero errors.',
+                    'Commit hash: 4b7f2ad'
+                ]
+            },
+            {
+                cmd: 'node scripts/deploy.mjs --target production',
+                output: [
+                    'Uploading static assets to edge cache... done.',
+                    'Invalidating stale CDN objects... done.',
+                    'Deployment status: healthy.'
+                ]
+            }
+        ],
+        init() {
+            this.cmdEl = document.getElementById('origin-terminal-command');
+            this.outputEl = document.getElementById('origin-terminal-output');
+            if(!this.cmdEl || !this.outputEl) return;
+            this.commandIndex = 0;
+            this.runLoop();
+        },
+        async runLoop() {
+            while(true) {
+                const item = this.commands[this.commandIndex % this.commands.length];
+                await this.typeCommand(item.cmd);
+                await this.sleep(260);
+                this.renderOutput(item.output);
+                await this.sleep(1900);
+                this.clearTerminal();
+                this.commandIndex++;
+            }
+        },
+        async typeCommand(command) {
+            this.cmdEl.textContent = '';
+            for (const char of command) {
+                this.cmdEl.textContent += char;
+                await this.sleep(24 + Math.random() * 18);
+            }
+        },
+        renderOutput(lines) {
+            this.outputEl.innerHTML = lines.map((line, idx) => {
+                const variant = idx === lines.length - 1 ? 'ok' : (line.toLowerCase().includes('deploy') ? 'info' : '');
+                return `<div class="${variant}">↳ ${line}</div>`;
+            }).join('');
+        },
+        clearTerminal() {
+            this.cmdEl.textContent = '';
+            this.outputEl.innerHTML = '';
+        },
+        sleep(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+    };
 
     /**
      * 1. CUSTOM CURSOR ENGINE
@@ -304,7 +417,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isAnimating: false,
         wheelLock: false,
         touchStartY: null,
+        touchStartX: null,
         touchStartedOnRail: false,
+        touchCanSwitchTabs: false,
         navRailThreshold: 18,
         navIndicator: document.querySelector('.nav-rail-highlight'),
         init() {
@@ -372,59 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.navIndicator.style.opacity = '1';
         },
         bindScrollTabSwitch() {
-            const portraitMedia = window.matchMedia('(max-width: 1023px)');
-
-            const trySwitchByDelta = (deltaY) => {
-                if (!portraitMedia.matches || this.isAnimating || this.wheelLock) return;
-                const activeIndex = this.tabNavItems.findIndex(nav => nav.classList.contains('active'));
-                if (activeIndex === -1) return;
-
-                const direction = deltaY > 0 ? 1 : -1;
-                const nextIndex = activeIndex + direction;
-                if (nextIndex < 0 || nextIndex >= this.tabNavItems.length) return;
-
-                const nextNav = this.tabNavItems[nextIndex];
-                const targetId = nextNav.getAttribute('data-target');
-                const theme = nextNav.getAttribute('data-theme');
-                if (!targetId || !theme) return;
-
-                this.wheelLock = true;
-                this.switchTab(nextNav, targetId, theme, true);
-                setTimeout(() => { this.wheelLock = false; }, 550);
-            };
-
-            window.addEventListener('wheel', (event) => {
-                if (!portraitMedia.matches) return;
-                if (!this.isOnNavRail(event.clientX)) return;
-                if (Math.abs(event.deltaY) < 20) return;
-                event.preventDefault();
-                trySwitchByDelta(event.deltaY);
-            }, { passive: false });
-
-            window.addEventListener('touchstart', (event) => {
-                if (!portraitMedia.matches) return;
-                const touch = event.touches?.[0];
-                this.touchStartedOnRail = this.isOnNavRail(touch?.clientX);
-                this.touchStartY = event.touches?.[0]?.clientY ?? null;
-            }, { passive: true });
-
-            window.addEventListener('touchmove', (event) => {
-                if (!portraitMedia.matches || this.touchStartY === null || !this.touchStartedOnRail) return;
-                const currentY = event.touches?.[0]?.clientY;
-                if (typeof currentY !== 'number') return;
-
-                const deltaY = this.touchStartY - currentY;
-                if (Math.abs(deltaY) < 35) return;
-
-                event.preventDefault();
-                trySwitchByDelta(deltaY);
-                this.touchStartY = currentY;
-            }, { passive: false });
-
-            window.addEventListener('touchend', () => {
-                this.touchStartY = null;
-                this.touchStartedOnRail = false;
-            }, { passive: true });
+            // Intentionally disabled: tab switching is click/tap only across desktop and mobile.
         },
         switchTab(navElement, targetId, theme, updateHash = true) {
             this.isAnimating = true;
@@ -742,7 +805,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if(this.iceCount >= 6) return;
             
-            AudioEngine.playIceClink();
+            AudioEngine.playIceDropSequence();
             this.iceCount++;
             
             const ice = document.createElement('div');
@@ -1511,8 +1574,13 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lastVibrateAt = 0;
             this.lastMicroPulseAt = 0;
             this.spaceStars = [];
+            this.spaceDust = [];
             this.starFov = 520;
-            this.spaceTravelSpeed = this.isMobile ? 100 : 130;
+            this.spaceTravelSpeed = this.isMobile ? 92 : 126;
+            this.baseTravelSpeed = this.spaceTravelSpeed;
+            this.travelBoost = 1;
+            this.cameraDrift = { x: 0, y: 0 };
+            this.lastFrameTime = performance.now();
             this.prevMouse = { x: this.mouse.x, y: this.mouse.y };
 
             this.resize();
@@ -1520,36 +1588,44 @@ document.addEventListener('DOMContentLoaded', () => {
             window.addEventListener('mousemove', (e) => {
                 this.mouse.x = e.clientX;
                 this.mouse.y = e.clientY;
-                
-                // Spawn fast motion line particles around cursor movement
-                if(document.getElementById('mod-entropy').classList.contains('active')) {
+
+                // Spawn fast motion line particles around cursor movement.
+                if (this.isEntropyActive()) {
                     this.spawnTrailParticles(e.clientX, e.clientY);
-                    this.vibratePulse(4);
                 }
             });
-            window.addEventListener('mousedown', () => {
-                if(document.getElementById('mod-entropy').classList.contains('active')) {
-                    this.vibratePulse(14);
-                }
+
+            // Explicit interaction haptics: click on laptop, touch on mobile.
+            const triggerInteractionPulse = (x, y, duration) => {
+                if (!this.isEntropyActive()) return;
+                this.mouse.x = x;
+                this.mouse.y = y;
+                this.spawnTrailParticles(x, y);
+                this.vibratePulse(duration, true);
+            };
+
+            window.addEventListener('pointerdown', (e) => {
+                const x = e.clientX ?? this.mouse.x;
+                const y = e.clientY ?? this.mouse.y;
+                const duration = e.pointerType === 'touch' ? 16 : 14;
+                triggerInteractionPulse(x, y, duration);
             });
-            window.addEventListener('touchstart', (e) => {
-                const touch = e.touches?.[0];
-                if (!touch) return;
-                this.mouse.x = touch.clientX;
-                this.mouse.y = touch.clientY;
-                if(document.getElementById('mod-entropy').classList.contains('active')) {
-                    this.spawnTrailParticles(touch.clientX, touch.clientY);
-                    this.vibratePulse(15);
-                }
-            }, { passive: true });
+
+            if (!window.PointerEvent) {
+                window.addEventListener('touchstart', (e) => {
+                    const touch = e.touches?.[0];
+                    if (!touch) return;
+                    triggerInteractionPulse(touch.clientX, touch.clientY, 16);
+                }, { passive: true });
+            }
+
             window.addEventListener('touchmove', (e) => {
                 const touch = e.touches?.[0];
                 if (!touch) return;
                 this.mouse.x = touch.clientX;
                 this.mouse.y = touch.clientY;
-                if(document.getElementById('mod-entropy').classList.contains('active')) {
+                if (this.isEntropyActive()) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
-                    this.vibratePulse(7);
                 }
             }, { passive: true });
 
@@ -1574,15 +1650,31 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.height = this.height;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
             this.wordExplosionEnabled = false;
-            this.spaceTravelSpeed = this.isMobile ? 100 : 130;
+            this.spaceTravelSpeed = this.isMobile ? 92 : 126;
+            this.baseTravelSpeed = this.spaceTravelSpeed;
             this.createSpaceField();
         },
 
         createSpaceField() {
-            const starCount = this.isMobile ? 320 : 680;
+            const starCount = this.isMobile ? 460 : 1100;
             this.spaceStars = [];
             for (let i = 0; i < starCount; i++) {
                 this.spaceStars.push(this.makeStar(true));
+            }
+            this.createDustField();
+        },
+
+        createDustField() {
+            const dustCount = this.isMobile ? 170 : 340;
+            this.spaceDust = [];
+            for (let i = 0; i < dustCount; i++) {
+                this.spaceDust.push({
+                    x: Math.random() * this.width,
+                    y: Math.random() * this.height,
+                    z: Math.random() * this.width,
+                    size: Math.random() * 0.65 + 0.15,
+                    drift: (Math.random() - 0.5) * 0.12
+                });
             }
         },
 
@@ -1591,7 +1683,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: (Math.random() - 0.5) * this.width,
                 y: (Math.random() - 0.5) * this.height,
                 z: randomDepth ? (Math.random() * this.width) : this.width,
-                size: this.isMobile ? (Math.random() * 0.25 + 0.08) : (Math.random() * 0.5 + 0.1),
+                size: this.isMobile ? (Math.random() * 0.18 + 0.05) : (Math.random() * 0.26 + 0.06),
                 hue: 200 + Math.random() * 28,
                 twinkle: Math.random() * Math.PI * 2
             };
@@ -1599,13 +1691,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         drawSpaceField() {
             this.ctx.globalCompositeOperation = 'source-over';
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.84)';
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
             this.ctx.fillRect(0, 0, this.width, this.height);
+
+            const now = performance.now();
+            const boostPulse = 0.88 + Math.sin(now * 0.0012) * 0.12;
+            this.travelBoost += (boostPulse - this.travelBoost) * 0.08;
+            const pointerInfluenceX = ((this.mouse.x / this.width) - 0.5) * 0.85;
+            const pointerInfluenceY = ((this.mouse.y / this.height) - 0.5) * 0.85;
+            this.cameraDrift.x += (pointerInfluenceX - this.cameraDrift.x) * 0.04;
+            this.cameraDrift.y += (pointerInfluenceY - this.cameraDrift.y) * 0.04;
+            const speed = this.baseTravelSpeed * this.travelBoost * this.frameDelta;
 
             for (let i = 0; i < this.spaceStars.length; i++) {
                 const star = this.spaceStars[i];
                 const prevZ = star.z;
-                star.z -= this.spaceTravelSpeed;
+                star.z -= speed;
 
                 if (star.z <= 1) {
                     this.spaceStars[i] = this.makeStar(false);
@@ -1615,20 +1716,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const proj = this.starFov / star.z;
                 const prevProj = this.starFov / prevZ;
 
-                const sx = (star.x * proj) + (this.width / 2);
-                const sy = (star.y * proj) + (this.height / 2);
-                const px = (star.x * prevProj) + (this.width / 2);
-                const py = (star.y * prevProj) + (this.height / 2);
+                const sx = (star.x * proj) + (this.width / 2) + (this.cameraDrift.x * 80 * proj);
+                const sy = (star.y * proj) + (this.height / 2) + (this.cameraDrift.y * 80 * proj);
+                const px = (star.x * prevProj) + (this.width / 2) + (this.cameraDrift.x * 80 * prevProj);
+                const py = (star.y * prevProj) + (this.height / 2) + (this.cameraDrift.y * 80 * prevProj);
 
                 if (sx < 0 || sx > this.width || sy < 0 || sy > this.height) {
                     this.spaceStars[i] = this.makeStar(false);
                     continue;
                 }
 
-                const alpha = Math.max(0.15, 1 - (star.z / this.width));
+                const alpha = Math.max(0.08, 1 - (star.z / this.width));
                 const twinklePulse = 0.65 + (Math.sin((performance.now() * 0.003) + star.twinkle) * 0.35);
                 const lineWidth = Math.max(0.5, star.size * proj * 1.35);
-                const starAlpha = Math.min(0.95, alpha * twinklePulse);
+                const starAlpha = Math.min(0.9, alpha * twinklePulse);
 
                 this.ctx.strokeStyle = `hsla(${star.hue}, 95%, 88%, ${Math.min(0.8, starAlpha)})`;
                 this.ctx.lineWidth = lineWidth;
@@ -1644,6 +1745,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ctx.arc(sx, sy, Math.max(0.35, star.size * proj), 0, Math.PI * 2);
                 this.ctx.fill();
                 this.ctx.shadowBlur = 0;
+            }
+
+            this.drawDustField(speed);
+
+            const vignette = this.ctx.createRadialGradient(
+                this.width / 2,
+                this.height / 2,
+                this.width * 0.1,
+                this.width / 2,
+                this.height / 2,
+                this.width * 0.78
+            );
+            vignette.addColorStop(0, 'rgba(20, 26, 42, 0)');
+            vignette.addColorStop(0.72, 'rgba(6, 10, 18, 0.24)');
+            vignette.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
+            this.ctx.fillStyle = vignette;
+            this.ctx.fillRect(0, 0, this.width, this.height);
+        },
+
+        drawDustField(speed) {
+            this.ctx.globalCompositeOperation = 'lighter';
+            for (let i = 0; i < this.spaceDust.length; i++) {
+                const dust = this.spaceDust[i];
+                dust.z -= speed * 0.56;
+                dust.y += dust.drift;
+                if (dust.z <= 1 || dust.y < -20 || dust.y > this.height + 20) {
+                    dust.x = Math.random() * this.width;
+                    dust.y = Math.random() * this.height;
+                    dust.z = this.width;
+                    dust.drift = (Math.random() - 0.5) * 0.12;
+                }
+
+                const depth = this.starFov / Math.max(1, dust.z);
+                const x = ((dust.x - this.width / 2) * depth) + (this.width / 2) + (this.cameraDrift.x * 30 * depth);
+                const y = ((dust.y - this.height / 2) * depth) + (this.height / 2) + (this.cameraDrift.y * 30 * depth);
+                const alpha = Math.max(0.05, 1 - (dust.z / this.width));
+
+                this.ctx.fillStyle = `rgba(238, 244, 255, ${alpha * 0.36})`;
+                this.ctx.fillRect(x, y, dust.size * depth, dust.size * depth);
             }
         },
 
@@ -1685,10 +1825,15 @@ document.addEventListener('DOMContentLoaded', () => {
             this.prevMouse.y = y;
         },
 
-        vibratePulse(duration = 10) {
+        isEntropyActive() {
+            const entropyModule = document.getElementById('mod-entropy');
+            return !!entropyModule && entropyModule.classList.contains('active');
+        },
+
+        vibratePulse(duration = 10, force = false) {
             if (!navigator.vibrate) return;
             const now = performance.now();
-            if (now - this.lastVibrateAt < 55) return;
+            if (!force && now - this.lastVibrateAt < 55) return;
             this.lastVibrateAt = now;
             navigator.vibrate(duration);
         },
@@ -1824,7 +1969,10 @@ document.addEventListener('DOMContentLoaded', () => {
         animate() {
             requestAnimationFrame(() => this.animate());
             
-            if(!document.getElementById('mod-entropy').classList.contains('active')) return;
+            if (!this.isEntropyActive()) return;
+            const now = performance.now();
+            this.frameDelta = Math.min(2.1, Math.max(0.55, (now - this.lastFrameTime) / 16.67));
+            this.lastFrameTime = now;
 
             // Infinite deep-space motion background (always fast FPS-travel effect).
             this.drawSpaceField();
@@ -1933,11 +2081,12 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         microVibrate() {
+            if (!this.isEntropyActive()) return;
             if (!navigator.vibrate) return;
             const now = performance.now();
-            if (now - this.lastMicroPulseAt < 180) return;
+            if (now - this.lastMicroPulseAt < 220) return;
             this.lastMicroPulseAt = now;
-            navigator.vibrate(4);
+            this.vibratePulse(4);
         }
     };
 
@@ -1945,6 +2094,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * INIT ALL SYSTEMS
      */
     BGEngine.init();
+    OriginPrompt.init();
     AppController.init();
     NeuralCore.init();
     MixologyEngine.init();
