@@ -1074,6 +1074,8 @@ input:checked + .slider:before { transform: translateX(18px); }
 /* --- 4. PHOTOREALISTIC GLASS ENGINE --- */
 .realistic-glass {
     position: relative;
+    --glass-wall: 3px;
+    --liquid-radius: 26px;
     overflow: hidden;
     border: 3px solid rgba(255, 255, 255, 0.2);
     border-top: 2px solid rgba(255, 255, 255, 0.6);
@@ -1088,9 +1090,9 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 /* Glass Morphing Shapes (Larger sizes for visibility) */
-.realistic-glass.whiskey-shape { width: 180px; height: 200px; border-radius: 8px 8px 30px 30px; }
-.realistic-glass.wine-shape { width: 220px; height: 240px; border-radius: 10px 10px 110px 110px; }
-.realistic-glass.vodka-shape { width: 120px; height: 260px; border-radius: 4px 4px 15px 15px; }
+.realistic-glass.whiskey-shape { width: 180px; height: 200px; border-radius: 8px 8px 30px 30px; --liquid-radius: 24px; }
+.realistic-glass.wine-shape { width: 220px; height: 240px; border-radius: 10px 10px 110px 110px; --liquid-radius: 90px; }
+.realistic-glass.vodka-shape { width: 120px; height: 260px; border-radius: 4px 4px 15px 15px; --liquid-radius: 12px; }
 
 /* 3D Glass Glare (Front) */
 .glass-front {
@@ -1112,14 +1114,15 @@ input:checked + .slider:before { transform: translateX(18px); }
 /* --- 6. LIQUID PHYSICS LAYER --- */
 .realistic-liquid {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+    bottom: var(--glass-wall);
+    left: var(--glass-wall);
+    width: calc(100% - (var(--glass-wall) * 2));
     height: 0%; /* JS animates this */
-    border-radius: 0 0 26px 26px;
+    border-radius: 0 0 var(--liquid-radius) var(--liquid-radius);
     transition: height 0.1s linear, background-color 1s ease;
     box-shadow: inset 0 -15px 40px rgba(0,0,0,0.9), inset 0 5px 15px rgba(255,255,255,0.25);
     z-index: 5;
+    overflow: hidden;
 }
 
 /* 3D Liquid Surface Ellipse */
@@ -1127,13 +1130,13 @@ input:checked + .slider:before { transform: translateX(18px); }
     content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
+    left: 50%;
+    width: 94%;
     height: 16px;
     border-radius: 50%;
     background: inherit;
     filter: brightness(1.4) contrast(1.2);
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     border: 1px solid rgba(255,255,255,0.4);
     box-shadow: inset 0 2px 8px rgba(255,255,255,0.5);
 }
