@@ -754,8 +754,8 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     #mod-brew #mixology-panel {
         max-height: none;
-        min-height: calc(100dvh - var(--mobile-nav-height) - 92px);
-        overflow-y: auto;
+        min-height: auto;
+        overflow: visible;
         overflow-x: hidden;
         border-radius: 20px;
     }
@@ -772,10 +772,8 @@ input:checked + .slider:before { transform: translateX(18px); }
         border: 0;
         box-shadow: none;
         max-height: none;
-        overflow-y: auto;
+        overflow: visible;
         overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
         gap: 0.65rem;
     }
 
@@ -784,7 +782,7 @@ input:checked + .slider:before { transform: translateX(18px); }
         border-radius: 16px;
         background: #0a0a0c;
         box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
-        overflow: hidden;
+        overflow: visible;
     }
 
     #mod-brew .machine-layout {
@@ -813,7 +811,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     #mod-brew .machine-stage {
-        order: 3;
+        order: 2;
         min-height: clamp(240px, 44vh, 340px);
         overflow: visible;
     }
@@ -844,7 +842,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     #mod-brew .machine-controls-right {
-        order: 2;
+        order: 3;
         border-left: 0;
         display: block;
     }
