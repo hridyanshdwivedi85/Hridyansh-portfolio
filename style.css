@@ -868,17 +868,18 @@ input:checked + .slider:before { transform: translateX(18px); }
 /* --- RESPONSIVE FIXES --- */
 @media (max-width: 1023px) {
     :root {
-        --mobile-nav-height: 0px;
-        --mobile-nav-rail-width: 22px;
+        --mobile-nav-height: 62px;
     }
 
     .module {
-        width: calc(100vw - var(--mobile-nav-rail-width) - 1.2rem);
+        width: min(94vw, 980px);
         top: clamp(70px, 9vh, 90px);
-        left: calc(var(--mobile-nav-rail-width) + 0.45rem);
-        right: 0.4rem;
-        bottom: max(10px, env(safe-area-inset-bottom));
-        padding-bottom: 24px;
+        left: 0;
+        right: 0;
+        bottom: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
+        padding-bottom: 12px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .global-header {
@@ -899,27 +900,73 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     .nav-area {
         position: fixed !important;
-        top: 0 !important;
-        bottom: 0 !important;
         left: 0 !important;
-        right: auto !important;
+        right: 0 !important;
+        top: auto !important;
+        bottom: 0 !important;
         transform: none !important;
-        width: var(--mobile-nav-rail-width);
-        height: 100vh !important;
+        width: 100vw !important;
+        height: auto !important;
         margin: 0 !important;
-        background: transparent !important;
-        border: 0 !important;
+        background: linear-gradient(180deg, rgba(3, 3, 3, 0.15), rgba(3, 3, 3, 0.92)) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(10px);
         pointer-events: auto;
+        padding: 0.35rem 0.55rem calc(env(safe-area-inset-bottom) + 0.4rem) 0.55rem;
+        align-items: stretch !important;
     }
 
-    .nav-area > .code-font,
-    .nav-area nav {
+    .nav-area > .code-font {
         display: none !important;
+    }
+
+    .nav-area nav {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 0.45rem !important;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.05rem 0.1rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .nav-area nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-area nav .nav-item {
+        flex: 0 0 auto;
+        padding: 0.45rem 0.68rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        background: rgba(13, 13, 13, 0.74);
+        gap: 0.38rem !important;
+    }
+
+    .nav-area nav .nav-active-text {
+        display: none !important;
+    }
+
+    .nav-area nav .nav-label {
+        color: #d1d5db !important;
+        font-size: 0.56rem !important;
+        letter-spacing: 0.12em !important;
+        white-space: nowrap;
+    }
+
+    .nav-area nav .nav-item.active {
+        border-color: rgba(217, 119, 6, 0.66);
+        background: rgba(20, 16, 10, 0.92);
+        box-shadow: 0 0 14px rgba(217, 119, 6, 0.2);
     }
 
     .scroll-tab-popup {
         display: inline-flex;
-        bottom: 6vh;
+        bottom: calc(var(--mobile-nav-height) + 2.3rem);
         font-size: 0.52rem;
         padding: 0.5rem 0.72rem;
         max-width: min(88vw, 320px);
@@ -937,14 +984,15 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 @media (max-width: 767px) {
     :root {
-        --mobile-nav-rail-width: 20px;
+        --mobile-nav-height: 64px;
     }
 
     .module {
-        width: calc(100vw - var(--mobile-nav-rail-width) - 1rem);
-        left: calc(var(--mobile-nav-rail-width) + 0.35rem);
-        right: 0.35rem;
-        padding-bottom: 28px;
+        width: min(95vw, 560px);
+        left: 0;
+        right: 0;
+        bottom: calc(var(--mobile-nav-height) + max(10px, env(safe-area-inset-bottom)));
+        padding-bottom: 10px;
     }
 
     .global-header {
@@ -960,7 +1008,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     #mod-brew,
     #mod-identity,
     #mod-entropy {
-        padding-bottom: 34px;
+        padding-bottom: 20px;
     }
 
     #audio-unlock .heading-font {
