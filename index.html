@@ -319,6 +319,29 @@
         <div class="build-progress-wrap mb-2">
             <div id="compiler-progress-bar" class="build-progress-bar"></div>
         </div>
+
+        <div class="hidden md:flex build-options-desktop mb-2" id="compiler-desktop-options" aria-label="Desktop build pipeline options">
+            <div class="build-option-row" data-build-option="parse">
+                <span class="build-option-dot"></span>
+                <span>Parser Graph</span>
+            </div>
+            <div class="build-option-row" data-build-option="compile">
+                <span class="build-option-dot"></span>
+                <span>Compiler Core</span>
+            </div>
+            <div class="build-option-row" data-build-option="bundle">
+                <span class="build-option-dot"></span>
+                <span>Bundle Split</span>
+            </div>
+            <div class="build-option-row" data-build-option="sign">
+                <span class="build-option-dot"></span>
+                <span>Artifact Sign</span>
+            </div>
+            <div class="build-option-row" data-build-option="deploy">
+                <span class="build-option-dot"></span>
+                <span>Deploy Queue</span>
+            </div>
+        </div>
         
         <div class="flex-grow flex items-center justify-between relative px-2 md:px-6 compiler-scale-fix origin-center w-full shrink-0 min-h-[350px]">
             <div class="compiler-col compiler-col--input flex flex-col gap-6 z-20 w-40 relative">
