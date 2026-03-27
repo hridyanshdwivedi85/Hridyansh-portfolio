@@ -397,27 +397,7 @@ body, html {
 .module { position: absolute; top: 10vh; bottom: 5vh; left: 0; right: 0; margin: auto; width: 85%; max-width: 1200px; overflow-y: auto; overflow-x: hidden; padding-bottom: 80px; scrollbar-width: none; opacity: 0; pointer-events: none; visibility: hidden; transform: translateY(30px) scale(0.98); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
 .module::-webkit-scrollbar { display: none; }
 
-/* Hide right-side tab buttons/dot while preserving invisible scroll rail behavior */
-.nav-area {
-    position: fixed !important;
-    top: 0 !important;
-    bottom: 0 !important;
-    right: 0 !important;
-    width: 28px !important;
-    height: 100vh !important;
-    justify-content: center !important;
-    align-items: stretch !important;
-    pointer-events: auto;
-}
-
-.nav-area > .code-font,
-.nav-area nav {
-    display: none !important;
-}
-
-#scroll-tab-popup {
-    display: none !important;
-}
+/* PC Nav layout is preserved from global settings above. Tabs will show on bottom right for PC. */
 .module.active { opacity: 1; pointer-events: auto; visibility: visible; transform: translateY(0) scale(1); }
 
 /* UI Hardware Elements */
