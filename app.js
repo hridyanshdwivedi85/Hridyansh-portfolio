@@ -1251,8 +1251,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const MusicPlayer = {
         tracks: [
             {
-                title: 'Local Track Ready',
-                artist: 'Drop your own audio file in assets/media',
+                title: 'Tum Hi Ho Aashiqui 2',
+                artist: 'Local MP3',
+                src: 'assets/media/Tum Hi Ho Aashiqui 2 320 Kbps.mp3'
+            },
+            {
+                title: 'Music Track',
+                artist: 'Local MP3',
                 src: 'assets/media/music-track.mp3'
             }
         ],
@@ -1274,6 +1279,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.loadTrack(0);
             this.bind();
+            this.initRainScene();
         },
         bind() {
             this.playBtn.addEventListener('click', () => this.togglePlay());
@@ -1293,7 +1299,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.audio.addEventListener('play', () => this.setPlayingState(true));
             this.audio.addEventListener('pause', () => this.setPlayingState(false));
             this.audio.addEventListener('error', () => {
-                this.trackArtistEl.textContent = 'Track not found. Add your file with the exact name.';
+                this.trackArtistEl.textContent = 'Unable to load this MP3. Skipping to the next track.';
+                setTimeout(() => this.nextTrack(), 600);
                 this.setPlayingState(false);
             });
 
@@ -1341,6 +1348,37 @@ document.addEventListener('DOMContentLoaded', () => {
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        },
+        initRainScene() {
+            const rainLayer = document.getElementById('music-rain-layer');
+            const reflectionLayer = document.getElementById('music-reflection-layer');
+            if (!rainLayer || !reflectionLayer || rainLayer.dataset.ready === 'true') return;
+
+            rainLayer.dataset.ready = 'true';
+            const dropCount = window.matchMedia('(max-width: 768px)').matches ? 70 : 130;
+            const rippleCount = window.matchMedia('(max-width: 768px)').matches ? 30 : 55;
+
+            for (let i = 0; i < dropCount; i++) {
+                const drop = document.createElement('span');
+                drop.className = 'rain-drop';
+                drop.style.left = `${Math.random() * 110 - 5}%`;
+                drop.style.animationDuration = `${0.55 + Math.random() * 0.7}s`;
+                drop.style.animationDelay = `${Math.random() * -1.5}s`;
+                drop.style.opacity = `${0.35 + Math.random() * 0.45}`;
+                drop.style.height = `${7 + Math.random() * 10}vh`;
+                rainLayer.appendChild(drop);
+            }
+
+            for (let i = 0; i < rippleCount; i++) {
+                const ripple = document.createElement('span');
+                ripple.className = 'reflection-droplet';
+                ripple.style.left = `${Math.random() * 100}%`;
+                ripple.style.animationDuration = `${1.3 + Math.random() * 1.6}s`;
+                ripple.style.animationDelay = `${Math.random() * -3}s`;
+                ripple.style.width = `${40 + Math.random() * 50}px`;
+                ripple.style.height = ripple.style.width;
+                reflectionLayer.appendChild(ripple);
+            }
         }
     };
 
