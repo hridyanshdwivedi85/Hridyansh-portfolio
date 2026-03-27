@@ -348,6 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 cursorDot.classList.remove('entropy-cursor-dot');
                 cursorOutline.style.opacity = '';
                 cursorDot.style.opacity = '';
+                cursorOutline.style.transform = 'translate(-50%, -50%)';
                 if (window.EntropyEngine) {
                     EntropyEngine.sequenceStarted = false;
                     EntropyEngine.stopAmbientLoop?.();
@@ -1267,11 +1268,11 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lineConnectCooldown = 0;
             this.lastTrailSpawn = 0;
             this.lastVibrateAt = 0;
+            this.lastMicroPulseAt = 0;
             this.spaceStars = [];
             this.starFov = 520;
-            this.baseSpaceSpeed = 50;
-            this.spaceSpeed = this.baseSpaceSpeed;
-            this.isSpeedBoosting = false;
+            this.spaceTravelSpeed = this.isMobile ? 100 : 130;
+            this.prevMouse = { x: this.mouse.x, y: this.mouse.y };
 
             this.resize();
             window.addEventListener('resize', () => this.resize());
@@ -1279,19 +1280,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.x = e.clientX;
                 this.mouse.y = e.clientY;
                 
-                // Spawn beautiful bokeh trail particles on mouse move
+                // Spawn fast motion line particles around cursor movement
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(e.clientX, e.clientY);
+                    this.vibratePulse(4);
                 }
             });
             window.addEventListener('mousedown', () => {
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
-                    this.increaseSpeed();
-                    this.isSpeedBoosting = true;
+                    this.vibratePulse(14);
                 }
-            });
-            window.addEventListener('mouseup', () => {
-                this.isSpeedBoosting = false;
             });
             window.addEventListener('touchstart', (e) => {
                 const touch = e.touches?.[0];
@@ -1300,9 +1298,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.y = touch.clientY;
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
-                    this.increaseSpeed();
-                    this.isSpeedBoosting = true;
-                    this.vibratePulse(12);
+                    this.vibratePulse(15);
                 }
             }, { passive: true });
             window.addEventListener('touchmove', (e) => {
@@ -1312,12 +1308,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.y = touch.clientY;
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
-                    this.increaseSpeed(2);
                     this.vibratePulse(7);
                 }
-            }, { passive: true });
-            window.addEventListener('touchend', () => {
-                this.isSpeedBoosting = false;
             }, { passive: true });
 
             // Bind observer to start sequence only when tab is opened
@@ -1341,8 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.height = this.height;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
             this.wordExplosionEnabled = false;
-            this.baseSpaceSpeed = 50;
-            this.spaceSpeed = Math.max(this.spaceSpeed || this.baseSpaceSpeed, this.baseSpaceSpeed);
+            this.spaceTravelSpeed = this.isMobile ? 100 : 130;
             this.createSpaceField();
         },
 
@@ -1365,10 +1356,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         },
 
-        increaseSpeed(multiplier = 1) {
-            this.spaceSpeed += 25 * multiplier;
-        },
-
         drawSpaceField() {
             this.ctx.globalCompositeOperation = 'source-over';
             this.ctx.fillStyle = 'rgba(0, 0, 0, 0.84)';
@@ -1377,7 +1364,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 0; i < this.spaceStars.length; i++) {
                 const star = this.spaceStars[i];
                 const prevZ = star.z;
-                star.z -= this.spaceSpeed;
+                star.z -= this.spaceTravelSpeed;
 
                 if (star.z <= 1) {
                     this.spaceStars[i] = this.makeStar(false);
@@ -1421,25 +1408,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
         spawnTrailParticles(x, y) {
             const now = performance.now();
-            const spawnInterval = this.isMobile ? 34 : 16; // Mobile-safe cap
+            const spawnInterval = this.isMobile ? 26 : 12;
             if (now - this.lastTrailSpawn < spawnInterval) return;
             this.lastTrailSpawn = now;
 
-            const count = this.isMobile ? (Math.random() * 1.5 + 1) : (Math.random() * 2.5 + 2);
-            const colors = ['255, 255, 255', '217, 119, 6', '150, 150, 150']; 
-            
+            const dx = x - this.prevMouse.x;
+            const dy = y - this.prevMouse.y;
+            const movement = Math.max(2, Math.hypot(dx, dy));
+            const dirX = dx / movement;
+            const dirY = dy / movement;
+            const count = this.isMobile ? 3 : 6;
+            const colors = ['255, 255, 255', '217, 119, 6', '125, 211, 252'];
+
             for(let i=0; i<count; i++) {
+                const spread = i / Math.max(1, count - 1);
+                const tailX = x - (dirX * movement * spread);
+                const tailY = y - (dirY * movement * spread);
                 this.trailParticles.push({
-                    x: x + (Math.random() - 0.5) * 10,
-                    y: y + (Math.random() - 0.5) * 10,
-                    vx: (Math.random() - 0.5) * 1.0,
-                    vy: (Math.random() - 0.5) * 1.0 - 0.5, // Stronger upward smoke-like drift
-                    size: this.isMobile ? (Math.random() * 0.45 + 0.25) : (Math.random() * 0.95 + 0.45),
+                    x: tailX + (Math.random() - 0.5) * 4,
+                    y: tailY + (Math.random() - 0.5) * 4,
+                    baseX: tailX,
+                    baseY: tailY,
+                    vx: (-dirX * 1.2) + ((Math.random() - 0.5) * 0.45),
+                    vy: (-dirY * 1.2) + ((Math.random() - 0.5) * 0.45),
+                    size: this.isMobile ? (Math.random() * 0.65 + 0.5) : (Math.random() * 1.1 + 0.65),
                     color: colors[Math.floor(Math.random() * colors.length)],
-                    life: this.isMobile ? (40 + Math.random() * 30) : (70 + Math.random() * 50),
-                    maxLife: this.isMobile ? 80 : 120
+                    life: this.isMobile ? (34 + Math.random() * 20) : (56 + Math.random() * 36),
+                    maxLife: this.isMobile ? 60 : 92,
+                    jitterAmp: this.isMobile ? 0.7 : 1.25,
+                    jitterFreq: 0.14 + Math.random() * 0.2,
+                    jitterPhase: Math.random() * Math.PI * 2
                 });
             }
+            this.prevMouse.x = x;
+            this.prevMouse.y = y;
         },
 
         vibratePulse(duration = 10) {
@@ -1583,23 +1585,54 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if(!document.getElementById('mod-entropy').classList.contains('active')) return;
 
-            // Infinite deep-space motion background (FPS travel effect).
-            if (!this.isSpeedBoosting && this.spaceSpeed > this.baseSpaceSpeed) {
-                this.spaceSpeed = Math.max(this.baseSpaceSpeed, this.spaceSpeed * 0.985);
-            }
+            // Infinite deep-space motion background (always fast FPS-travel effect).
             this.drawSpaceField();
+            this.shakeCursor();
+            this.microVibrate();
 
-            // Draw Bokeh Trail Particles
+            // Draw line-like trail particles with vibration.
             this.ctx.globalCompositeOperation = 'screen';
             for(let i = this.trailParticles.length - 1; i >= 0; i--) {
                 let p = this.trailParticles[i];
+                const lifeRatio = p.life / p.maxLife;
+                const jitter = Math.sin((performance.now() * p.jitterFreq) + p.jitterPhase) * p.jitterAmp;
                 p.x += p.vx; p.y += p.vy;
                 p.life--;
                 
-                let alpha = (p.life / p.maxLife) * 0.7; // Max opacity 0.7
+                let alpha = lifeRatio * 0.85;
+                const drawX = p.x + jitter;
+                const drawY = p.y - jitter;
 
                 this.ctx.fillStyle = `rgba(${p.color}, ${alpha})`;
-                this.ctx.fillRect(p.x, p.y, p.size, p.size);
+                this.ctx.fillRect(drawX, drawY, p.size, p.size);
+
+                const cursorDist = Math.hypot(this.mouse.x - drawX, this.mouse.y - drawY);
+                if (cursorDist < (this.isMobile ? 110 : 140)) {
+                    this.ctx.strokeStyle = `rgba(217, 119, 6, ${Math.max(0.12, (1 - (cursorDist / 160)) * 0.6)})`;
+                    this.ctx.lineWidth = this.isMobile ? 0.6 : 0.9;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(drawX, drawY);
+                    this.ctx.lineTo(
+                        this.mouse.x + (Math.sin((performance.now() * 0.02) + p.jitterPhase) * 1.4),
+                        this.mouse.y + (Math.cos((performance.now() * 0.02) + p.jitterPhase) * 1.4)
+                    );
+                    this.ctx.stroke();
+                }
+
+                const next = this.trailParticles[i - 1];
+                if (next && Math.random() > 0.5) {
+                    const nx = next.x;
+                    const ny = next.y;
+                    const near = Math.hypot(nx - drawX, ny - drawY);
+                    if (near < (this.isMobile ? 38 : 52)) {
+                        this.ctx.strokeStyle = `rgba(255, 255, 255, ${Math.max(0.08, lifeRatio * 0.28)})`;
+                        this.ctx.lineWidth = 0.45;
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(drawX, drawY);
+                        this.ctx.lineTo(nx, ny);
+                        this.ctx.stroke();
+                    }
+                }
 
                 if(p.life <= 0) this.trailParticles.splice(i, 1);
             }
@@ -1646,6 +1679,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 this.lineConnectCooldown = Math.max(0, this.lineConnectCooldown - 1);
             }
+        },
+
+        shakeCursor() {
+            const cursorOutline = document.getElementById("cursor-outline");
+            if (!cursorOutline || !cursorOutline.classList.contains('entropy-cursor')) return;
+            const t = performance.now() * 0.045;
+            const offsetX = Math.sin(t * 1.3) * 1.8;
+            const offsetY = Math.cos(t * 1.7) * 1.8;
+            const rotation = Math.sin(t) * 1.2;
+            cursorOutline.style.transform = `translate(-50%, -50%) translate(${offsetX}px, ${offsetY}px) rotate(${rotation}deg)`;
+        },
+
+        microVibrate() {
+            if (!navigator.vibrate) return;
+            const now = performance.now();
+            if (now - this.lastMicroPulseAt < 180) return;
+            this.lastMicroPulseAt = now;
+            navigator.vibrate(4);
         }
     };
 
