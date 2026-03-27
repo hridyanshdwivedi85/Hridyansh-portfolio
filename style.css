@@ -760,6 +760,45 @@ input:checked + .slider:before { transform: translateX(18px); }
         border-radius: 20px;
     }
 
+    /* Portrait-first lab layout: controls first, output section at the end */
+    #mod-brew > div {
+        max-width: 560px;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    #mod-brew #mixology-panel {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        overflow: visible;
+        gap: 0.65rem;
+    }
+
+    #mod-brew #mixology-panel > div {
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        background: #0a0a0c;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+        overflow: hidden;
+    }
+
+    #mod-brew .machine-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+        background: transparent;
+    }
+
+    #mod-brew .machine-controls-left,
+    #mod-brew .machine-controls-right,
+    #mod-brew .machine-stage {
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 14px;
+        background: #0d0d12;
+        box-shadow: none;
+    }
+
     #mod-brew .machine-layout {
         gap: 0.6rem;
     }
@@ -770,8 +809,51 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     #mod-brew .machine-stage {
+        order: 3;
         min-height: clamp(250px, 44vh, 360px);
         overflow: visible;
+    }
+
+    #mod-brew .machine-controls-left {
+        order: 1;
+        border-right: 0;
+        display: grid;
+        gap: 1rem;
+    }
+
+    #mod-brew .machine-controls-left .flex.flex-col.gap-2 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.45rem;
+    }
+
+    #mod-brew .machine-controls-left .neo-btn {
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 10px 8px;
+        letter-spacing: 0.08em;
+        font-size: 9px;
+    }
+
+    #mod-brew .machine-controls-left .neo-btn i {
+        font-size: 0.75rem;
+    }
+
+    #mod-brew .machine-controls-right {
+        order: 2;
+        border-left: 0;
+        display: block;
+    }
+
+    #mod-brew .machine-controls-right .flex.flex-col.gap-3.mt-auto {
+        margin-top: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.55rem;
+    }
+
+    #mod-brew .machine-controls-right #btn-pour {
+        grid-column: 1 / -1;
     }
 
     #mod-brew .glass-stage-area {
