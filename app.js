@@ -304,6 +304,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isAnimating: false,
         wheelLock: false,
         touchStartY: null,
+        touchStartedOnRail: false,
+        navRailThreshold: 18,
+        navIndicator: document.querySelector('.nav-rail-highlight'),
         init() {
             this.tabNavItems = Array.from(this.navItems).filter(
                 nav => nav.getAttribute('data-target')
@@ -338,6 +341,35 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             this.bindScrollTabSwitch();
+            this.updateNavIndicator();
+            window.addEventListener('resize', () => this.updateNavIndicator(), { passive: true });
+            window.addEventListener('orientationchange', () => this.updateNavIndicator(), { passive: true });
+        },
+        isOnNavRail(clientX) {
+            if (typeof clientX !== 'number') return false;
+            const navArea = document.querySelector('.nav-area');
+            if (!navArea) return false;
+            const rect = navArea.getBoundingClientRect();
+            const extra = this.navRailThreshold;
+            return clientX >= (rect.left - extra) && clientX <= (rect.right + extra);
+        },
+        updateNavIndicator() {
+            if (!this.navIndicator) return;
+            const activeTab = this.tabNavItems.find(nav => nav.classList.contains('active'));
+            const navWrap = document.getElementById('main-nav');
+            if (!activeTab || !navWrap) {
+                this.navIndicator.style.opacity = '0';
+                return;
+            }
+
+            const navRect = navWrap.getBoundingClientRect();
+            const activeRect = activeTab.getBoundingClientRect();
+            const top = Math.max(0, activeRect.top - navRect.top + 2);
+            const height = Math.max(8, activeRect.height - 4);
+
+            this.navIndicator.style.top = `${top}px`;
+            this.navIndicator.style.height = `${height}px`;
+            this.navIndicator.style.opacity = '1';
         },
         bindScrollTabSwitch() {
             const portraitMedia = window.matchMedia('(max-width: 767px) and (orientation: portrait)');
@@ -363,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.addEventListener('wheel', (event) => {
                 if (!portraitMedia.matches) return;
+                if (!this.isOnNavRail(event.clientX)) return;
                 if (Math.abs(event.deltaY) < 20) return;
                 event.preventDefault();
                 trySwitchByDelta(event.deltaY);
@@ -370,11 +403,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.addEventListener('touchstart', (event) => {
                 if (!portraitMedia.matches) return;
+                const touch = event.touches?.[0];
+                this.touchStartedOnRail = this.isOnNavRail(touch?.clientX);
                 this.touchStartY = event.touches?.[0]?.clientY ?? null;
             }, { passive: true });
 
             window.addEventListener('touchmove', (event) => {
-                if (!portraitMedia.matches || this.touchStartY === null) return;
+                if (!portraitMedia.matches || this.touchStartY === null || !this.touchStartedOnRail) return;
                 const currentY = event.touches?.[0]?.clientY;
                 if (typeof currentY !== 'number') return;
 
@@ -388,6 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             window.addEventListener('touchend', () => {
                 this.touchStartY = null;
+                this.touchStartedOnRail = false;
             }, { passive: true });
         },
         switchTab(navElement, targetId, theme, updateHash = true) {
@@ -428,6 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             this.navItems.forEach(n => n.classList.remove('active')); 
             navElement.classList.add('active');
+            this.updateNavIndicator();
             
             BGEngine.setTheme(theme);
 
