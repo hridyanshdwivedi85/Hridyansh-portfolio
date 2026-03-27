@@ -2,7 +2,10 @@
 <html lang="en" class="scrollbar-hide bg-black">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Celestial Engine V3 | Advanced Physics & Raytracing</title>
     
     <!-- Tailwind CSS -->
@@ -17,7 +20,18 @@
     
             <style>
         body { margin: 0; overflow: hidden; background: #000; }
+        body.force-fullscreen-fallback {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
         #webgl-container { position: absolute; inset: 0; width: 100vw; height: 100vh; z-index: 0; cursor: crosshair; overflow: hidden; touch-action: none; }
+        body.force-fullscreen-fallback #webgl-container {
+            width: 100dvw;
+            height: 100dvh;
+        }
         .glass-panel { background: rgba(5, 5, 10, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.9); }
         .sys-button { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .sys-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,255,255,0.1); }
@@ -1034,8 +1048,11 @@
             }, 1000);
         }, 6000);
 
-        const isLandscapeMobile = () => window.matchMedia('(max-width: 1024px) and (orientation: landscape)').matches;
-        let shouldEnforceLandscapeFullscreen = false;
+        const mobileLandscapeQuery = window.matchMedia('(max-width: 1024px) and (orientation: landscape)');
+        const isLandscapeMobile = () => mobileLandscapeQuery.matches;
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        let shouldEnforceLandscapeFullscreen = true;
+        let userActivatedFullscreen = false;
 
         const requestFullscreenWithHiddenUi = async () => {
             const docEl = document.documentElement;
@@ -1050,7 +1067,17 @@
         };
 
         const syncLandscapeFullscreen = async () => {
-            if (!shouldEnforceLandscapeFullscreen || !isLandscapeMobile()) return;
+            if (!shouldEnforceLandscapeFullscreen) return;
+            const isLandscape = isLandscapeMobile();
+            document.body.classList.toggle('force-fullscreen-fallback', isLandscape && isIOS);
+
+            if (!isLandscape) {
+                if (fullscreenBtn) {
+                    fullscreenBtn.innerHTML = '<i class="fas fa-mobile-screen mr-1"></i> rotate device';
+                }
+                return;
+            }
+
             try {
                 await requestFullscreenWithHiddenUi();
                 if (screen.orientation?.lock) {
@@ -1060,6 +1087,9 @@
                     fullscreenBtn.innerHTML = '<i class="fas fa-check mr-1"></i> landscape on';
                 }
             } catch (err) {
+                if (fullscreenBtn) {
+                    fullscreenBtn.innerHTML = '<i class="fas fa-check mr-1"></i> immersive mode';
+                }
                 console.warn('Landscape fullscreen sync failed:', err);
             }
         };
@@ -1067,6 +1097,7 @@
         const enterLandscapeFullscreen = async () => {
             try {
                 shouldEnforceLandscapeFullscreen = true;
+                userActivatedFullscreen = true;
                 if (!isLandscapeMobile() && fullscreenBtn) {
                     fullscreenBtn.innerHTML = '<i class="fas fa-mobile-screen mr-1"></i> rotate device';
                 }
@@ -1079,9 +1110,19 @@
             }
         };
 
+        const primeMobileFullscreen = () => {
+            if (userActivatedFullscreen) return;
+            userActivatedFullscreen = true;
+            syncLandscapeFullscreen();
+        };
+
         fullscreenBtn?.addEventListener('click', enterLandscapeFullscreen);
+        window.addEventListener('pointerdown', primeMobileFullscreen, { once: true, passive: true });
+        window.addEventListener('touchend', primeMobileFullscreen, { once: true, passive: true });
         window.addEventListener('resize', syncLandscapeFullscreen, { passive: true });
         window.addEventListener('orientationchange', syncLandscapeFullscreen);
+        document.addEventListener('fullscreenchange', syncLandscapeFullscreen);
+        mobileLandscapeQuery.addEventListener?.('change', syncLandscapeFullscreen);
 
     </script>
 </body>
