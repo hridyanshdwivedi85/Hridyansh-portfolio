@@ -184,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const cursorDot = document.getElementById("cursor-dot");
     const cursorOutline = document.getElementById("cursor-outline");
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
     window.addEventListener("mousemove", (e) => {
         // Only run if the device has a mouse pointer (ignores touch screens)
         if (window.matchMedia("(pointer: fine)").matches) {
@@ -305,9 +306,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if(targetId === 'mod-entropy') {
                 cursorOutline.classList.add('entropy-cursor');
                 cursorDot.classList.add('entropy-cursor-dot');
+                if (isTouchDevice) {
+                    cursorOutline.style.opacity = '0';
+                    cursorDot.style.opacity = '0';
+                }
             } else {
                 cursorOutline.classList.remove('entropy-cursor');
                 cursorDot.classList.remove('entropy-cursor-dot');
+                cursorOutline.style.opacity = '';
+                cursorDot.style.opacity = '';
                 if (window.EntropyEngine) {
                     EntropyEngine.sequenceStarted = false;
                     EntropyEngine.stopAmbientLoop?.();
@@ -509,6 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnWine: document.getElementById('btn-wine'),
                 btnVodka: document.getElementById('btn-vodka'),
                 btnIce: document.getElementById('btn-ice'),
+                btnAddWater: document.getElementById('btn-add-water'),
                 btnPour: document.getElementById('btn-pour'),
                 btnReset: document.getElementById('btn-reset'),
                 sliderWater: document.getElementById('slider-water'),
@@ -522,7 +530,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 statusText: document.getElementById('mix-status-text'),
                 readoutVol: document.getElementById('readout-vol'),
-                readoutAbv: document.getElementById('readout-abv')
+                readoutAbv: document.getElementById('readout-abv'),
+                readoutTemp: document.getElementById('readout-temp'),
+                panel: document.getElementById('mixology-panel')
             };
 
             this.bindEvents();
@@ -542,6 +552,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.waterMl = parseInt(e.target.value);
                 this.ui.valWater.innerText = this.waterMl + "ml";
                 this.updateMetrics();
+            });
+
+            this.ui.btnAddWater.addEventListener('click', () => {
+                if(this.state !== 'POURING') this.addWater();
             });
 
             this.ui.btnPour.addEventListener('click', () => {
@@ -601,15 +615,21 @@ document.addEventListener('DOMContentLoaded', () => {
             // Calculate physics-based landing position
             // Spread ice horizontally, stack them vertically
             const rot = (Math.random() - 0.5) * 60;
-            const xOffset = (Math.random() - 0.5) * 40; 
-            const yStack = (this.iceCount * 25); // Stack height offset
+            const glassWidth = this.ui.glass.clientWidth;
+            const glassHeight = this.ui.glass.clientHeight;
+            const cubeSize = Math.max(18, Math.min(34, glassWidth * 0.22));
+            const xOffset = (Math.random() - 0.5) * Math.max(12, glassWidth * 0.28);
+            const yStack = this.iceCount * (cubeSize * 0.42);
             
             this.ui.iceContainer.appendChild(ice);
 
+            ice.style.width = `${cubeSize}px`;
+            ice.style.height = `${cubeSize}px`;
+
             // Realistic Drop Animation
             gsap.fromTo(ice, 
-                { y: -300, x: xOffset, rotation: rot + 180, opacity: 0, scale: 0.5 },
-                { y: `calc(100% - ${yStack}px)`, x: xOffset, rotation: rot, opacity: 1, scale: 1, duration: 0.7, ease: "bounce.out" }
+                { y: -230, x: xOffset, rotation: rot + 150, opacity: 0, scale: 0.65 },
+                { y: `${Math.max(6, glassHeight - cubeSize - yStack)}px`, x: xOffset, rotation: rot, opacity: 1, scale: 1, duration: 0.95, ease: "bounce.out" }
             );
 
             // Displace liquid if already poured (Archimedes principle)
@@ -620,6 +640,30 @@ document.addEventListener('DOMContentLoaded', () => {
             
             this.ui.statusText.innerText = `ICE CUBE INSERTED (${this.iceCount})`;
             this.ui.statusText.style.color = "#38bdf8";
+            this.updateStatusLights();
+        },
+
+        addWater() {
+            if(!this.waterMl) {
+                this.ui.statusText.innerText = "SET H2O SLIDER FIRST";
+                this.ui.statusText.style.color = "#60a5fa";
+                return;
+            }
+            this.ui.statusText.innerText = `WATER DOSING +${this.waterMl}ml`;
+            this.ui.statusText.style.color = "#60a5fa";
+            gsap.fromTo(this.ui.stream,
+                { scaleY: 0, background: 'rgba(140,210,255,0.6)' },
+                {
+                    scaleY: 1,
+                    duration: 0.24,
+                    ease: "power1.out",
+                    yoyo: true,
+                    repeat: 1,
+                    onComplete: () => gsap.set(this.ui.stream, { scaleY: 0 })
+                }
+            );
+            this.updateMetrics();
+            this.updateStatusLights();
         },
 
         startPour() {
@@ -629,7 +673,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.audioRef = AudioEngine.startPour();
             
             const baseVol = this.drinks[this.drink].vol;
-            const targetFill = Math.min(95, (baseVol + this.waterMl + (this.iceCount * 15)) / 2.5);
+            const maxFillByDrink = this.drink === 'vodka' ? 86 : (this.drink === 'wine' ? 90 : 82);
+            const targetFill = Math.min(maxFillByDrink, (baseVol + this.waterMl + (this.iceCount * 12)) / 2.8);
 
             // Stream Styling (mix color if water added)
             const pureColor = this.drinks[this.drink].colorBase;
@@ -668,6 +713,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.state = 'READY';
                 this.ui.statusText.innerText = "READY TO SERVE";
                 this.ui.statusText.style.color = "#4ade80";
+                this.updateStatusLights();
             });
         },
 
@@ -686,6 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.updateMetrics(0);
             this.ui.statusText.innerText = "SYSTEM FLUSHED";
             this.ui.statusText.style.color = "#4ade80";
+            this.updateStatusLights();
         },
 
         updateMetrics(progress = 1) {
@@ -708,6 +755,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dilutedAbv = (baseVol * baseAbv) / totalLiquid;
                 this.ui.readoutAbv.innerHTML = `${dilutedAbv.toFixed(1)}<span class="text-xs text-orange-700">%</span>`;
             }
+            const temp = this.computeTemperature(currentTotal);
+            this.ui.readoutTemp.innerHTML = `${temp}<span class="text-xs text-cyan-700">°C</span>`;
+            this.updateStatusLights();
+        },
+
+        computeTemperature(totalVolume) {
+            const base = this.drink === 'wine' ? 16 : 7;
+            const warmByVolume = Math.min(8, totalVolume * 0.04);
+            const chillByIce = this.iceCount * 2.4;
+            return Math.max(-2, Math.round((base + warmByVolume - chillByIce) * 10) / 10);
+        },
+
+        updateStatusLights() {
+            const cold = this.computeTemperature(Math.floor(this.liquidVol));
+            const activeColor = this.state === 'POURING'
+                ? 'rgba(250, 204, 21, 0.55)'
+                : (cold <= 5 ? 'rgba(56, 189, 248, 0.45)' : 'rgba(74, 222, 128, 0.45)');
+            this.ui.panel.style.boxShadow = `0 30px 60px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.1), 0 0 24px ${activeColor}`;
         }
     };
 	
@@ -998,6 +1063,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ambientLoop = null;
             this.ambientGain = null;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
+            this.wordExplosionEnabled = !this.isMobile;
             this.lineConnectCooldown = 0;
             this.lastTrailSpawn = 0;
 
@@ -1019,6 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.y = touch.clientY;
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
+                    if (navigator.vibrate) navigator.vibrate(10);
                 }
             }, { passive: true });
             window.addEventListener('touchmove', (e) => {
@@ -1028,6 +1095,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.y = touch.clientY;
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
+                    if (navigator.vibrate) navigator.vibrate(8);
                 }
             }, { passive: true });
 
@@ -1051,6 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.width = this.width;
             this.canvas.height = this.height;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
+            this.wordExplosionEnabled = !this.isMobile;
         },
 
         spawnTrailParticles(x, y) {
@@ -1126,7 +1195,9 @@ document.addEventListener('DOMContentLoaded', () => {
                   if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.playSteamBurst === 'function') {
                       AudioEngine.playSteamBurst();
                   }
-                  this.explodeText(this.isMobile ? "Create. Code. Evolve." : "Coding means creativity. Systems become art.");
+                  if (this.wordExplosionEnabled) {
+                      this.explodeText("Coding means creativity. Systems become art.");
+                  }
                   // Stage 4: Calm ambient phase
                   setTimeout(() => this.startAmbientLoop(), 900);
               });
