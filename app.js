@@ -249,12 +249,13 @@ document.addEventListener('DOMContentLoaded', () => {
             else if(newTheme === 'coffee') document.body.style.backgroundColor = "#0a0602";
             else if(newTheme === 'aurora') document.body.style.backgroundColor = "#050208";
             else if(newTheme === 'geo') document.body.style.backgroundColor = "#020617";
+            else if(newTheme === 'music') document.body.style.backgroundColor = "#020202";
             else if(newTheme === 'entropy') document.body.style.backgroundColor = "#0b0806";
             else document.body.style.backgroundColor = "#030303";
         },
         createParticles() {
             this.particles = [];
-            const count = this.theme === 'galaxy' ? 150 : (this.theme === 'coffee' ? 60 : 100);
+            const count = this.theme === 'galaxy' ? 150 : (this.theme === 'coffee' ? 60 : (this.theme === 'music' ? 80 : 100));
             for(let i=0; i<count; i++) {
                 this.particles.push({
                     x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height,
@@ -1244,11 +1245,109 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    /**
+     * 9. MUSIC PLAYER (Minimal Local Media Deck)
+     */
+    const MusicPlayer = {
+        tracks: [
+            {
+                title: 'Local Track Ready',
+                artist: 'Drop your own audio file in assets/media',
+                src: 'assets/media/music-track.mp3'
+            }
+        ],
+        currentIndex: 0,
+        init() {
+            this.audio = document.getElementById('music-audio');
+            this.playBtn = document.getElementById('music-play');
+            this.playIcon = document.getElementById('music-play-icon');
+            this.prevBtn = document.getElementById('music-prev');
+            this.nextBtn = document.getElementById('music-next');
+            this.progress = document.getElementById('music-progress');
+            this.volume = document.getElementById('music-volume');
+            this.currentTimeEl = document.getElementById('music-current-time');
+            this.durationEl = document.getElementById('music-duration');
+            this.trackTitleEl = document.getElementById('music-track-title');
+            this.trackArtistEl = document.getElementById('music-track-artist');
+
+            if (!this.audio || !this.playBtn || !this.progress || !this.volume) return;
+
+            this.loadTrack(0);
+            this.bind();
+        },
+        bind() {
+            this.playBtn.addEventListener('click', () => this.togglePlay());
+            this.prevBtn?.addEventListener('click', () => this.prevTrack());
+            this.nextBtn?.addEventListener('click', () => this.nextTrack());
+
+            this.audio.addEventListener('loadedmetadata', () => {
+                this.durationEl.textContent = this.formatTime(this.audio.duration || 0);
+            });
+            this.audio.addEventListener('timeupdate', () => {
+                const duration = this.audio.duration || 0;
+                const current = this.audio.currentTime || 0;
+                this.currentTimeEl.textContent = this.formatTime(current);
+                this.progress.value = duration ? (current / duration) * 100 : 0;
+            });
+            this.audio.addEventListener('ended', () => this.nextTrack());
+            this.audio.addEventListener('play', () => this.setPlayingState(true));
+            this.audio.addEventListener('pause', () => this.setPlayingState(false));
+            this.audio.addEventListener('error', () => {
+                this.trackArtistEl.textContent = 'Track not found. Add your file with the exact name.';
+                this.setPlayingState(false);
+            });
+
+            this.progress.addEventListener('input', () => {
+                const duration = this.audio.duration || 0;
+                if (!duration) return;
+                this.audio.currentTime = (Number(this.progress.value) / 100) * duration;
+            });
+
+            this.volume.addEventListener('input', () => {
+                this.audio.volume = Number(this.volume.value);
+            });
+            this.audio.volume = Number(this.volume.value);
+        },
+        loadTrack(index) {
+            const total = this.tracks.length;
+            this.currentIndex = (index + total) % total;
+            const track = this.tracks[this.currentIndex];
+            this.audio.src = track.src;
+            this.trackTitleEl.textContent = track.title;
+            this.trackArtistEl.textContent = track.artist;
+            this.currentTimeEl.textContent = '00:00';
+            this.durationEl.textContent = '00:00';
+            this.progress.value = 0;
+        },
+        togglePlay() {
+            if (this.audio.paused) this.audio.play().catch(() => {});
+            else this.audio.pause();
+        },
+        prevTrack() {
+            this.loadTrack(this.currentIndex - 1);
+            this.audio.play().catch(() => {});
+        },
+        nextTrack() {
+            this.loadTrack(this.currentIndex + 1);
+            this.audio.play().catch(() => {});
+        },
+        setPlayingState(isPlaying) {
+            if (!this.playIcon) return;
+            this.playIcon.classList.toggle('fa-play', !isPlaying);
+            this.playIcon.classList.toggle('fa-pause', isPlaying);
+        },
+        formatTime(seconds) {
+            if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+    };
 
     
     
    /**
-     * 9. ENTROPY ENGINE (Kinetic Particle Exploder & Bokeh Trail)
+     * 10. ENTROPY ENGINE (Kinetic Particle Exploder & Bokeh Trail)
      */
     const EntropyEngine = {
         init() {
@@ -1338,7 +1437,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         createSpaceField() {
-            const starCount = this.isMobile ? 180 : 380;
+            const starCount = this.isMobile ? 320 : 680;
             this.spaceStars = [];
             for (let i = 0; i < starCount; i++) {
                 this.spaceStars.push(this.makeStar(true));
@@ -1350,7 +1449,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: (Math.random() - 0.5) * this.width,
                 y: (Math.random() - 0.5) * this.height,
                 z: randomDepth ? (Math.random() * this.width) : this.width,
-                size: this.isMobile ? (Math.random() * 0.45 + 0.15) : (Math.random() * 0.85 + 0.2),
+                size: this.isMobile ? (Math.random() * 0.25 + 0.08) : (Math.random() * 0.5 + 0.1),
                 hue: 200 + Math.random() * 28,
                 twinkle: Math.random() * Math.PI * 2
             };
@@ -1417,7 +1516,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const movement = Math.max(2, Math.hypot(dx, dy));
             const dirX = dx / movement;
             const dirY = dy / movement;
-            const count = this.isMobile ? 3 : 6;
+            const count = this.isMobile ? 6 : 11;
             const colors = ['255, 255, 255', '217, 119, 6', '125, 211, 252'];
 
             for(let i=0; i<count; i++) {
@@ -1431,7 +1530,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     baseY: tailY,
                     vx: (-dirX * 1.2) + ((Math.random() - 0.5) * 0.45),
                     vy: (-dirY * 1.2) + ((Math.random() - 0.5) * 0.45),
-                    size: this.isMobile ? (Math.random() * 0.65 + 0.5) : (Math.random() * 1.1 + 0.65),
+                    size: this.isMobile ? (Math.random() * 0.32 + 0.2) : (Math.random() * 0.65 + 0.3),
                     color: colors[Math.floor(Math.random() * colors.length)],
                     life: this.isMobile ? (34 + Math.random() * 20) : (56 + Math.random() * 36),
                     maxLife: this.isMobile ? 60 : 92,
@@ -1709,6 +1808,7 @@ document.addEventListener('DOMContentLoaded', () => {
     MixologyEngine.init();
     CompilerArena.init();
     SocialCard.init();
+    MusicPlayer.init();
     window.EntropyEngine = EntropyEngine;
     EntropyEngine.init(); // <-- Add this initialization
      
