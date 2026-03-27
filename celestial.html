@@ -184,36 +184,6 @@
                 padding: 6px 12px !important;
             }
         }
-
-        #btn-fullscreen-landscape {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            z-index: 120;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.22);
-            background: rgba(5, 5, 10, 0.72);
-            color: #f8fafc;
-            padding: 9px 14px;
-            font-family: 'Fira Code', monospace;
-            font-size: 10px;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.45);
-        }
-        #btn-fullscreen-landscape.hidden {
-            display: none;
-        }
-        @media (max-width: 768px) {
-            #btn-fullscreen-landscape {
-                top: 10px;
-                right: 10px;
-                font-size: 9px;
-                padding: 8px 11px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -232,9 +202,6 @@
 
     <!-- WebGL Canvas Container -->
     <div id="webgl-container"></div>
-    <button id="btn-fullscreen-landscape" class="sound-click hidden" type="button" aria-label="Enter fullscreen landscape mode">
-        <i class="fas fa-expand mr-1"></i> fullscreen
-    </button>
 
     <!-- Deep-Scan HUD Overlays -->
     <div class="absolute top-0 left-0 w-full h-full pointer-events-none z-10" id="celestial-ui">
@@ -999,7 +966,6 @@
         const loadScreen = document.getElementById('loading-screen');
         const quoteEl = document.getElementById('welcome-quote');
         const spaceWarp = document.getElementById('space-warp');
-        const fullscreenBtn = document.getElementById('btn-fullscreen-landscape');
         const welcomeQuotes = [
             '"Welcome, Commander. Stars are only the beginning."',
             '"Every orbit is a story. Every light is a destination."',
@@ -1028,33 +994,8 @@
             setTimeout(() => {
                 loadScreen.style.display = 'none';
                 CelestialEngine.init();
-                if (fullscreenBtn && window.matchMedia('(max-width: 1024px)').matches) {
-                    fullscreenBtn.classList.remove('hidden');
-                }
             }, 1000);
         }, 6000);
-
-        const enterLandscapeFullscreen = async () => {
-            const docEl = document.documentElement;
-            try {
-                if (!document.fullscreenElement) {
-                    await (docEl.requestFullscreen?.() || docEl.webkitRequestFullscreen?.());
-                }
-                if (screen.orientation?.lock) {
-                    await screen.orientation.lock('landscape');
-                }
-                if (fullscreenBtn) {
-                    fullscreenBtn.innerHTML = '<i class="fas fa-check mr-1"></i> landscape on';
-                }
-            } catch (err) {
-                if (fullscreenBtn) {
-                    fullscreenBtn.innerHTML = '<i class="fas fa-mobile-screen mr-1"></i> rotate device';
-                }
-                console.warn('Fullscreen/landscape request failed:', err);
-            }
-        };
-
-        fullscreenBtn?.addEventListener('click', enterLandscapeFullscreen);
 
     </script>
 </body>
