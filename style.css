@@ -778,7 +778,12 @@ input:checked + .slider:before { transform: translateX(18px); }
         min-height: clamp(200px, 33vh, 290px);
         height: auto;
         overflow: visible;
+        padding-top: 14px;
     }
+
+    #mod-brew .realistic-glass.whiskey-shape { width: 156px; height: 174px; }
+    #mod-brew .realistic-glass.wine-shape { width: 192px; height: 210px; }
+    #mod-brew .realistic-glass.vodka-shape { width: 106px; height: 230px; }
 
     #mod-brew .w-full.flex.flex-wrap.md\:flex-nowrap {
         gap: 10px !important;
@@ -1114,7 +1119,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 /* --- 6. LIQUID PHYSICS LAYER --- */
 .realistic-liquid {
     position: absolute;
-    bottom: var(--glass-wall);
+    bottom: 0;
     left: var(--glass-wall);
     width: calc(100% - (var(--glass-wall) * 2));
     height: 0%; /* JS animates this */
