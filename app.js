@@ -1269,7 +1269,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.lastVibrateAt = 0;
             this.spaceStars = [];
             this.starFov = 520;
-            this.spaceSpeed = this.isMobile ? 12 : 15;
+            this.baseSpaceSpeed = 50;
+            this.spaceSpeed = this.baseSpaceSpeed;
+            this.isSpeedBoosting = false;
 
             this.resize();
             window.addEventListener('resize', () => this.resize());
@@ -1282,6 +1284,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.spawnTrailParticles(e.clientX, e.clientY);
                 }
             });
+            window.addEventListener('mousedown', () => {
+                if(document.getElementById('mod-entropy').classList.contains('active')) {
+                    this.increaseSpeed();
+                    this.isSpeedBoosting = true;
+                }
+            });
+            window.addEventListener('mouseup', () => {
+                this.isSpeedBoosting = false;
+            });
             window.addEventListener('touchstart', (e) => {
                 const touch = e.touches?.[0];
                 if (!touch) return;
@@ -1289,6 +1300,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.y = touch.clientY;
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
+                    this.increaseSpeed();
+                    this.isSpeedBoosting = true;
                     this.vibratePulse(12);
                 }
             }, { passive: true });
@@ -1299,8 +1312,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.mouse.y = touch.clientY;
                 if(document.getElementById('mod-entropy').classList.contains('active')) {
                     this.spawnTrailParticles(touch.clientX, touch.clientY);
+                    this.increaseSpeed(2);
                     this.vibratePulse(7);
                 }
+            }, { passive: true });
+            window.addEventListener('touchend', () => {
+                this.isSpeedBoosting = false;
             }, { passive: true });
 
             // Bind observer to start sequence only when tab is opened
@@ -1324,12 +1341,13 @@ document.addEventListener('DOMContentLoaded', () => {
             this.canvas.height = this.height;
             this.isMobile = window.matchMedia('(max-width: 767px)').matches;
             this.wordExplosionEnabled = false;
-            this.spaceSpeed = this.isMobile ? 12 : 15;
+            this.baseSpaceSpeed = 50;
+            this.spaceSpeed = Math.max(this.spaceSpeed || this.baseSpaceSpeed, this.baseSpaceSpeed);
             this.createSpaceField();
         },
 
         createSpaceField() {
-            const starCount = this.isMobile ? 220 : 420;
+            const starCount = this.isMobile ? 180 : 380;
             this.spaceStars = [];
             for (let i = 0; i < starCount; i++) {
                 this.spaceStars.push(this.makeStar(true));
@@ -1341,10 +1359,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: (Math.random() - 0.5) * this.width,
                 y: (Math.random() - 0.5) * this.height,
                 z: randomDepth ? (Math.random() * this.width) : this.width,
-                size: Math.random() * 1.25 + 0.2,
+                size: this.isMobile ? (Math.random() * 0.45 + 0.15) : (Math.random() * 0.85 + 0.2),
                 hue: 200 + Math.random() * 28,
                 twinkle: Math.random() * Math.PI * 2
             };
+        },
+
+        increaseSpeed(multiplier = 1) {
+            this.spaceSpeed += 25 * multiplier;
         },
 
         drawSpaceField() {
@@ -1403,7 +1425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (now - this.lastTrailSpawn < spawnInterval) return;
             this.lastTrailSpawn = now;
 
-            const count = this.isMobile ? (Math.random() * 2 + 1) : (Math.random() * 3 + 2);
+            const count = this.isMobile ? (Math.random() * 1.5 + 1) : (Math.random() * 2.5 + 2);
             const colors = ['255, 255, 255', '217, 119, 6', '150, 150, 150']; 
             
             for(let i=0; i<count; i++) {
@@ -1412,7 +1434,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     y: y + (Math.random() - 0.5) * 10,
                     vx: (Math.random() - 0.5) * 1.0,
                     vy: (Math.random() - 0.5) * 1.0 - 0.5, // Stronger upward smoke-like drift
-                    size: Math.random() * 1.25 + 0.75,
+                    size: this.isMobile ? (Math.random() * 0.45 + 0.25) : (Math.random() * 0.95 + 0.45),
                     color: colors[Math.floor(Math.random() * colors.length)],
                     life: this.isMobile ? (40 + Math.random() * 30) : (70 + Math.random() * 50),
                     maxLife: this.isMobile ? 80 : 120
@@ -1562,6 +1584,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if(!document.getElementById('mod-entropy').classList.contains('active')) return;
 
             // Infinite deep-space motion background (FPS travel effect).
+            if (!this.isSpeedBoosting && this.spaceSpeed > this.baseSpaceSpeed) {
+                this.spaceSpeed = Math.max(this.baseSpaceSpeed, this.spaceSpeed * 0.985);
+            }
             this.drawSpaceField();
 
             // Draw Bokeh Trail Particles
