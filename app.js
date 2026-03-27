@@ -622,14 +622,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Handle Wine Stem
             if(type === 'wine') {
                 gsap.to(this.ui.stem, {opacity: 1, duration: 0.5});
-                this.ui.liquid.style.borderRadius = "0 0 80px 80px";
             } else if (type === 'whiskey') {
                 gsap.to(this.ui.stem, {opacity: 0, duration: 0.3});
-                this.ui.liquid.style.borderRadius = "0 0 20px 20px";
             } else {
                 gsap.to(this.ui.stem, {opacity: 0, duration: 0.3});
-                this.ui.liquid.style.borderRadius = "0 0 10px 10px";
             }
+            this.applyLiquidAppearance();
         },
 
         addIce() {
@@ -725,12 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tl.to(this.ui.stream, { scaleY: 1, duration: 0.3, ease: "power2.in" });
             
             // 2. Liquid Rises
-            this.ui.liquid.style.background = this.drinks[this.drink].colorGradient;
-            if(this.waterMl > 0) {
-                this.ui.liquid.style.opacity = "0.85"; // Water dilution
-            } else {
-                this.ui.liquid.style.opacity = "1";
-            }
+            this.applyLiquidAppearance(targetMl, this.pouredSpiritMl + pendingSpirit);
 
             tl.to(this.ui.liquid, {
                 height: `${targetFill}%`, 
@@ -758,6 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.state = 'READY';
                 this.ui.statusText.innerText = "READY TO SERVE";
                 this.ui.statusText.style.color = "#4ade80";
+                this.applyLiquidAppearance();
                 this.updateMetrics(1);
                 this.updateStatusLights();
             });
@@ -777,8 +771,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ui.iceContainer.innerHTML = '';
             }});
             
+            gsap.killTweensOf(this.ui.liquid);
             gsap.to(this.ui.liquid, { height: "0%", duration: 0.5, ease: "power2.inOut" });
             gsap.to(this.ui.stream, { scaleY: 0, duration: 0.2 });
+            this.ui.liquid.style.background = 'transparent';
+            this.ui.liquid.style.opacity = '0';
             
             this.updateMetrics(0);
             this.ui.statusText.innerText = "SYSTEM FLUSHED";
@@ -851,10 +848,27 @@ document.addEventListener('DOMContentLoaded', () => {
         animateLiquidToCurrentVolume(duration = 0.45) {
             const targetFill = this.computeFillPercent(this.pouredSpiritMl + this.pouredWaterMl);
             this.liquidVol = targetFill;
-            this.ui.liquid.style.background = this.drinks[this.drink].colorGradient;
-            if(this.pouredWaterMl > 0) this.ui.liquid.style.opacity = "0.88";
+            this.applyLiquidAppearance();
             gsap.to(this.ui.liquid, { height: `${targetFill}%`, duration, ease: "power2.out" });
             this.updateMetrics();
+        },
+
+        applyLiquidAppearance(totalMl = this.pouredSpiritMl + this.pouredWaterMl, spiritMl = this.pouredSpiritMl) {
+            if(totalMl <= 0) {
+                this.ui.liquid.style.background = 'transparent';
+                this.ui.liquid.style.opacity = '0';
+                return;
+            }
+
+            const waterRatio = Math.max(0, Math.min(1, 1 - (spiritMl / Math.max(1, totalMl))));
+            if(spiritMl <= 0) {
+                this.ui.liquid.style.background = "linear-gradient(to right, rgba(220,242,255,0.08) 0%, rgba(255,255,255,0.18) 50%, rgba(220,242,255,0.08) 100%)";
+                this.ui.liquid.style.opacity = "0.92";
+                return;
+            }
+
+            this.ui.liquid.style.background = this.drinks[this.drink].colorGradient;
+            this.ui.liquid.style.opacity = `${Math.max(0.56, 1 - (waterRatio * 0.42))}`;
         },
 
         syncStreamHeight() {
