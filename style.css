@@ -2,6 +2,7 @@
     --brand-orange: #d97706;
     --bg-dark: #050505;
     --panel-border: rgba(255, 255, 255, 0.05);
+    --safe-nav-space: 8rem;
 }
 
 body, html { 
@@ -506,15 +507,24 @@ input:checked + .slider:before { transform: translateX(18px); }
         height: 150px !important;
     }
 
-    #mod-brew .relative.flex-grow {
-        overflow: hidden !important;
-        min-height: 260px;
+    #mod-brew #mixology-panel {
+        max-height: min(920px, calc(100dvh - var(--safe-nav-space)));
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
-    #brew-machine-panel {
-        min-height: auto !important;
-        max-height: none;
-        padding: 0.7rem 0.65rem !important;
+    #mod-brew .machine-layout {
+        gap: 0.6rem;
+    }
+
+    #mod-brew .machine-stage {
+        min-height: clamp(250px, 44vh, 360px);
+        overflow: visible;
+    }
+
+    #mod-brew .glass-stage-area {
+        min-height: clamp(200px, 33vh, 290px);
+        height: auto;
         overflow: visible;
     }
 
@@ -611,9 +621,6 @@ input:checked + .slider:before { transform: translateX(18px); }
     .lab-functional-layer .espresso-stream { top: 62px; height: 54px; }
     .lab-functional-layer .espresso-cup { top: 108px; width: min(84px, 48%); }
 
-    #brew-machine-panel {
-        max-height: none;
-    }
     .lab-brand-shell { gap: 8px; }
     .lab-brand-left { gap: 8px; }
     .lab-brand-accent { height: 36px; }
@@ -643,7 +650,6 @@ input:checked + .slider:before { transform: translateX(18px); }
 @media (min-width: 1024px) {
     .compiler-scale-fix { transform: scale(0.90); transform-origin: center center; }
     .mobile-coffee-scale { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; transform: scale(0.9); transform-origin: center top; min-height: 190px; }
-    #brew-machine-panel { max-width: 680px; gap: 0.65rem !important; padding: 0.7rem !important; }
 }
 
 /* ESSENCE Flip Card Module */
@@ -687,13 +693,13 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 .machine-controls-left, .machine-controls-right { padding: 1.25rem; }
 .machine-stage {
-    min-height: 300px;
+    min-height: clamp(260px, 42vh, 390px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     background: radial-gradient(circle at center, #1a1a24 0%, #050505 80%);
     box-shadow: inset 0 20px 50px rgba(0,0,0,1), inset 0 -20px 50px rgba(0,0,0,1);
 }
@@ -704,23 +710,27 @@ input:checked + .slider:before { transform: translateX(18px); }
         flex-direction: row; /* Row layout for the machine */
     }
     .machine-controls-left { width: 25%; border-right: 1px solid rgba(255,255,255,0.05); }
-    .machine-stage { width: 50%; min-height: 340px; }
+    .machine-stage { width: 50%; min-height: clamp(300px, 48vh, 430px); }
     .machine-controls-right { width: 25%; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: space-between;}
 }
 
 #mod-brew {
     top: 3vh;
     bottom: 2vh;
-    overflow-y: hidden;
+    overflow-y: auto;
     padding-bottom: 0;
 }
 
 #mod-brew #mixology-panel {
-    max-height: calc(100dvh - 8vh);
+    max-height: min(920px, calc(100dvh - var(--safe-nav-space)));
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 #mod-brew .glass-stage-area {
-    height: 260px;
+    min-height: clamp(210px, 35vh, 320px);
+    height: auto;
+    overflow: visible;
 }
 
 /* --- 2. MODERN HARDWARE BUTTONS --- */
