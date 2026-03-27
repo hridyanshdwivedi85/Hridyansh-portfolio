@@ -401,6 +401,152 @@ body, html {
 .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
 input:checked + .slider { background-color: #0ea5e9; border-color: #0ea5e9; box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);}
 input:checked + .slider:before { transform: translateX(18px); }
+
+/* CONTACT / IDENTITY MODULE: MOBILE-FIRST LAYOUT TUNING */
+@media (max-width: 767px) {
+    #mod-identity .identity-main-wrap {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        gap: 0.9rem !important;
+        padding: 0 0.35rem;
+    }
+
+    #mod-identity .identity-linkedin-card,
+    #mod-identity .identity-right-column,
+    #mod-identity .identity-terminal-card,
+    #mod-identity .identity-status-card {
+        width: 100% !important;
+    }
+
+    #mod-identity .identity-linkedin-card {
+        max-width: 430px !important;
+    }
+
+    #mod-identity .identity-right-column {
+        max-width: 430px !important;
+        margin: 0 auto;
+        gap: 0.6rem !important;
+    }
+
+    #mod-identity .identity-terminal-card,
+    #mod-identity .identity-status-card {
+        max-width: 430px;
+        margin: 0 auto;
+        padding: 0.9rem !important;
+    }
+
+    #mod-identity .identity-social-grid {
+        max-width: 430px;
+        margin: 0 auto;
+        gap: 0.45rem !important;
+    }
+
+    #mod-identity .identity-social-grid a {
+        padding-top: 0.7rem !important;
+        padding-bottom: 0.7rem !important;
+        gap: 0.35rem !important;
+    }
+
+    #mod-identity .identity-social-grid a > div {
+        width: 1.75rem !important;
+        height: 1.75rem !important;
+    }
+
+    #mod-identity .identity-social-grid i {
+        font-size: 0.75rem !important;
+    }
+
+    #mod-identity .identity-social-grid span {
+        font-size: 0.38rem !important;
+        letter-spacing: 0.12em !important;
+    }
+
+    #mod-identity .identity-linkedin-card .px-5 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    #mod-identity .identity-linkedin-card h2 {
+        font-size: 1.15rem !important;
+    }
+
+    #mod-identity .identity-linkedin-card p,
+    #mod-identity .identity-linkedin-card span,
+    #mod-identity .identity-linkedin-card a {
+        font-size: 0.69rem;
+        line-height: 1.4;
+    }
+
+    #mod-identity .identity-terminal-card .code-font.text-\[11px\] {
+        font-size: 0.62rem !important;
+        line-height: 1.45 !important;
+    }
+
+    #mod-identity .identity-terminal-card .code-font.text-\[10px\] {
+        font-size: 0.56rem !important;
+        letter-spacing: 0.16em !important;
+    }
+
+    #mod-identity .identity-status-card .code-font {
+        font-size: 0.45rem !important;
+    }
+
+    #mod-identity .identity-status-card .text-white.text-\[13px\] {
+        font-size: 0.72rem !important;
+        gap: 0.35rem !important;
+    }
+
+    #mod-identity .identity-footer {
+        padding-bottom: calc(env(safe-area-inset-bottom) + 88px) !important;
+    }
+}
+
+@media (max-width: 414px) {
+    #mod-identity {
+        width: calc(100vw - 1rem) !important;
+    }
+
+    #mod-identity .identity-main-wrap {
+        gap: 0.75rem !important;
+        padding: 0 0.2rem;
+    }
+
+    #mod-identity .identity-linkedin-card {
+        border-radius: 22px !important;
+    }
+
+    #mod-identity .identity-linkedin-card .px-5 {
+        padding-left: 0.85rem !important;
+        padding-right: 0.85rem !important;
+    }
+
+    #mod-identity .identity-linkedin-card h2 {
+        font-size: 1.03rem !important;
+    }
+
+    #mod-identity .identity-linkedin-card p,
+    #mod-identity .identity-linkedin-card span,
+    #mod-identity .identity-linkedin-card a {
+        font-size: 0.64rem !important;
+    }
+
+    #mod-identity .identity-terminal-card,
+    #mod-identity .identity-status-card {
+        padding: 0.8rem !important;
+    }
+}
+
+@media (max-height: 760px) and (max-width: 767px) {
+    #mod-identity .identity-main-wrap {
+        gap: 0.55rem !important;
+    }
+
+    #mod-identity .identity-footer {
+        padding-bottom: calc(env(safe-area-inset-bottom) + 96px) !important;
+    }
+}
 /* --- RESPONSIVE FIXES --- */
 @media (max-width: 1023px) {
     .module {
