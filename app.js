@@ -1254,56 +1254,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: 'Local Track Ready',
                 artist: 'Drop your own audio file in assets/media',
                 src: 'assets/media/music-track.mp3'
-            },
-            {
-                title: 'Track 02',
-                artist: 'assets/media/song-2.mp3',
-                src: 'assets/media/song-2.mp3'
-            },
-            {
-                title: 'Track 03',
-                artist: 'assets/media/song-3.mp3',
-                src: 'assets/media/song-3.mp3'
             }
         ],
         currentIndex: 0,
-        shuffleEnabled: false,
-        repeatOneEnabled: false,
-        mutedBeforeVolume: 0.65,
         init() {
             this.audio = document.getElementById('music-audio');
             this.playBtn = document.getElementById('music-play');
             this.playIcon = document.getElementById('music-play-icon');
             this.prevBtn = document.getElementById('music-prev');
             this.nextBtn = document.getElementById('music-next');
-            this.shuffleBtn = document.getElementById('music-shuffle');
-            this.repeatBtn = document.getElementById('music-repeat');
-            this.muteBtn = document.getElementById('music-mute');
             this.progress = document.getElementById('music-progress');
             this.volume = document.getElementById('music-volume');
             this.currentTimeEl = document.getElementById('music-current-time');
             this.durationEl = document.getElementById('music-duration');
             this.trackTitleEl = document.getElementById('music-track-title');
             this.trackArtistEl = document.getElementById('music-track-artist');
-            this.playlistEl = document.getElementById('music-playlist');
-            this.loadLocalBtn = document.getElementById('music-load-local');
-            this.localPicker = document.getElementById('music-local-picker');
 
             if (!this.audio || !this.playBtn || !this.progress || !this.volume) return;
 
             this.loadTrack(0);
-            this.renderPlaylist();
             this.bind();
         },
         bind() {
             this.playBtn.addEventListener('click', () => this.togglePlay());
             this.prevBtn?.addEventListener('click', () => this.prevTrack());
             this.nextBtn?.addEventListener('click', () => this.nextTrack());
-            this.shuffleBtn?.addEventListener('click', () => this.toggleShuffle());
-            this.repeatBtn?.addEventListener('click', () => this.toggleRepeatOne());
-            this.muteBtn?.addEventListener('click', () => this.toggleMute());
-            this.loadLocalBtn?.addEventListener('click', () => this.localPicker?.click());
-            this.localPicker?.addEventListener('change', (event) => this.loadLocalFiles(event.target.files));
 
             this.audio.addEventListener('loadedmetadata', () => {
                 this.durationEl.textContent = this.formatTime(this.audio.duration || 0);
@@ -1314,14 +1289,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.currentTimeEl.textContent = this.formatTime(current);
                 this.progress.value = duration ? (current / duration) * 100 : 0;
             });
-            this.audio.addEventListener('ended', () => {
-                if (this.repeatOneEnabled) {
-                    this.audio.currentTime = 0;
-                    this.audio.play().catch(() => {});
-                    return;
-                }
-                this.nextTrack();
-            });
+            this.audio.addEventListener('ended', () => this.nextTrack());
             this.audio.addEventListener('play', () => this.setPlayingState(true));
             this.audio.addEventListener('pause', () => this.setPlayingState(false));
             this.audio.addEventListener('error', () => {
@@ -1337,38 +1305,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.volume.addEventListener('input', () => {
                 this.audio.volume = Number(this.volume.value);
-                this.audio.muted = Number(this.volume.value) === 0;
-                this.muteBtn?.classList.toggle('active', this.audio.muted);
             });
             this.audio.volume = Number(this.volume.value);
-        },
-        renderPlaylist() {
-            if (!this.playlistEl) return;
-            this.playlistEl.innerHTML = '';
-            this.tracks.forEach((track, index) => {
-                const item = document.createElement('li');
-                item.className = 'music-track-item';
-                if (index === this.currentIndex) item.classList.add('active');
-                item.innerHTML = `
-                    <span class="name">${track.title}</span>
-                    <span class="meta">${this.formatTrackMeta(track.src)}</span>
-                `;
-                item.addEventListener('click', () => {
-                    this.loadTrack(index);
-                    this.audio.play().catch(() => {});
-                });
-                this.playlistEl.appendChild(item);
-            });
-        },
-        formatTrackMeta(src) {
-            const short = src.split('/').pop() || src;
-            return short.length > 24 ? `${short.slice(0, 24)}...` : short;
-        },
-        highlightActiveTrack() {
-            if (!this.playlistEl) return;
-            [...this.playlistEl.children].forEach((item, idx) => {
-                item.classList.toggle('active', idx === this.currentIndex);
-            });
         },
         loadTrack(index) {
             const total = this.tracks.length;
@@ -1380,70 +1318,17 @@ document.addEventListener('DOMContentLoaded', () => {
             this.currentTimeEl.textContent = '00:00';
             this.durationEl.textContent = '00:00';
             this.progress.value = 0;
-            this.highlightActiveTrack();
         },
         togglePlay() {
             if (this.audio.paused) this.audio.play().catch(() => {});
             else this.audio.pause();
         },
         prevTrack() {
-            if (this.shuffleEnabled && this.tracks.length > 1) {
-                this.playRandomTrack();
-                return;
-            }
             this.loadTrack(this.currentIndex - 1);
             this.audio.play().catch(() => {});
         },
         nextTrack() {
-            if (this.shuffleEnabled && this.tracks.length > 1) {
-                this.playRandomTrack();
-                return;
-            }
             this.loadTrack(this.currentIndex + 1);
-            this.audio.play().catch(() => {});
-        },
-        playRandomTrack() {
-            let nextIndex = this.currentIndex;
-            while (nextIndex === this.currentIndex && this.tracks.length > 1) {
-                nextIndex = Math.floor(Math.random() * this.tracks.length);
-            }
-            this.loadTrack(nextIndex);
-            this.audio.play().catch(() => {});
-        },
-        toggleShuffle() {
-            this.shuffleEnabled = !this.shuffleEnabled;
-            this.shuffleBtn?.classList.toggle('active', this.shuffleEnabled);
-        },
-        toggleRepeatOne() {
-            this.repeatOneEnabled = !this.repeatOneEnabled;
-            this.repeatBtn?.classList.toggle('active', this.repeatOneEnabled);
-        },
-        toggleMute() {
-            if (!this.audio.muted && this.audio.volume > 0) this.mutedBeforeVolume = this.audio.volume;
-            this.audio.muted = !this.audio.muted;
-            this.muteBtn?.classList.toggle('active', this.audio.muted);
-            if (this.audio.muted) {
-                this.volume.value = 0;
-            } else {
-                const restored = this.mutedBeforeVolume > 0 ? this.mutedBeforeVolume : 0.65;
-                this.audio.volume = restored;
-                this.volume.value = restored;
-            }
-        },
-        loadLocalFiles(files) {
-            if (!files || !files.length) return;
-            const picked = [...files]
-                .filter((file) => file.type.startsWith('audio/'))
-                .map((file) => ({
-                    title: file.name.replace(/\.[^/.]+$/, ''),
-                    artist: 'Local upload',
-                    src: URL.createObjectURL(file)
-                }));
-            if (!picked.length) return;
-            this.tracks = picked;
-            this.currentIndex = 0;
-            this.renderPlaylist();
-            this.loadTrack(0);
             this.audio.play().catch(() => {});
         },
         setPlayingState(isPlaying) {
