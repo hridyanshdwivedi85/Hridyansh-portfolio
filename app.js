@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         switchTab(navElement, targetId, theme, updateHash = true) {
             this.isAnimating = true;
+            document.body.classList.toggle('identity-active', targetId === 'mod-identity');
             
             // Toggle Crosshair Cursor for Entropy
             const cursorOutline = document.getElementById("cursor-outline");
@@ -1340,7 +1341,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: (Math.random() - 0.5) * this.width,
                 y: (Math.random() - 0.5) * this.height,
                 z: randomDepth ? (Math.random() * this.width) : this.width,
-                size: Math.random() * 2.2 + 0.35,
+                size: Math.random() * 1.25 + 0.2,
                 hue: 200 + Math.random() * 28,
                 twinkle: Math.random() * Math.PI * 2
             };
@@ -1390,7 +1391,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ctx.shadowColor = `rgba(255,255,255,${Math.min(0.55, starAlpha)})`;
                 this.ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, starAlpha + 0.18)})`;
                 this.ctx.beginPath();
-                this.ctx.arc(sx, sy, Math.max(0.65, star.size * proj), 0, Math.PI * 2);
+                this.ctx.arc(sx, sy, Math.max(0.35, star.size * proj), 0, Math.PI * 2);
                 this.ctx.fill();
                 this.ctx.shadowBlur = 0;
             }
@@ -1411,7 +1412,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     y: y + (Math.random() - 0.5) * 10,
                     vx: (Math.random() - 0.5) * 1.0,
                     vy: (Math.random() - 0.5) * 1.0 - 0.5, // Stronger upward smoke-like drift
-                    size: Math.random() * 3 + 1.5, // MUCH SMALLER: 1.5px to 4.5px radius
+                    size: Math.random() * 1.25 + 0.75,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     life: this.isMobile ? (40 + Math.random() * 30) : (70 + Math.random() * 50),
                     maxLife: this.isMobile ? 80 : 120
@@ -1571,16 +1572,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 p.life--;
                 
                 let alpha = (p.life / p.maxLife) * 0.7; // Max opacity 0.7
-                
-                let radGrad = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-                radGrad.addColorStop(0, `rgba(${p.color}, ${alpha})`);
-                radGrad.addColorStop(0.4, `rgba(${p.color}, ${alpha * 0.5})`);
-                radGrad.addColorStop(1, `rgba(${p.color}, 0)`);
-                
-                this.ctx.fillStyle = radGrad;
-                this.ctx.beginPath();
-                this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                this.ctx.fill();
+
+                this.ctx.fillStyle = `rgba(${p.color}, ${alpha})`;
+                this.ctx.fillRect(p.x, p.y, p.size, p.size);
 
                 if(p.life <= 0) this.trailParticles.splice(i, 1);
             }
