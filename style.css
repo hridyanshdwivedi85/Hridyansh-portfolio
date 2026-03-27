@@ -1618,7 +1618,19 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 @media (min-width: 1024px) {
-    .compiler-scale-fix { transform: scale(0.90); transform-origin: center center; }
+    .compiler-scale-fix { transform: scale(0.82); transform-origin: center center; }
+    #mod-compiler .build-stage {
+        font-size: 8px;
+        padding: 4px 6px;
+        letter-spacing: 0.06em;
+    }
+    #mod-compiler .build-progress-wrap {
+        height: 7px;
+    }
+    #mod-compiler .forge-container {
+        width: 132px;
+        height: 132px;
+    }
     .mobile-coffee-scale { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; transform: scale(0.9); transform-origin: center top; min-height: 190px; }
 }
 
