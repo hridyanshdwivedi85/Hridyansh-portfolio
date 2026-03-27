@@ -64,6 +64,38 @@ document.addEventListener('DOMContentLoaded', () => {
             osc.connect(gain).connect(this.ctx.destination);
             osc.start(t); osc.stop(t + 0.1);
         },
+        playSteamBurst() {
+            if (!this.unlocked || !this.ctx) return;
+            const t = this.ctx.currentTime;
+
+            // Gentle steam "whoosh": filtered noise + soft airy highs
+            const bSize = this.ctx.sampleRate * 0.9;
+            const buf = this.ctx.createBuffer(1, bSize, this.ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bSize; i++) data[i] = (Math.random() * 2 - 1) * 0.7;
+
+            const noise = this.ctx.createBufferSource();
+            noise.buffer = buf;
+
+            const band = this.ctx.createBiquadFilter();
+            band.type = 'bandpass';
+            band.frequency.setValueAtTime(1100, t);
+            band.frequency.exponentialRampToValueAtTime(2100, t + 0.55);
+            band.Q.value = 0.8;
+
+            const high = this.ctx.createBiquadFilter();
+            high.type = 'highpass';
+            high.frequency.value = 600;
+
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.0001, t);
+            gain.gain.exponentialRampToValueAtTime(0.04, t + 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+
+            noise.connect(high).connect(band).connect(gain).connect(this.ctx.destination);
+            noise.start(t);
+            noise.stop(t + 0.75);
+        },
         startPour() {
             if (!this.unlocked || !this.ctx) return { stop: () => {} };
             const t = this.ctx.currentTime;
@@ -276,6 +308,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 cursorOutline.classList.remove('entropy-cursor');
                 cursorDot.classList.remove('entropy-cursor-dot');
+                if (window.EntropyEngine) {
+                    EntropyEngine.sequenceStarted = false;
+                    EntropyEngine.stopAmbientLoop?.();
+                    EntropyEngine.isExploded = false;
+                    EntropyEngine.textParticles = [];
+                    EntropyEngine.trailParticles = [];
+                }
             }
 
             // Update URL for SEO and Sharing
@@ -951,6 +990,11 @@ document.addEventListener('DOMContentLoaded', () => {
             this.mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
             this.isExploded = false;
             this.sequenceStarted = false;
+            this.ambientLoop = null;
+            this.ambientGain = null;
+            this.isMobile = window.matchMedia('(max-width: 767px)').matches;
+            this.lineConnectCooldown = 0;
+            this.lastTrailSpawn = 0;
 
             this.resize();
             window.addEventListener('resize', () => this.resize());
@@ -983,10 +1027,16 @@ document.addEventListener('DOMContentLoaded', () => {
             this.height = window.innerHeight;
             this.canvas.width = this.width;
             this.canvas.height = this.height;
+            this.isMobile = window.matchMedia('(max-width: 767px)').matches;
         },
 
         spawnTrailParticles(x, y) {
-            const count = Math.random() * 3 + 2; // Spawn more particles (2 to 5 per move)
+            const now = performance.now();
+            const spawnInterval = this.isMobile ? 34 : 16; // Mobile-safe cap
+            if (now - this.lastTrailSpawn < spawnInterval) return;
+            this.lastTrailSpawn = now;
+
+            const count = this.isMobile ? (Math.random() * 2 + 1) : (Math.random() * 3 + 2);
             const colors = ['255, 255, 255', '217, 119, 6', '150, 150, 150']; 
             
             for(let i=0; i<count; i++) {
@@ -997,8 +1047,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     vy: (Math.random() - 0.5) * 1.0 - 0.5, // Stronger upward smoke-like drift
                     size: Math.random() * 3 + 1.5, // MUCH SMALLER: 1.5px to 4.5px radius
                     color: colors[Math.floor(Math.random() * colors.length)],
-                    life: 70 + Math.random() * 50,
-                    maxLife: 120
+                    life: this.isMobile ? (40 + Math.random() * 30) : (70 + Math.random() * 50),
+                    maxLife: this.isMobile ? 80 : 120
                 });
             }
         },
@@ -1006,23 +1056,96 @@ document.addEventListener('DOMContentLoaded', () => {
         runSequence() {
             const t1 = document.getElementById('entropy-t1');
             const t2 = document.getElementById('entropy-t2');
+            if (!t1 || !t2) return;
             
             // Reset state if re-running
+            this.stopAmbientLoop();
             this.textParticles = [];
             this.isExploded = false;
-            t1.style.opacity = 0; t2.style.opacity = 0;
+            this.lineConnectCooldown = 0;
+            t1.style.opacity = 0;
+            t2.style.opacity = 0;
+            t1.style.filter = 'blur(10px)';
+            t2.style.filter = 'blur(8px)';
+            t2.style.transform = 'translateY(0px) scale(1)';
+            gsap.set([t1, t2], { clearProps: "all" });
 
             const tl = gsap.timeline();
-            tl.to(t1, { opacity: 1, duration: 2, ease: "power2.out" })
-              .to(t1, { opacity: 0, duration: 1.5, ease: "power2.in" }, "+=2")
-              .to(t2, { opacity: 1, scale: 1.05, duration: 2, ease: "back.out(1.2)" }, "+=0.5")
+            // Stage 1: Title 1 fade/blur in-out
+            tl.fromTo(t1,
+                { opacity: 0, filter: 'blur(12px)', y: 10 },
+                { opacity: 1, filter: 'blur(0px)', y: 0, duration: 1.2, ease: "power2.out" }
+              )
+              .to(t1, { opacity: 1, duration: 0.9, ease: "none" })
+              .to(t1, { opacity: 0, filter: 'blur(10px)', y: -8, duration: 1.1, ease: "power2.inOut" })
+              // Stage 2: Title 2 glow pulse + slight parallax
+              .fromTo(t2,
+                { opacity: 0, filter: 'blur(8px)', textShadow: '0 0 0 rgba(217,119,6,0)', y: 14 },
+                { opacity: 1, filter: 'blur(0px)', textShadow: '0 0 16px rgba(217,119,6,0.35)', y: 0, duration: 1.3, ease: "power2.out" },
+                "+=0.2"
+              )
+              .to(t2, {
+                  textShadow: '0 0 22px rgba(217,119,6,0.45)',
+                  duration: 1.1,
+                  repeat: 1,
+                  yoyo: true,
+                  ease: "sine.inOut"
+              })
+              .to(t2, {
+                  y: () => (this.mouse.y - this.height / 2) * 0.015,
+                  x: () => (this.mouse.x - this.width / 2) * 0.01,
+                  duration: 1.0,
+                  ease: "sine.out"
+              })
               .add(() => {
-                  setTimeout(() => {
-                      t2.style.opacity = 0; 
-                      if(window.AudioEngine && window.AudioEngine.unlocked) AudioEngine.playSteamBurst();
-                      this.explodeText("Coding means creativity.");
-                  }, 2000);
+                  // Stage 3: Particle burst phase
+                  gsap.to(t2, { opacity: 0, filter: 'blur(8px)', duration: 0.9, ease: "power2.inOut" });
+                  if (typeof AudioEngine !== 'undefined' && typeof AudioEngine.playSteamBurst === 'function') {
+                      AudioEngine.playSteamBurst();
+                  }
+                  this.explodeText("Coding means creativity.");
+                  // Stage 4: Calm ambient phase
+                  setTimeout(() => this.startAmbientLoop(), 900);
               });
+        },
+
+        startAmbientLoop() {
+            if (this.ambientLoop || !window.AudioEngine || !AudioEngine.unlocked || !AudioEngine.ctx) return;
+            const t = AudioEngine.ctx.currentTime;
+            const osc = AudioEngine.ctx.createOscillator();
+            const gain = AudioEngine.ctx.createGain();
+            const lowpass = AudioEngine.ctx.createBiquadFilter();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(92, t);
+            osc.frequency.linearRampToValueAtTime(110, t + 8);
+            osc.frequency.linearRampToValueAtTime(92, t + 16);
+            lowpass.type = 'lowpass';
+            lowpass.frequency.value = 220;
+
+            gain.gain.setValueAtTime(0.0001, t);
+            gain.gain.exponentialRampToValueAtTime(0.008, t + 1.5);
+
+            osc.connect(lowpass).connect(gain).connect(AudioEngine.ctx.destination);
+            osc.start(t);
+
+            this.ambientLoop = osc;
+            this.ambientGain = gain;
+        },
+
+        stopAmbientLoop() {
+            if (!this.ambientLoop || !this.ambientGain || !window.AudioEngine || !AudioEngine.ctx) {
+                this.ambientLoop = null;
+                this.ambientGain = null;
+                return;
+            }
+            const now = AudioEngine.ctx.currentTime;
+            this.ambientGain.gain.cancelScheduledValues(now);
+            this.ambientGain.gain.setValueAtTime(Math.max(this.ambientGain.gain.value, 0.0001), now);
+            this.ambientGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+            this.ambientLoop.stop(now + 0.7);
+            this.ambientLoop = null;
+            this.ambientGain = null;
         },
 
         explodeText(text) {
@@ -1039,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.ctx.clearRect(0, 0, this.width, this.height);
             
             // Map pixels to particles
-            const step = window.innerWidth < 768 ? 5 : 7; // Performance adjustment
+            const step = this.isMobile ? 8 : 7; // Lower particle count on smaller screens
             for(let y = 0; y < this.height; y += step) {
                 for(let x = 0; x < this.width; x += step) {
                     const index = (y * this.width + x) * 4;
@@ -1109,13 +1232,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         p.vx += dx * 0.02;
                         p.vy += dy * 0.02;
                         
-                        // Draw connection lines from exploded text to mouse
-                        if (dist < 80 && Math.random() > 0.8) {
+                        // Draw connection lines from exploded text to mouse (frequency capped on mobile)
+                        const lineChance = this.isMobile ? 0.985 : 0.92;
+                        if (this.lineConnectCooldown <= 0 && dist < 80 && Math.random() > lineChance) {
                             this.ctx.strokeStyle = `rgba(217, 119, 6, ${0.4 - dist/200})`;
                             this.ctx.beginPath();
                             this.ctx.moveTo(p.x, p.y);
                             this.ctx.lineTo(this.mouse.x, this.mouse.y);
                             this.ctx.stroke();
+                            this.lineConnectCooldown = this.isMobile ? 8 : 3;
                         }
                     }
 
@@ -1128,6 +1253,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     this.ctx.fillStyle = p.color;
                     this.ctx.fillRect(p.x, p.y, p.size, p.size);
                 }
+                this.lineConnectCooldown = Math.max(0, this.lineConnectCooldown - 1);
             }
         }
     };
@@ -1141,6 +1267,7 @@ document.addEventListener('DOMContentLoaded', () => {
     MixologyEngine.init();
     CompilerArena.init();
     SocialCard.init();
+    window.EntropyEngine = EntropyEngine;
     EntropyEngine.init(); // <-- Add this initialization
      
 });
