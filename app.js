@@ -481,6 +481,8 @@ document.addEventListener('DOMContentLoaded', () => {
         waterMl: 0,
         iceCount: 0,
         liquidVol: 0,
+        pouredSpiritMl: 0,
+        pouredWaterMl: 0,
 
         // High-end realistic color gradients and physical properties
         drinks: {
@@ -604,7 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ui.statusText.style.color = "#ef4444";
                 return;
             }
-            if(this.iceCount >= 4) return;
+            if(this.iceCount >= 6) return;
             
             AudioEngine.playIceClink();
             this.iceCount++;
@@ -612,15 +614,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const ice = document.createElement('div');
             ice.className = 'real-ice';
             
-            // Calculate physics-based landing position
-            // Spread ice horizontally, stack them vertically
             const rot = (Math.random() - 0.5) * 60;
             const glassWidth = this.ui.glass.clientWidth;
             const glassHeight = this.ui.glass.clientHeight;
             const cubeSize = Math.max(18, Math.min(34, glassWidth * 0.22));
-            const xOffset = (Math.random() - 0.5) * Math.max(12, glassWidth * 0.28);
-            const yStack = this.iceCount * (cubeSize * 0.42);
-            
+            const dropSlot = this.getIceDropSlot(this.iceCount - 1, cubeSize);
+
             this.ui.iceContainer.appendChild(ice);
 
             ice.style.width = `${cubeSize}px`;
@@ -628,14 +627,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Realistic Drop Animation
             gsap.fromTo(ice, 
-                { y: -230, x: xOffset, rotation: rot + 150, opacity: 0, scale: 0.65 },
-                { y: `${Math.max(6, glassHeight - cubeSize - yStack)}px`, x: xOffset, rotation: rot, opacity: 1, scale: 1, duration: 0.95, ease: "bounce.out" }
+                { y: -230, x: dropSlot.x, rotation: rot + 150, opacity: 0, scale: 0.65 },
+                { y: `${Math.max(6, glassHeight - cubeSize - dropSlot.yOffset)}px`, x: dropSlot.x, rotation: rot, opacity: 1, scale: 1, duration: 0.95, ease: "bounce.out" }
             );
 
             // Displace liquid if already poured (Archimedes principle)
-            if(this.liquidVol > 0) {
-                this.liquidVol += 15; // Ice displacement volume
-                gsap.to(this.ui.liquid, { height: `${this.liquidVol}%`, duration: 0.4, ease: "back.out(1.2)" });
+            if(this.pouredSpiritMl + this.pouredWaterMl > 0) {
+                this.animateLiquidToCurrentVolume(0.4);
             }
             
             this.ui.statusText.innerText = `ICE CUBE INSERTED (${this.iceCount})`;
@@ -649,19 +647,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ui.statusText.style.color = "#60a5fa";
                 return;
             }
+            const addAmount = this.waterMl;
+            this.pouredWaterMl += addAmount;
             this.ui.statusText.innerText = `WATER DOSING +${this.waterMl}ml`;
             this.ui.statusText.style.color = "#60a5fa";
+            this.syncStreamHeight();
             gsap.fromTo(this.ui.stream,
-                { scaleY: 0, background: 'rgba(140,210,255,0.6)' },
+                { scaleY: 0, background: 'linear-gradient(180deg, rgba(160,225,255,0.95) 0%, rgba(112,178,255,0.55) 100%)' },
                 {
                     scaleY: 1,
-                    duration: 0.24,
+                    duration: Math.max(0.38, 0.35 + (addAmount / 240)),
                     ease: "power1.out",
-                    yoyo: true,
-                    repeat: 1,
-                    onComplete: () => gsap.set(this.ui.stream, { scaleY: 0 })
+                    onComplete: () => gsap.to(this.ui.stream, { scaleY: 0, duration: 0.22, ease: "power1.in" })
                 }
             );
+            this.animateLiquidToCurrentVolume(0.9);
             this.updateMetrics();
             this.updateStatusLights();
         },
@@ -673,8 +673,11 @@ document.addEventListener('DOMContentLoaded', () => {
             this.audioRef = AudioEngine.startPour();
             
             const baseVol = this.drinks[this.drink].vol;
-            const maxFillByDrink = this.drink === 'vodka' ? 86 : (this.drink === 'wine' ? 90 : 82);
-            const targetFill = Math.min(maxFillByDrink, (baseVol + this.waterMl + (this.iceCount * 12)) / 2.8);
+            const pendingSpirit = baseVol;
+            const pendingWater = this.waterMl;
+            const targetMl = this.pouredSpiritMl + this.pouredWaterMl + pendingSpirit + pendingWater;
+            const targetFill = this.computeFillPercent(targetMl);
+            this.syncStreamHeight();
 
             // Stream Styling (mix color if water added)
             const pureColor = this.drinks[this.drink].colorBase;
@@ -694,9 +697,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.ui.liquid.style.opacity = "1";
             }
 
-            tl.to(this.ui.liquid, { 
+            tl.to(this.ui.liquid, {
                 height: `${targetFill}%`, 
-                duration: 2.5 + (targetFill * 0.02), 
+                duration: 2.1 + (targetFill * 0.02), 
                 ease: "power1.inOut",
                 onUpdate: () => {
                     const currentProgress = tl.progress();
@@ -709,10 +712,18 @@ document.addEventListener('DOMContentLoaded', () => {
             tl.to(this.ui.stream, { scaleY: 0, transformOrigin: "top", duration: 0.3 }, "-=0.2");
             
             tl.call(() => {
+                this.pouredSpiritMl += pendingSpirit;
+                this.pouredWaterMl += pendingWater;
+                this.waterMl = 0;
+                this.ui.sliderWater.value = "0";
+                this.ui.valWater.innerText = "0ml";
+                this.liquidVol = this.computeFillPercent(this.pouredSpiritMl + this.pouredWaterMl);
+                this.ui.stream.style.height = '0px';
                 if(this.audioRef) this.audioRef.stop();
                 this.state = 'READY';
                 this.ui.statusText.innerText = "READY TO SERVE";
                 this.ui.statusText.style.color = "#4ade80";
+                this.updateMetrics(1);
                 this.updateStatusLights();
             });
         },
@@ -720,6 +731,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resetGlass() {
             this.liquidVol = 0;
             this.iceCount = 0;
+            this.waterMl = 0;
+            this.pouredSpiritMl = 0;
+            this.pouredWaterMl = 0;
+            this.ui.sliderWater.value = "0";
+            this.ui.valWater.innerText = "0ml";
             
             // Fade out ice cubes before removing
             gsap.to('.real-ice', { opacity: 0, scale: 0.5, duration: 0.3, onComplete: () => {
@@ -736,8 +752,9 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         updateMetrics(progress = 1) {
-            const baseVol = this.drinks[this.drink].vol;
-            const currentTotal = Math.floor((baseVol + this.waterMl) * progress);
+            const pendingMl = this.state === 'POURING' ? (this.drinks[this.drink].vol + this.waterMl) : 0;
+            const totalMl = this.pouredSpiritMl + this.pouredWaterMl + pendingMl;
+            const currentTotal = Math.max(0, Math.floor(totalMl * progress));
             
             // Animate number change
             this.ui.readoutVol.innerHTML = `${currentTotal}<span class="text-xs text-gray-500">ml</span>`;
@@ -751,8 +768,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if(currentTotal === 0) {
                 this.ui.readoutAbv.innerHTML = `0.0<span class="text-xs text-orange-700">%</span>`;
             } else {
-                const totalLiquid = baseVol + this.waterMl;
-                const dilutedAbv = (baseVol * baseAbv) / totalLiquid;
+                const spiritMl = this.pouredSpiritMl + (this.state === 'POURING' ? this.drinks[this.drink].vol * progress : 0);
+                const waterMl = this.pouredWaterMl + (this.state === 'POURING' ? this.waterMl * progress : 0);
+                const totalLiquid = Math.max(1, spiritMl + waterMl);
+                const dilutedAbv = (spiritMl * baseAbv) / totalLiquid;
                 this.ui.readoutAbv.innerHTML = `${dilutedAbv.toFixed(1)}<span class="text-xs text-orange-700">%</span>`;
             }
             const temp = this.computeTemperature(currentTotal);
@@ -773,6 +792,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? 'rgba(250, 204, 21, 0.55)'
                 : (cold <= 5 ? 'rgba(56, 189, 248, 0.45)' : 'rgba(74, 222, 128, 0.45)');
             this.ui.panel.style.boxShadow = `0 30px 60px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.1), 0 0 24px ${activeColor}`;
+        },
+
+        getIceDropSlot(index, cubeSize) {
+            const spreadX = Math.max(14, this.ui.glass.clientWidth * 0.24);
+            const spreadY = cubeSize * 0.6;
+            const slots = [
+                { x: -spreadX * 0.9, yOffset: spreadY * 0.7 },
+                { x: spreadX * 0.9, yOffset: spreadY * 0.7 },
+                { x: 0, yOffset: spreadY * 1.1 },
+                { x: -spreadX * 0.5, yOffset: spreadY * 1.6 },
+                { x: spreadX * 0.5, yOffset: spreadY * 1.6 },
+                { x: 0, yOffset: spreadY * 2.05 }
+            ];
+            return slots[index % slots.length];
+        },
+
+        computeFillPercent(totalMl) {
+            const maxFillByDrink = this.drink === 'vodka' ? 84 : (this.drink === 'wine' ? 88 : 80);
+            return Math.min(maxFillByDrink, Math.max(0, (totalMl + (this.iceCount * 12)) / 2.85));
+        },
+
+        animateLiquidToCurrentVolume(duration = 0.45) {
+            const targetFill = this.computeFillPercent(this.pouredSpiritMl + this.pouredWaterMl);
+            this.liquidVol = targetFill;
+            this.ui.liquid.style.background = this.drinks[this.drink].colorGradient;
+            if(this.pouredWaterMl > 0) this.ui.liquid.style.opacity = "0.88";
+            gsap.to(this.ui.liquid, { height: `${targetFill}%`, duration, ease: "power2.out" });
+            this.updateMetrics();
+        },
+
+        syncStreamHeight() {
+            const nozzleRect = this.ui.stream.parentElement.getBoundingClientRect();
+            const glassRect = this.ui.glass.getBoundingClientRect();
+            const streamHeight = Math.max(120, Math.min(350, Math.round(glassRect.top - nozzleRect.bottom + (glassRect.height * 0.76))));
+            this.ui.stream.style.height = `${streamHeight}px`;
         }
     };
 	
