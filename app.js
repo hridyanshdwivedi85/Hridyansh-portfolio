@@ -64,6 +64,38 @@ document.addEventListener('DOMContentLoaded', () => {
             osc.connect(gain).connect(this.ctx.destination);
             osc.start(t); osc.stop(t + 0.1);
         },
+        playIceDropSequence() {
+            if (!this.unlocked || !this.ctx) return;
+            const t = this.ctx.currentTime;
+
+            // Three small collisions make the ice feel physical instead of a single click.
+            [0, 0.07, 0.13].forEach((offset) => {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(1700 + Math.random() * 1300, t + offset);
+                osc.frequency.exponentialRampToValueAtTime(480 + Math.random() * 240, t + offset + 0.08);
+                gain.gain.setValueAtTime(0.0001, t + offset);
+                gain.gain.exponentialRampToValueAtTime(0.11, t + offset + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + offset + 0.09);
+                osc.connect(gain).connect(this.ctx.destination);
+                osc.start(t + offset);
+                osc.stop(t + offset + 0.1);
+            });
+
+            // A brief low tap for glass/body resonance.
+            const body = this.ctx.createOscillator();
+            const bodyGain = this.ctx.createGain();
+            body.type = 'sine';
+            body.frequency.setValueAtTime(180, t);
+            body.frequency.exponentialRampToValueAtTime(90, t + 0.18);
+            bodyGain.gain.setValueAtTime(0.0001, t);
+            bodyGain.gain.exponentialRampToValueAtTime(0.04, t + 0.03);
+            bodyGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+            body.connect(bodyGain).connect(this.ctx.destination);
+            body.start(t);
+            body.stop(t + 0.24);
+        },
         playSteamBurst() {
             if (!this.unlocked || !this.ctx) return;
             const t = this.ctx.currentTime;
@@ -105,20 +137,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const noise = this.ctx.createBufferSource(); noise.buffer = buf; noise.loop = true;
             
             const filter = this.ctx.createBiquadFilter(); filter.type = 'bandpass'; 
-            filter.frequency.setValueAtTime(800, t);
-            filter.frequency.linearRampToValueAtTime(1500, t + 3); // Pitch goes up as glass fills
-            filter.Q.value = 1.5;
+            filter.frequency.setValueAtTime(620, t);
+            filter.frequency.linearRampToValueAtTime(1700, t + 3); // Pitch rises as glass fills.
+            filter.Q.value = 1.2;
+
+            const gurgle = this.ctx.createOscillator();
+            gurgle.type = 'triangle';
+            gurgle.frequency.setValueAtTime(122, t);
+            gurgle.frequency.linearRampToValueAtTime(148, t + 2.4);
+            const gurgleGain = this.ctx.createGain();
+            gurgleGain.gain.setValueAtTime(0.0001, t);
+            gurgleGain.gain.exponentialRampToValueAtTime(0.026, t + 0.24);
 
             const gain = this.ctx.createGain(); 
-            gain.gain.setValueAtTime(0, t); 
-            gain.gain.linearRampToValueAtTime(0.15, t + 0.2);
+            gain.gain.setValueAtTime(0.0001, t); 
+            gain.gain.exponentialRampToValueAtTime(0.17, t + 0.2);
             
-            noise.connect(filter).connect(gain).connect(this.ctx.destination); noise.start(t);
+            noise.connect(filter).connect(gain).connect(this.ctx.destination);
+            gurgle.connect(gurgleGain).connect(this.ctx.destination);
+            noise.start(t);
+            gurgle.start(t);
 
             return {
                 stop: () => {
-                    gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.3);
-                    setTimeout(() => noise.stop(), 400);
+                    const now = this.ctx.currentTime;
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+                    gurgleGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+                    setTimeout(() => { noise.stop(); gurgle.stop(); }, 340);
                 }
             };
         },
@@ -178,6 +223,74 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.sound-click, .hw-btn').forEach(el => {
         el.addEventListener('click', () => AudioEngine.playClick());
     });
+
+    const OriginPrompt = {
+        commands: [
+            {
+                cmd: 'npm run build:ios --release',
+                output: [
+                    'Analyzing dependency graph... done.',
+                    'Compiling UI layer with typed modules... done.',
+                    'Signing artifact: build/ios/Hridyansh.app',
+                    'Build completed in 3.2s.'
+                ]
+            },
+            {
+                cmd: 'git commit -m "feat: realtime growth systems"',
+                output: [
+                    '9 files changed, 344 insertions(+), 27 deletions(-).',
+                    'Lint check passed with zero errors.',
+                    'Commit hash: 4b7f2ad'
+                ]
+            },
+            {
+                cmd: 'node scripts/deploy.mjs --target production',
+                output: [
+                    'Uploading static assets to edge cache... done.',
+                    'Invalidating stale CDN objects... done.',
+                    'Deployment status: healthy.'
+                ]
+            }
+        ],
+        init() {
+            this.cmdEl = document.getElementById('origin-terminal-command');
+            this.outputEl = document.getElementById('origin-terminal-output');
+            if(!this.cmdEl || !this.outputEl) return;
+            this.commandIndex = 0;
+            this.runLoop();
+        },
+        async runLoop() {
+            while(true) {
+                const item = this.commands[this.commandIndex % this.commands.length];
+                await this.typeCommand(item.cmd);
+                await this.sleep(260);
+                this.renderOutput(item.output);
+                await this.sleep(1900);
+                this.clearTerminal();
+                this.commandIndex++;
+            }
+        },
+        async typeCommand(command) {
+            this.cmdEl.textContent = '';
+            for (const char of command) {
+                this.cmdEl.textContent += char;
+                await this.sleep(24 + Math.random() * 18);
+            }
+        },
+        renderOutput(lines) {
+            this.outputEl.innerHTML = lines.map((line, idx) => {
+                const variant = idx === lines.length - 1 ? 'ok' : (line.toLowerCase().includes('deploy') ? 'info' : '');
+                return `<div class="${variant}">↳ ${line}</div>`;
+            }).join('');
+        },
+        clearTerminal() {
+            this.cmdEl.textContent = '';
+            this.outputEl.innerHTML = '';
+        },
+        sleep(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+    };
 
     /**
      * 1. CUSTOM CURSOR ENGINE
@@ -742,7 +855,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if(this.iceCount >= 6) return;
             
-            AudioEngine.playIceClink();
+            AudioEngine.playIceDropSequence();
             this.iceCount++;
             
             const ice = document.createElement('div');
@@ -1945,6 +2058,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * INIT ALL SYSTEMS
      */
     BGEngine.init();
+    OriginPrompt.init();
     AppController.init();
     NeuralCore.init();
     MixologyEngine.init();
