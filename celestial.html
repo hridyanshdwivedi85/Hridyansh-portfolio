@@ -1034,18 +1034,43 @@
             }, 1000);
         }, 6000);
 
-        const enterLandscapeFullscreen = async () => {
+        const isLandscapeMobile = () => window.matchMedia('(max-width: 1024px) and (orientation: landscape)').matches;
+        let shouldEnforceLandscapeFullscreen = false;
+
+        const requestFullscreenWithHiddenUi = async () => {
             const docEl = document.documentElement;
+            if (document.fullscreenElement) return;
+            if (docEl.requestFullscreen) {
+                await docEl.requestFullscreen({ navigationUI: 'hide' });
+                return;
+            }
+            if (docEl.webkitRequestFullscreen) {
+                await docEl.webkitRequestFullscreen();
+            }
+        };
+
+        const syncLandscapeFullscreen = async () => {
+            if (!shouldEnforceLandscapeFullscreen || !isLandscapeMobile()) return;
             try {
-                if (!document.fullscreenElement) {
-                    await (docEl.requestFullscreen?.() || docEl.webkitRequestFullscreen?.());
-                }
+                await requestFullscreenWithHiddenUi();
                 if (screen.orientation?.lock) {
                     await screen.orientation.lock('landscape');
                 }
                 if (fullscreenBtn) {
                     fullscreenBtn.innerHTML = '<i class="fas fa-check mr-1"></i> landscape on';
                 }
+            } catch (err) {
+                console.warn('Landscape fullscreen sync failed:', err);
+            }
+        };
+
+        const enterLandscapeFullscreen = async () => {
+            try {
+                shouldEnforceLandscapeFullscreen = true;
+                if (!isLandscapeMobile() && fullscreenBtn) {
+                    fullscreenBtn.innerHTML = '<i class="fas fa-mobile-screen mr-1"></i> rotate device';
+                }
+                await syncLandscapeFullscreen();
             } catch (err) {
                 if (fullscreenBtn) {
                     fullscreenBtn.innerHTML = '<i class="fas fa-mobile-screen mr-1"></i> rotate device';
@@ -1055,6 +1080,8 @@
         };
 
         fullscreenBtn?.addEventListener('click', enterLandscapeFullscreen);
+        window.addEventListener('resize', syncLandscapeFullscreen, { passive: true });
+        window.addEventListener('orientationchange', syncLandscapeFullscreen);
 
     </script>
 </body>
