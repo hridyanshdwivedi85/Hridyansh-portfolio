@@ -1167,6 +1167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('stage-sign'),
                     document.getElementById('stage-deploy')
                 ],
+                optionRows: Array.from(document.querySelectorAll('#compiler-desktop-options .build-option-row')),
                 packets: document.getElementById('compiler-dataflow'),
                 inputNodes: ['#node-src-1', '#node-src-2', '#node-src-3']
             };
@@ -1182,6 +1183,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setStage(index) {
             this.ui.stages.forEach((s, i) => s.classList.toggle('active', i <= index));
+            this.ui.optionRows.forEach((row, i) => row.classList.toggle('active', i <= index));
         },
 
         log(lines) {
