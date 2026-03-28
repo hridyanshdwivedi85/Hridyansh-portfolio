@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
             <style>
+        :root {
+            --app-vh: 100vh;
+        }
         body { margin: 0; overflow: hidden; background: #000; }
         body.force-fullscreen-fallback {
             position: fixed;
@@ -27,10 +30,23 @@
             height: 100%;
             overflow: hidden;
         }
-        #webgl-container { position: absolute; inset: 0; width: 100vw; height: 100vh; z-index: 0; cursor: crosshair; overflow: hidden; touch-action: none; }
+        #webgl-container { position: absolute; inset: 0; width: 100vw; height: var(--app-vh); z-index: 0; cursor: crosshair; overflow: hidden; touch-action: none; }
         body.force-fullscreen-fallback #webgl-container {
             width: 100dvw;
-            height: 100dvh;
+            height: var(--app-vh);
+        }
+        html.ios-landscape-immersive,
+        body.ios-landscape-immersive {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: var(--app-vh);
+            overflow: hidden;
+        }
+        html.ios-landscape-immersive #webgl-container,
+        body.ios-landscape-immersive #webgl-container {
+            width: 100dvw;
+            height: var(--app-vh);
         }
         .glass-panel { background: rgba(5, 5, 10, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.9); }
         .sys-button { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -1053,6 +1069,17 @@
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         let shouldEnforceLandscapeFullscreen = true;
         let userActivatedFullscreen = false;
+        let viewportSyncFrame = null;
+
+        const syncViewportHeightVar = () => {
+            const viewportHeight = window.visualViewport?.height || window.innerHeight;
+            document.documentElement.style.setProperty('--app-vh', `${viewportHeight}px`);
+        };
+
+        const queueViewportHeightSync = () => {
+            if (viewportSyncFrame) cancelAnimationFrame(viewportSyncFrame);
+            viewportSyncFrame = requestAnimationFrame(syncViewportHeightVar);
+        };
 
         const requestFullscreenWithHiddenUi = async () => {
             const docEl = document.documentElement;
@@ -1070,6 +1097,9 @@
             if (!shouldEnforceLandscapeFullscreen) return;
             const isLandscape = isLandscapeMobile();
             document.body.classList.toggle('force-fullscreen-fallback', isLandscape && isIOS);
+            document.documentElement.classList.toggle('ios-landscape-immersive', isLandscape && isIOS);
+            document.body.classList.toggle('ios-landscape-immersive', isLandscape && isIOS);
+            queueViewportHeightSync();
 
             if (!isLandscape) {
                 if (fullscreenBtn) {
@@ -1089,6 +1119,9 @@
             } catch (err) {
                 if (fullscreenBtn) {
                     fullscreenBtn.innerHTML = '<i class="fas fa-check mr-1"></i> immersive mode';
+                }
+                if (isIOS) {
+                    setTimeout(() => window.scrollTo(0, 1), 40);
                 }
                 console.warn('Landscape fullscreen sync failed:', err);
             }
@@ -1121,8 +1154,11 @@
         window.addEventListener('touchend', primeMobileFullscreen, { once: true, passive: true });
         window.addEventListener('resize', syncLandscapeFullscreen, { passive: true });
         window.addEventListener('orientationchange', syncLandscapeFullscreen);
+        window.visualViewport?.addEventListener('resize', queueViewportHeightSync, { passive: true });
+        window.visualViewport?.addEventListener('scroll', queueViewportHeightSync, { passive: true });
         document.addEventListener('fullscreenchange', syncLandscapeFullscreen);
         mobileLandscapeQuery.addEventListener?.('change', syncLandscapeFullscreen);
+        syncViewportHeightVar();
 
     </script>
 </body>
