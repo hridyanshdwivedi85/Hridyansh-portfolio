@@ -1093,6 +1093,29 @@
             }
         };
 
+        const hideIOSBrowserChrome = () => {
+            if (!isIOS) return;
+            const targetHeight = window.screen?.height ? `${window.screen.height}px` : `${window.innerHeight}px`;
+            document.documentElement.style.height = targetHeight;
+            document.body.style.height = targetHeight;
+            document.body.style.minHeight = targetHeight;
+            document.body.style.overflow = 'hidden';
+
+            // Safari on iPhone ignores fullscreen for normal DOM elements in some contexts.
+            // This sequence minimizes top/bottom browser chrome in landscape.
+            setTimeout(() => window.scrollTo(0, 1), 20);
+            setTimeout(() => window.scrollTo(0, 0), 80);
+            setTimeout(() => queueViewportHeightSync(), 140);
+        };
+
+        const resetIOSBrowserChromeFallback = () => {
+            if (!isIOS) return;
+            document.documentElement.style.removeProperty('height');
+            document.body.style.removeProperty('height');
+            document.body.style.removeProperty('min-height');
+            document.body.style.removeProperty('overflow');
+        };
+
         const syncLandscapeFullscreen = async () => {
             if (!shouldEnforceLandscapeFullscreen) return;
             const isLandscape = isLandscapeMobile();
@@ -1102,6 +1125,7 @@
             queueViewportHeightSync();
 
             if (!isLandscape) {
+                resetIOSBrowserChromeFallback();
                 if (fullscreenBtn) {
                     fullscreenBtn.innerHTML = '<i class="fas fa-mobile-screen mr-1"></i> rotate device';
                 }
@@ -1113,10 +1137,12 @@
                 if (screen.orientation?.lock) {
                     await screen.orientation.lock('landscape');
                 }
+                hideIOSBrowserChrome();
                 if (fullscreenBtn) {
                     fullscreenBtn.innerHTML = '<i class="fas fa-check mr-1"></i> landscape on';
                 }
             } catch (err) {
+                hideIOSBrowserChrome();
                 if (fullscreenBtn) {
                     fullscreenBtn.innerHTML = '<i class="fas fa-check mr-1"></i> immersive mode';
                 }
