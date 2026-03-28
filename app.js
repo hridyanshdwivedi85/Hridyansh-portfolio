@@ -1436,6 +1436,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.startCaseBtn = document.getElementById('buds-start');
             this.playBtn = document.getElementById('music-play');
             this.playIcon = document.getElementById('music-play-icon');
+            this.stopBtn = document.getElementById('music-stop');
             this.prevBtn = document.getElementById('music-prev');
             this.nextBtn = document.getElementById('music-next');
             this.progress = document.getElementById('music-progress');
@@ -1450,11 +1451,13 @@ document.addEventListener('DOMContentLoaded', () => {
             this.loadTrack(0);
             this.setControlsEnabled(false);
             this.bind();
+            this.bind3DRotation();
             this.initRainScene();
         },
         bind() {
             this.startCaseBtn?.addEventListener('click', () => this.openCase());
             this.playBtn.addEventListener('click', () => this.togglePlay());
+            this.stopBtn?.addEventListener('click', () => this.stopAndDock());
             this.prevBtn?.addEventListener('click', () => this.prevTrack());
             this.nextBtn?.addEventListener('click', () => this.nextTrack());
 
@@ -1501,7 +1504,7 @@ document.addEventListener('DOMContentLoaded', () => {
         togglePlay() {
             if (!this.isReady) return;
             if (this.audio.paused) this.audio.play().catch(() => {});
-            else this.audio.pause();
+            else this.stopAndDock();
         },
         prevTrack() {
             if (!this.isReady) return;
