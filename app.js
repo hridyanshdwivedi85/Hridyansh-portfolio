@@ -1429,10 +1429,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         ],
         currentIndex: 0,
+        isReady: false,
         init() {
             this.audio = document.getElementById('music-audio');
+            this.shell = document.getElementById('airpods-shell');
+            this.startCaseBtn = document.getElementById('buds-start');
+            this.stage = this.shell?.querySelector('.airpods-stage');
             this.playBtn = document.getElementById('music-play');
             this.playIcon = document.getElementById('music-play-icon');
+            this.stopBtn = document.getElementById('music-stop');
             this.prevBtn = document.getElementById('music-prev');
             this.nextBtn = document.getElementById('music-next');
             this.progress = document.getElementById('music-progress');
@@ -1445,11 +1450,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.audio || !this.playBtn || !this.progress || !this.volume) return;
 
             this.loadTrack(0);
+            this.setControlsEnabled(false);
             this.bind();
+            this.bind3DRotation();
             this.initRainScene();
         },
         bind() {
+            this.startCaseBtn?.addEventListener('click', () => this.openCase());
             this.playBtn.addEventListener('click', () => this.togglePlay());
+            this.stopBtn?.addEventListener('click', () => this.stopAndDock());
             this.prevBtn?.addEventListener('click', () => this.prevTrack());
             this.nextBtn?.addEventListener('click', () => this.nextTrack());
 
@@ -1494,14 +1503,17 @@ document.addEventListener('DOMContentLoaded', () => {
             this.progress.value = 0;
         },
         togglePlay() {
+            if (!this.isReady) return;
             if (this.audio.paused) this.audio.play().catch(() => {});
-            else this.audio.pause();
+            else this.stopAndDock();
         },
         prevTrack() {
+            if (!this.isReady) return;
             this.loadTrack(this.currentIndex - 1);
             this.audio.play().catch(() => {});
         },
         nextTrack() {
+            if (!this.isReady) return;
             this.loadTrack(this.currentIndex + 1);
             this.audio.play().catch(() => {});
         },
@@ -1509,6 +1521,76 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.playIcon) return;
             this.playIcon.classList.toggle('fa-play', !isPlaying);
             this.playIcon.classList.toggle('fa-pause', isPlaying);
+            this.shell?.classList.toggle('is-playing', isPlaying);
+        },
+        openCase() {
+            if (this.isReady && this.shell?.classList.contains('is-open')) return;
+            this.isReady = true;
+            this.shell?.classList.add('is-open');
+            this.setControlsEnabled(true);
+            this.startCaseBtn?.setAttribute('aria-label', 'AirPods case opened');
+        },
+        stopAndDock() {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+            this.progress.value = 0;
+            this.currentTimeEl.textContent = '00:00';
+            this.shell?.classList.remove('is-open');
+            this.setPlayingState(false);
+            setTimeout(() => {
+                this.isReady = false;
+                this.setControlsEnabled(false);
+                this.startCaseBtn?.setAttribute('aria-label', 'Start and open AirPods case');
+            }, 420);
+        },
+        setControlsEnabled(enabled) {
+            const elements = [this.playBtn, this.stopBtn, this.prevBtn, this.nextBtn, this.progress, this.volume];
+            elements.forEach(el => {
+                if (!el) return;
+                if ('disabled' in el) el.disabled = !enabled;
+            });
+            this.shell?.classList.toggle('is-ready', enabled);
+        },
+        bind3DRotation() {
+            if (!this.stage || !this.shell) return;
+
+            const setRotation = (x, y) => {
+                this.shell.style.setProperty('--pods-rotate-x', `${x.toFixed(2)}deg`);
+                this.shell.style.setProperty('--pods-rotate-y', `${y.toFixed(2)}deg`);
+            };
+
+            let dragging = false;
+            let pointerId = null;
+
+            const onPointerMove = (event) => {
+                if (!dragging || event.pointerId !== pointerId) return;
+                const rect = this.stage.getBoundingClientRect();
+                const px = (event.clientX - rect.left) / rect.width;
+                const py = (event.clientY - rect.top) / rect.height;
+                const rotateY = (px - 0.5) * 24;
+                const rotateX = (0.45 - py) * 20;
+                setRotation(rotateX, rotateY);
+            };
+
+            const endDrag = (event) => {
+                if (event.pointerId !== pointerId) return;
+                dragging = false;
+                pointerId = null;
+                this.stage.releasePointerCapture(event.pointerId);
+                setRotation(-12, 0);
+            };
+
+            this.stage.addEventListener('pointerdown', (event) => {
+                dragging = true;
+                pointerId = event.pointerId;
+                this.stage.setPointerCapture(event.pointerId);
+            });
+            this.stage.addEventListener('pointermove', onPointerMove);
+            this.stage.addEventListener('pointerup', endDrag);
+            this.stage.addEventListener('pointercancel', endDrag);
+            this.stage.addEventListener('pointerleave', () => {
+                if (!dragging) setRotation(-12, 0);
+            });
         },
         formatTime(seconds) {
             if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
