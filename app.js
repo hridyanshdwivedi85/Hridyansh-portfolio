@@ -1429,8 +1429,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         ],
         currentIndex: 0,
+        isReady: false,
         init() {
             this.audio = document.getElementById('music-audio');
+            this.shell = document.getElementById('airpods-shell');
+            this.startCaseBtn = document.getElementById('buds-start');
             this.playBtn = document.getElementById('music-play');
             this.playIcon = document.getElementById('music-play-icon');
             this.prevBtn = document.getElementById('music-prev');
@@ -1445,10 +1448,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.audio || !this.playBtn || !this.progress || !this.volume) return;
 
             this.loadTrack(0);
+            this.setControlsEnabled(false);
             this.bind();
             this.initRainScene();
         },
         bind() {
+            this.startCaseBtn?.addEventListener('click', () => this.openCase());
             this.playBtn.addEventListener('click', () => this.togglePlay());
             this.prevBtn?.addEventListener('click', () => this.prevTrack());
             this.nextBtn?.addEventListener('click', () => this.nextTrack());
@@ -1494,14 +1499,17 @@ document.addEventListener('DOMContentLoaded', () => {
             this.progress.value = 0;
         },
         togglePlay() {
+            if (!this.isReady) return;
             if (this.audio.paused) this.audio.play().catch(() => {});
             else this.audio.pause();
         },
         prevTrack() {
+            if (!this.isReady) return;
             this.loadTrack(this.currentIndex - 1);
             this.audio.play().catch(() => {});
         },
         nextTrack() {
+            if (!this.isReady) return;
             this.loadTrack(this.currentIndex + 1);
             this.audio.play().catch(() => {});
         },
@@ -1509,6 +1517,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.playIcon) return;
             this.playIcon.classList.toggle('fa-play', !isPlaying);
             this.playIcon.classList.toggle('fa-pause', isPlaying);
+            this.shell?.classList.toggle('is-playing', isPlaying);
+        },
+        openCase() {
+            if (this.isReady) return;
+            this.isReady = true;
+            this.shell?.classList.add('is-open');
+            this.setControlsEnabled(true);
+            this.startCaseBtn?.setAttribute('aria-label', 'AirPods case opened');
+        },
+        setControlsEnabled(enabled) {
+            const elements = [this.playBtn, this.prevBtn, this.nextBtn, this.progress, this.volume];
+            elements.forEach(el => {
+                if (!el) return;
+                if ('disabled' in el) el.disabled = !enabled;
+            });
+            this.shell?.classList.toggle('is-ready', enabled);
         },
         formatTime(seconds) {
             if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
