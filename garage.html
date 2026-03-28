@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" class="scrollbar-hide bg-[#050505]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Garage | Hridyansh Dwivedi</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS Base -->
+    <link rel="stylesheet" href="style.css?v=4.0">
+
+    <style>
+        body { margin: 0; overflow: hidden; background: #030303; }
+        
+        /* Garage Loading Animation */
+        #garage-loader {
+            position: fixed; inset: 0; z-index: 99999; background: #000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .garage-door-top { position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to bottom, #111, #0a0a0a); border-bottom: 2px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 2; transform-origin: top; }
+        .garage-door-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to top, #111, #0a0a0a); border-top: 2px solid #333; box-shadow: 0 -10px 30px rgba(0,0,0,0.8); z-index: 2; transform-origin: bottom; }
+        
+        .loader-content { position: relative; z-index: 10; text-align: center; }
+        
+        /* Iframe Container */
+        .sketchfab-embed-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.05);
+            background: radial-gradient(circle at center, #1a1a1a, #050505);
+            opacity: 0; transform: scale(0.95); /* For GSAP */
+        }
+        .sketchfab-embed-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            inset: 0;
+        }
+
+        /* Glass Panel Override */
+        .glass-card { background: rgba(10, 10, 12, 0.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.9); }
+        
+        .car-selector-btn { transition: all 0.3s ease; }
+        .car-selector-btn.active { background: rgba(255, 255, 255, 0.1); border-color: rgba(255,255,255,0.3); box-shadow: 0 0 20px rgba(255,255,255,0.05); }
+        .car-selector-btn:hover:not(.active) { background: rgba(255, 255, 255, 0.05); transform: translateX(4px); }
+        
+        /* Hide sketchfab anchor links */
+        .sketchfab-embed-wrapper p { display: none !important; }
+    </style>
+</head>
+<body class="text-white">
+
+    <!-- Loading Doors -->
+    <div id="garage-loader">
+        <div class="garage-door-top" id="door-t"></div>
+        <div class="garage-door-bottom" id="door-b"></div>
+        <div class="loader-content" id="loader-content">
+            <h1 class="font-[Syne] text-4xl font-bold tracking-widest uppercase mb-2 text-gray-300">INITIALIZING GARAGE</h1>
+            <div class="font-[Fira\ Code] text-xs text-gray-500 animate-pulse tracking-widest">> Powering up lighting grids...</div>
+        </div>
+    </div>
+
+    <!-- Background Ambience -->
+    <div class="absolute inset-0 pointer-events-none z-0" style="background: radial-gradient(circle at 50% -20%, #1a1b22, #030303 60%);">
+        <div class="absolute top-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent opacity-30"></div>
+    </div>
+
+    <!-- UI Overlay -->
+    <div class="absolute inset-0 z-10 flex flex-col pointer-events-none p-4 md:p-8">
+        
+        <!-- Header / Back Navigation -->
+        <div class="flex justify-between items-start pointer-events-auto w-full">
+            <a href="index.html" class="inline-flex items-center gap-2 text-gray-400 hover:text-white font-[Fira\ Code] text-[10px] md:text-xs tracking-widest uppercase bg-white/5 px-4 py-3 rounded-lg border border-white/10 transition-all hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                <i class="fas fa-chevron-left"></i> Return Hub
+            </a>
+            <div class="text-right">
+                <h2 class="font-[Syne] text-2xl md:text-3xl font-bold tracking-tighter text-white drop-shadow-md uppercase">The Collection</h2>
+                <div class="font-[Fira\ Code] text-[8px] md:text-[10px] text-gray-500 tracking-[0.3em] uppercase mt-1">Sys.Garage / Active</div>
+            </div>
+        </div>
+
+        <!-- Main Layout (List + Iframe + Details) -->
+        <div class="flex-grow flex flex-col lg:flex-row gap-6 mt-8 h-full min-h-0 relative pointer-events-none">
+            
+            <!-- Left: Car Selection List -->
+            <div class="lg:w-72 shrink-0 flex flex-col gap-3 pointer-events-auto z-20" id="ui-left">
+                <div class="font-[Fira\ Code] text-[10px] text-gray-500 tracking-widest uppercase mb-2 border-b border-white/10 pb-2">Available Vehicles</div>
+                
+                <!-- Vehicle 1: Mustang -->
+                <button class="car-selector-btn active w-full text-left p-4 rounded-xl border border-white/10 bg-black/40 flex items-center justify-between" data-car="mustang">
+                    <div>
+                        <div class="font-bold text-sm text-gray-200 font-[Syne] tracking-wide">Ford Mustang</div>
+                        <div class="font-[Fira\ Code] text-[9px] text-gray-500 mt-1 uppercase">1967 Fastback</div>
+                    </div>
+                    <i class="fas fa-car-side text-gray-600"></i>
+                </button>
+
+                <!-- Placeholder for future vehicles -->
+                <button class="car-selector-btn opacity-40 cursor-not-allowed w-full text-left p-4 rounded-xl border border-white/5 bg-black/20 flex items-center justify-between mt-2">
+                    <div>
+                        <div class="font-bold text-sm text-gray-600 font-[Syne] tracking-wide">Empty Slot</div>
+                        <div class="font-[Fira\ Code] text-[9px] text-gray-700 mt-1 uppercase">Awaiting Delivery</div>
+                    </div>
+                    <i class="fas fa-lock text-gray-800"></i>
+                </button>
+            </div>
+
+            <!-- Center: 3D Embed Iframe -->
+            <div class="flex-grow h-[50vh] lg:h-full relative pointer-events-auto z-10" id="ui-center">
+                <div class="sketchfab-embed-wrapper" id="embed-container"> 
+                    <iframe title="Ford Mustang Fastback 1967" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/8949a90f004848e9b26c16819ece43ae/embed?autospin=1&autostart=1&preload=1&transparent=1&ui_theme=dark&dnt=1"> </iframe> 
+                </div>
+            </div>
+
+            <!-- Right: Specs Panel -->
+            <div class="lg:w-80 shrink-0 pointer-events-auto h-full z-20 flex flex-col justify-end lg:justify-start" id="ui-right">
+                <div class="glass-card p-6 w-full flex flex-col gap-6">
+                    <div class="border-b border-white/10 pb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-[Syne] text-2xl font-bold uppercase text-white shadow-[0_0_10px_rgba(255,255,255,0.1)]">Mustang '67</h3>
+                            <div class="bg-white/10 px-2 py-1 rounded text-[8px] font-[Fira\ Code] tracking-widest border border-white/20 text-gray-300">CLASSIC</div>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-relaxed font-light">The iconic 1967 Ford Mustang Fastback. A symbol of raw American muscle, featuring aggressive lines, a sweeping roofline, and unparalleled road presence.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="font-[Fira\ Code] text-[8px] text-gray-500 tracking-widest mb-1">ENGINE</div>
+                            <div class="text-sm font-bold text-gray-200">289 cu in V8</div>
+                        </div>
+                        <div>
+                            <div class="font-[Fira\ Code] text-[8px] text-gray-500 tracking-widest mb-1">POWER</div>
+                            <div class="text-sm font-bold text-gray-200">225 HP</div>
+                        </div>
+                        <div>
+                            <div class="font-[Fira\ Code] text-[8px] text-gray-500 tracking-widest mb-1">0-60 MPH</div>
+                            <div class="text-sm font-bold text-gray-200">7.3 Seconds</div>
+                        </div>
+                        <div>
+                            <div class="font-[Fira\ Code] text-[8px] text-gray-500 tracking-widest mb-1">TRANSMISSION</div>
+                            <div class="text-sm font-bold text-gray-200">4-Speed Manual</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-4 flex gap-2">
+                        <button class="flex-1 bg-white text-black font-bold text-xs py-3 rounded-lg uppercase tracking-widest transition-all hover:bg-gray-200 hover:scale-[1.02]">
+                            Start Engine <i class="fas fa-play ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tl = gsap.timeline();
+
+            // 1. Initial Loader Text delay
+            tl.to("#loader-content", { opacity: 0, duration: 0.5, delay: 1.5, ease: "power2.inOut" });
+
+            // 2. Open Garage Doors
+            tl.to("#door-t", { yPercent: -100, duration: 1.2, ease: "power3.inOut" }, "-=0.2");
+            tl.to("#door-b", { yPercent: 100, duration: 1.2, ease: "power3.inOut" }, "<");
+            tl.set("#garage-loader", { display: "none" });
+
+            // 3. Fade in UI Elements
+            tl.from("#ui-left", { x: -30, opacity: 0, duration: 0.8, ease: "power2.out" }, "-=0.5");
+            tl.from("#ui-right", { x: 30, opacity: 0, duration: 0.8, ease: "power2.out" }, "<");
+            
+            // 4. Reveal 3D Embed
+            tl.to("#embed-container", { opacity: 1, scale: 1, duration: 1.5, ease: "expo.out" }, "-=0.6");
+        });
+    </script>
+</body>
+</html>
