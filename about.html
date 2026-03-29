@@ -22,6 +22,7 @@
             color: #f5f5f7;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
 
         /* iOS-style scrollbar */
@@ -143,6 +144,16 @@
         /* Smooth reveal */
         .reveal { opacity: 1; transform: none; }
         .js .reveal { opacity: 0; transform: translateY(32px); }
+        main section,
+        footer {
+            content-visibility: auto;
+            contain-intrinsic-size: 760px;
+        }
+        .perf-mode .dynamic-island,
+        .perf-mode .ios-card {
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
 
         @media (max-width: 768px) {
             .stat-number { font-size: 2.4rem; }
@@ -193,6 +204,15 @@
             .skill-badge {
                 font-size: 11px;
                 padding: 7px 12px;
+            }
+
+            .orb {
+                display: none;
+            }
+
+            .dynamic-island {
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
             }
         }
 
@@ -538,8 +558,15 @@
     <script>
         const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const prefersSaveData = !!navigator.connection?.saveData;
+        const lowCPUDevice = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+        const enablePerformanceMode = isTouchDevice || prefersSaveData || lowCPUDevice;
 
-        if (window.gsap && window.ScrollTrigger && !prefersReducedMotion) {
+        if (enablePerformanceMode) {
+            document.body.classList.add('perf-mode');
+        }
+
+        if (window.gsap && window.ScrollTrigger && !prefersReducedMotion && !isTouchDevice) {
             gsap.registerPlugin(ScrollTrigger);
 
             document.querySelectorAll('.reveal').forEach((el, i) => {
@@ -547,14 +574,14 @@
                     { opacity: 0, y: 32 },
                     {
                         opacity: 1, y: 0,
-                        duration: isTouchDevice ? 0.6 : 0.9,
+                        duration: 0.9,
                         ease: 'power2.out',
                         scrollTrigger: {
                             trigger: el,
-                            start: isTouchDevice ? 'top 92%' : 'top 85%',
+                            start: 'top 85%',
                             toggleActions: 'play none none none'
                         },
-                        delay: isTouchDevice ? 0 : (i % 4) * 0.08
+                        delay: (i % 4) * 0.08
                     }
                 );
             });
@@ -568,7 +595,7 @@
                     onEnter: () => {
                         gsap.to(el, {
                             innerText: target,
-                            duration: isTouchDevice ? 1.2 : 1.8,
+                            duration: 1.8,
                             ease: 'power2.out',
                             snap: { innerText: 1 },
                             onUpdate: function() {
@@ -581,15 +608,51 @@
                 });
             });
 
-            if (!isTouchDevice) {
-                document.addEventListener('mousemove', (e) => {
-                    const x = (e.clientX / window.innerWidth - 0.5) * 24;
-                    const y = (e.clientY / window.innerHeight - 0.5) * 24;
-                    gsap.to('.orb-1', { x, y, duration: 1.8, ease: 'power2.out' });
-                    gsap.to('.orb-2', { x: -x * 0.5, y: -y * 0.5, duration: 2.2, ease: 'power2.out' });
-                    gsap.to('.orb-3', { x: x * 0.7, y: -y * 0.3, duration: 2.6, ease: 'power2.out' });
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 24;
+                const y = (e.clientY / window.innerHeight - 0.5) * 24;
+                gsap.to('.orb-1', { x, y, duration: 1.8, ease: 'power2.out' });
+                gsap.to('.orb-2', { x: -x * 0.5, y: -y * 0.5, duration: 2.2, ease: 'power2.out' });
+                gsap.to('.orb-3', { x: x * 0.7, y: -y * 0.3, duration: 2.6, ease: 'power2.out' });
+            });
+        } else if (!prefersReducedMotion) {
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'none';
+                    observer.unobserve(entry.target);
                 });
-            }
+            }, { threshold: 0.08, rootMargin: '0px 0px -8% 0px' });
+
+            document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+
+            document.querySelectorAll('[data-count]').forEach((el) => {
+                const target = parseInt(el.dataset.count, 10);
+                const animateCount = () => {
+                    const duration = 1000;
+                    const start = performance.now();
+                    const label = el.closest('div')?.querySelector('.text-gray-500')?.textContent || '';
+                    const addSuffix = label.includes('%') ? '%' : '+';
+                    const tick = (now) => {
+                        const progress = Math.min((now - start) / duration, 1);
+                        const value = Math.round(target * (1 - Math.pow(1 - progress, 3)));
+                        el.textContent = `${value}${addSuffix}`;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    };
+                    requestAnimationFrame(tick);
+                };
+
+                const countObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
+                        animateCount();
+                        observer.unobserve(entry.target);
+                    });
+                }, { threshold: 0.4 });
+
+                countObserver.observe(el);
+            });
         } else {
             document.querySelectorAll('.reveal').forEach((el) => {
                 el.style.opacity = '1';
