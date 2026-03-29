@@ -1428,6 +1428,12 @@ document.addEventListener('DOMContentLoaded', () => {
         isReady: false,
         hasStarted: false,
         visualizerRaf: null,
+        audioCtx: null,
+        analyser: null,
+        sourceNode: null,
+        freqData: null,
+        beatEnergy: 0,
+        colorPhase: 0,
         init() {
             this.audio = document.getElementById('music-audio');
             this.shell = document.getElementById('airpods-shell');
@@ -1497,6 +1503,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.openCase({ auto: true });
                 this.setControlsEnabled(true);
             }
+            this.ensureAudioAnalysis();
 
             if (this.audio.paused) {
                 this.audio.play().catch(() => {});
@@ -1576,6 +1583,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.visualizerBars.push(bar);
             }
         },
+        ensureAudioAnalysis() {
+            if (this.analyser || !this.audio) return;
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            this.audioCtx = this.audioCtx || new AudioCtx();
+            this.sourceNode = this.sourceNode || this.audioCtx.createMediaElementSource(this.audio);
+            this.analyser = this.audioCtx.createAnalyser();
+            this.analyser.fftSize = 256;
+            this.analyser.smoothingTimeConstant = 0.8;
+            this.sourceNode.connect(this.analyser);
+            this.analyser.connect(this.audioCtx.destination);
+            this.freqData = new Uint8Array(this.analyser.frequencyBinCount);
+        },
         stopAndDock() {
             if (!this.audio) return;
             if (typeof window.stopMusicModelAnimation === 'function') {
@@ -1599,13 +1619,29 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.visualizerBars?.length) return;
             const tick = () => {
                 const active = !this.audio.paused;
+                if (active && this.audioCtx?.state === 'suspended') {
+                    this.audioCtx.resume().catch(() => {});
+                }
+                if (active && this.analyser && this.freqData) {
+                    this.analyser.getByteFrequencyData(this.freqData);
+                }
+                const low = this.freqData
+                    ? this.freqData.slice(2, 16).reduce((sum, value) => sum + value, 0) / 14
+                    : 0;
+                this.beatEnergy = (this.beatEnergy * 0.84) + (low * 0.16);
+                const beatPulse = Math.max(0, (low - this.beatEnergy) / 128);
+                this.colorPhase += 0.6 + beatPulse * 4;
+
                 this.visualizerBars.forEach((bar, index) => {
-                    const wave = Math.sin((Date.now() * 0.01) + (index * 0.5));
-                    const pulse = Math.sin((Date.now() * 0.005) + index);
-                    const dynamic = active ? Math.max(0, wave * 0.7 + pulse * 0.35 + 0.75) : 0.25;
-                    const h = 6 + (dynamic * 30);
+                    const bin = this.freqData?.[index % (this.freqData?.length || 1)] || 0;
+                    const normalized = bin / 255;
+                    const sway = (Math.sin((Date.now() * 0.006) + (index * 0.45)) + 1) * 0.16;
+                    const dynamic = active ? Math.min(1, normalized * 1.18 + sway + beatPulse * 0.5) : 0.2;
+                    const h = 6 + (dynamic * 44);
+                    const hue = (this.colorPhase + (index * 4.2) + beatPulse * 70) % 360;
                     bar.style.height = `${h.toFixed(1)}px`;
-                    bar.style.opacity = active ? `${Math.min(1, 0.35 + dynamic * 0.7)}` : '0.3';
+                    bar.style.opacity = active ? `${Math.min(1, 0.26 + dynamic * 0.82)}` : '0.3';
+                    bar.style.background = `linear-gradient(180deg, hsl(${hue}, 95%, 72%), hsl(${(hue + 46) % 360}, 92%, 56%) 65%, hsl(${(hue + 112) % 360}, 90%, 50%))`;
                 });
                 this.visualizerRaf = requestAnimationFrame(tick);
             };
