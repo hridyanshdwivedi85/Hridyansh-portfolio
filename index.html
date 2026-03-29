@@ -1130,82 +1130,27 @@
             dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
             loader.setDRACOLoader(dracoLoader);
             const astroStatus = document.getElementById('astro-load-status');
-            // Try many path+name combinations because some deployments use "Assets" and custom GLB names.
-            const baseDirs = [
-                './assets/textures/',
-                './assets/texture/',
-                './Assets/textures/',
-                './Assets/texture/',
-                '/assets/textures/',
-                '/assets/texture/',
-                '/Assets/textures/',
-                '/Assets/texture/',
-                'assets/textures/',
-                'assets/texture/',
-                'Assets/textures/',
-                'Assets/texture/'
+            // Try multiple URL styles + possible file names because deployments may serve from nested paths.
+            const astroModelPaths = [
+                new URL('./assets/textures/nothing_buds_animation.glb', document.baseURI).href,
+                new URL('./assets/textures/nothing_buds.glb', document.baseURI).href,
+                new URL('./assets/textures/nothing-buds.glb', document.baseURI).href,
+                new URL('./assets/textures/astro_bot.glb', document.baseURI).href,
+                '/assets/textures/nothing_buds_animation.glb',
+                '/assets/textures/nothing_buds.glb',
+                '/assets/textures/nothing-buds.glb',
+                '/assets/textures/astro_bot.glb',
+                'assets/textures/nothing_buds_animation.glb',
+                'assets/textures/nothing_buds.glb',
+                'assets/textures/nothing-buds.glb',
+                'assets/textures/astro_bot.glb',
+                'assets/texture/nothing_buds_animation.glb',
+                'assets/texture/nothing_buds.glb',
+                'assets/texture/astro_bot.glb'
             ];
-            const modelNames = [
-                window.NOTHING_BUDS_GLB || '',
-                'nothing_buds_animation.glb',
-                'nothing_buds.glb',
-                'nothing-buds.glb',
-                'nothing buds animation.glb',
-                'nothing buds.glb',
-                'astro_bot.glb'
-            ].filter(Boolean);
-            const astroModelPaths = [...new Set(baseDirs.flatMap((dir) => modelNames.map((name) => new URL(`${dir}${name}`, document.baseURI).href)))];
             let modelMixer = null;
             let modelActions = [];
             const modelClock = new THREE.Clock();
-            let fallbackGroup = null;
-
-            const createFallbackModel = () => {
-                if (fallbackGroup) return;
-                fallbackGroup = new THREE.Group();
-
-                const bodyMat = new THREE.MeshPhysicalMaterial({
-                    color: 0xf8fafc,
-                    metalness: 0.05,
-                    roughness: 0.26,
-                    clearcoat: 0.6
-                });
-                const accentMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, emissive: 0x1d4ed8, emissiveIntensity: 0.2 });
-                const capsuleGeo = new THREE.CapsuleGeometry(0.24, 0.9, 10, 20);
-                const stemGeo = new THREE.CylinderGeometry(0.06, 0.07, 0.65, 14);
-                const budTipGeo = new THREE.SphereGeometry(0.12, 18, 18);
-
-                const makeBud = (side = 1) => {
-                    const bud = new THREE.Group();
-                    const capsule = new THREE.Mesh(capsuleGeo, bodyMat);
-                    capsule.rotation.z = side * 0.28;
-                    bud.add(capsule);
-
-                    const stem = new THREE.Mesh(stemGeo, bodyMat);
-                    stem.position.set(side * 0.24, -0.64, 0.04);
-                    stem.rotation.z = side * 0.18;
-                    bud.add(stem);
-
-                    const accent = new THREE.Mesh(budTipGeo, accentMat);
-                    accent.position.set(side * 0.23, 0.34, 0.18);
-                    bud.add(accent);
-                    return bud;
-                };
-
-                const left = makeBud(-1);
-                const right = makeBud(1);
-                left.position.x = -0.52;
-                right.position.x = 0.52;
-                fallbackGroup.add(left, right);
-                fallbackGroup.position.y = -0.1;
-                scene.add(fallbackGroup);
-
-                if (astroStatus) {
-                    astroStatus.textContent = 'Fallback 3D Active';
-                    setTimeout(() => astroStatus.style.opacity = '0', 1200);
-                    setTimeout(() => astroStatus.remove(), 1900);
-                }
-            };
 
             const placeModel = (gltf) => {
                 const model = gltf.scene;
@@ -1245,7 +1190,7 @@
             const tryLoadAstro = (pathIndex = 0) => {
                 const modelPath = astroModelPaths[pathIndex];
                 if (!modelPath) {
-                    createFallbackModel();
+                    if (astroStatus) astroStatus.textContent = '3D model unavailable (check asset path/server)';
                     return;
                 }
 
@@ -1278,7 +1223,6 @@
             function animate() {
                 requestAnimationFrame(animate);
                 if (modelMixer) modelMixer.update(modelClock.getDelta());
-                if (fallbackGroup) fallbackGroup.rotation.y += 0.007;
                 controls.update();
                 renderer.render(scene, camera);
             }
