@@ -1521,7 +1521,7 @@ document.addEventListener('DOMContentLoaded', () => {
         togglePlay() {
             if (!this.isReady) return;
             if (this.audio.paused) this.audio.play().catch(() => {});
-            else this.stopAndDock();
+            else this.audio.pause();
         },
         prevTrack() {
             if (!this.isReady) return;
@@ -1600,6 +1600,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.audio.currentTime = 0;
             this.progress.value = 0;
             this.currentTimeEl.textContent = '00:00';
+            this.durationEl.textContent = this.formatTime(this.audio.duration || 0);
             this.setPlayingState(false);
         },
         bind3DRotation() {
