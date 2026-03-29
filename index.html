@@ -612,7 +612,6 @@
                 <div class="music-copy-overlay" aria-hidden="true">
                     <div class="music-copy-chip code-font">Minimal Soundscape</div>
                     <h2 class="music-copy-title heading-font">Fine detail. Clean space. Pure listening.</h2>
-                    <p class="music-copy-sub code-font">A focused audio tab designed for calm background sessions.</p>
                 </div>
 
                 <div class="music-player-wrap">
@@ -668,10 +667,6 @@
                         </div>
                         <p class="music-headphone-note code-font"><i class="fas fa-headphones mr-1"></i> Use headphones for best experience</p>
                     </div>
-                </div>
-
-                <div class="music-visualizer-wrap" aria-hidden="true">
-                    <div class="music-visualizer" id="music-visualizer"></div>
                 </div>
 
                 <audio id="music-audio" preload="metadata"></audio>
@@ -1123,12 +1118,15 @@
             const controls = new OrbitControls(camera, canvas);
             controls.enableDamping = true;
             controls.dampingFactor = 0.08;
+            controls.enableRotate = true;
+            controls.rotateSpeed = 0.85;
             controls.enableZoom = false;
             controls.enablePan = false;
-            controls.autoRotate = true;
-            controls.autoRotateSpeed = 2.5;
-            controls.minPolarAngle = Math.PI / 4;
-            controls.maxPolarAngle = Math.PI / 1.6;
+            controls.autoRotate = false;
+            controls.minPolarAngle = Math.PI / 7;
+            controls.maxPolarAngle = Math.PI / 1.08;
+            controls.touches.ONE = THREE.TOUCH.ROTATE;
+            controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
             controls.target.set(0, -0.35, 0);
             controls.update();
 
