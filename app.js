@@ -1427,6 +1427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentIndex: 0,
         isReady: false,
         hasStarted: false,
+        visualizerRaf: null,
         init() {
             this.audio = document.getElementById('music-audio');
             this.shell = document.getElementById('airpods-shell');
@@ -1450,7 +1451,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.bind();
             this.openCase({ auto: true, keepLocked: true });
             this.bind3DRotation();
-            this.initRainScene();
+            this.initVisualizer();
         },
         bind() {
             this.startBtn?.addEventListener('click', () => this.beginExperience());
@@ -1491,18 +1492,20 @@ document.addEventListener('DOMContentLoaded', () => {
             this.audio.volume = Number(this.volume.value);
         },
         beginExperience() {
-            if (this.hasStarted) return;
-            this.hasStarted = true;
-            this.openCase({ auto: true });
-            this.setControlsEnabled(true);
-            if (this.startBtn) {
-                this.startBtn.classList.add('is-active');
-                this.startBtn.setAttribute('disabled', 'disabled');
-                this.startBtn.textContent = 'Started';
+            if (!this.hasStarted) {
+                this.hasStarted = true;
+                this.openCase({ auto: true });
+                this.setControlsEnabled(true);
             }
 
-            if (typeof window.startMusicModelAnimation === 'function') {
-                window.startMusicModelAnimation();
+            if (this.audio.paused) {
+                this.audio.play().catch(() => {});
+                this.updateStartButton(true);
+                if (typeof window.startMusicModelAnimation === 'function') {
+                    window.startMusicModelAnimation();
+                }
+            } else {
+                this.stopAndDock();
             }
         },
         loadTrack(index) {
@@ -1536,6 +1539,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.playIcon.classList.toggle('fa-play', !isPlaying);
             this.playIcon.classList.toggle('fa-pause', isPlaying);
             this.shell?.classList.toggle('is-playing', isPlaying);
+            this.updateStartButton(isPlaying);
+            if (isPlaying) this.startVisualizer();
+            else this.stopVisualizer();
         },
         openCase({ auto = false, keepLocked = false } = {}) {
             if (this.isReady && !keepLocked) return;
@@ -1558,35 +1564,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const secs = Math.floor(seconds % 60);
             return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
         },
-        initRainScene() {
-            const rainLayer = document.getElementById('music-rain-layer');
-            const reflectionLayer = document.getElementById('music-reflection-layer');
-            if (!rainLayer || !reflectionLayer || rainLayer.dataset.ready === 'true') return;
-
-            rainLayer.dataset.ready = 'true';
-            const dropCount = window.matchMedia('(max-width: 768px)').matches ? 70 : 130;
-            const rippleCount = window.matchMedia('(max-width: 768px)').matches ? 30 : 55;
-
-            for (let i = 0; i < dropCount; i++) {
-                const drop = document.createElement('span');
-                drop.className = 'rain-drop';
-                drop.style.left = `${Math.random() * 110 - 5}%`;
-                drop.style.animationDuration = `${0.55 + Math.random() * 0.7}s`;
-                drop.style.animationDelay = `${Math.random() * -1.5}s`;
-                drop.style.opacity = `${0.35 + Math.random() * 0.45}`;
-                drop.style.height = `${7 + Math.random() * 10}vh`;
-                rainLayer.appendChild(drop);
-            }
-
-            for (let i = 0; i < rippleCount; i++) {
-                const ripple = document.createElement('span');
-                ripple.className = 'reflection-droplet';
-                ripple.style.left = `${Math.random() * 100}%`;
-                ripple.style.animationDuration = `${1.3 + Math.random() * 1.6}s`;
-                ripple.style.animationDelay = `${Math.random() * -3}s`;
-                ripple.style.width = `${40 + Math.random() * 50}px`;
-                ripple.style.height = ripple.style.width;
-                reflectionLayer.appendChild(ripple);
+        initVisualizer() {
+            this.visualizer = document.getElementById('music-visualizer');
+            if (!this.visualizer) return;
+            this.visualizer.innerHTML = '';
+            this.visualizerBars = [];
+            for (let i = 0; i < 48; i++) {
+                const bar = document.createElement('span');
+                bar.className = 'bar';
+                this.visualizer.appendChild(bar);
+                this.visualizerBars.push(bar);
             }
         },
         stopAndDock() {
@@ -1594,12 +1581,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof window.stopMusicModelAnimation === 'function') {
                 window.stopMusicModelAnimation();
             }
+            this.shell?.classList.add('is-stopping');
+            setTimeout(() => this.shell?.classList.remove('is-stopping'), 360);
             this.audio.pause();
             this.audio.currentTime = 0;
             this.progress.value = 0;
             this.currentTimeEl.textContent = '00:00';
             this.durationEl.textContent = this.formatTime(this.audio.duration || 0);
             this.setPlayingState(false);
+        },
+        updateStartButton(isPlaying) {
+            if (!this.startBtn) return;
+            this.startBtn.classList.toggle('is-active', isPlaying);
+            this.startBtn.textContent = isPlaying ? 'Stop' : 'Start';
+        },
+        startVisualizer() {
+            if (!this.visualizerBars?.length) return;
+            const tick = () => {
+                const active = !this.audio.paused;
+                this.visualizerBars.forEach((bar, index) => {
+                    const wave = Math.sin((Date.now() * 0.01) + (index * 0.5));
+                    const pulse = Math.sin((Date.now() * 0.005) + index);
+                    const dynamic = active ? Math.max(0, wave * 0.7 + pulse * 0.35 + 0.75) : 0.25;
+                    const h = 6 + (dynamic * 30);
+                    bar.style.height = `${h.toFixed(1)}px`;
+                    bar.style.opacity = active ? `${Math.min(1, 0.35 + dynamic * 0.7)}` : '0.3';
+                });
+                this.visualizerRaf = requestAnimationFrame(tick);
+            };
+            cancelAnimationFrame(this.visualizerRaf);
+            tick();
+        },
+        stopVisualizer() {
+            cancelAnimationFrame(this.visualizerRaf);
+            this.visualizerRaf = null;
+            this.visualizerBars?.forEach((bar) => {
+                bar.style.height = '7px';
+                bar.style.opacity = '0.3';
+            });
         },
         bind3DRotation() {
             const stage = document.getElementById('astro-stage');
