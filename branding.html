@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en" class="scrollbar-hide bg-[#000] overflow-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Cache buster -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>The Advertising Engine | V7 Asymmetrical Masterpiece</title>
+    
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;800;900&family=Syne:wght@400;600;700;800&family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700;900&family=Bebas+Neue&family=Pacifico&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css?v=7.0">
+
+    <style>
+        body { margin: 0; padding: 0; width: 100vw; height: 100dvh; background: #000; overflow: hidden; position: fixed; overscroll-behavior-y: none; font-family: 'Inter', sans-serif;}
+        
+        * { cursor: default; }
+        a, button, .nav-btn, .side-nav-dot { cursor: pointer !important; }
+
+        /* Custom Cursors */
+        .cursor-shoe { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>👟</text></svg>"), auto; }
+        .cursor-game { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>🎮</text></svg>"), auto; }
+        .cursor-soda { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>🥤</text></svg>"), auto; }
+        .cursor-watch { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>⌚</text></svg>"), auto; }
+        .cursor-gym { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>🏋️</text></svg>"), auto; }
+        .cursor-drop { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>💧</text></svg>"), auto; }
+        .cursor-beer { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>🍻</text></svg>"), auto; }
+        .cursor-speed { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>🏎️</text></svg>"), auto; }
+
+        /* Core Mechanics */
+        #slider-master { display: flex; width: 800vw; height: 100dvh; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1); will-change: transform; }
+        .ad-slide { width: 100vw; height: 100dvh; position: relative; overflow: hidden; flex-shrink: 0; }
+        
+        .bg-layer { position: absolute; inset: 0; z-index: 10; background-size: cover; background-position: center; transition: transform 12s cubic-bezier(0.2, 0.8, 0.2, 1); transform: scale(1.15); pointer-events: none;}
+        .ad-slide.active .bg-layer { transform: scale(1); }
+
+        .price-tag { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.15); border-radius: 999px; padding: 6px 18px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: max-content; }
+        
+        .ai-product-layer { mix-blend-mode: screen; filter: contrast(1.1) brightness(1.2); pointer-events: none; }
+        .real-image-multiply { mix-blend-mode: multiply; filter: contrast(1.1); pointer-events: none; object-fit: contain;}
+        .real-image-screen { mix-blend-mode: screen; filter: contrast(1.1); pointer-events: none; object-fit: contain;}
+        .real-image-normal { pointer-events: none; object-fit: contain;}
+
+        /* --- SLIDE 1: NIKE (Asymmetric Top-Left Text, Bottom-Right Shoe) --- */
+        #nike-slide .bg-layer { background-image: url('assets/images/bg_nike.png?v=2'); filter: grayscale(100%) contrast(1.2) brightness(0.25); }
+        #nike-text-block { position: absolute; top: 15%; left: 8%; z-index: 20; color: white; max-width: 50vw;}
+        #nike-visual-block { position: absolute; bottom: 5%; right: 5%; width: 55vw; height: 60vh; z-index: 30;}
+        .nike-tech-ring { position: absolute; top: 50%; left: 50%; width: 50vw; height: 50vw; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.1); border-left-color: rgba(255,255,255,0.5); transform: translate(-50%, -50%); z-index: 28; max-height: 800px; max-width: 800px;}
+        .nike-tech-ring-inner { position: absolute; top: 50%; left: 50%; width: 40vw; height: 40vw; border-radius: 50%; border: 2px solid transparent; border-right-color: rgba(255,255,255,0.2); transform: translate(-50%, -50%); z-index: 29; max-height: 600px; max-width: 600px;}
+        #nike-product { width: 100%; height: 100%; background-image: url('assets/images/fg_nike.png?v=2'); background-size: contain; background-repeat: no-repeat; background-position: right bottom;}
+
+        /* --- SLIDE 2: PLAYSTATION (Symmetrical Center Float) --- */
+        #ps5-slide .bg-layer { background-image: url('assets/images/bg_ps5.png?v=2'); filter: contrast(1.2) brightness(0.3) saturate(1.2); }
+        .ps5-blue-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(59,130,246,0.2), transparent 60%); z-index: 12; pointer-events: none;}
+        #ps5-text-top { position: absolute; top: 10%; width: 100%; text-align: center; z-index: 20; }
+        #ps5-visual-block { position: absolute; top: 50%; left: 75%; transform: translate(-50%, -50%); width: 40vw; height: 50vh; z-index: 30; display: flex; justify-content: center; align-items: center;}
+        #ps5-text-bottom { position: absolute; top: 50%; left: 10%; transform: translateY(-50%); width: 40vw; display: flex; flex-direction: column; align-items: flex-start; text-align: left; z-index: 20; justify-content: center;}
+        .ps5-pulse-ring { position: absolute; width: 45vw; height: 45vw; border-radius: 50%; border: 2px solid rgba(59, 130, 246, 0.3); z-index: 25; pointer-events: none; max-width: 600px; max-height: 600px;}
+        #ps5-product { width: 100%; height: 100%; background-image: url('assets/images/fg_ps5.png?v=2'); background-size: contain; background-repeat: no-repeat; background-position: center;}
+
+        /* --- SLIDE 3: COCA-COLA (Side by Side Red Classic) --- */
+        #coke-slide { background: #E50014; display: flex; }
+        #coke-slide .bg-layer { display: none; }
+        #coke-visual-block { width: 50vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: transparent; z-index: 30; }
+        #coke-text-block { width: 50vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 0 10%; z-index: 20; color: #ffffff; }
+        
+        /* --- SLIDE 4: APPLE WATCH (Minimal Top-Center Float, Content Below) --- */
+        #apple-slide { background: #f5f5f7; }
+        #apple-slide .bg-layer { background: radial-gradient(circle at 50% 30%, #ffffff 0%, #e2e2e4 100%); }
+        #apple-text-block { position: absolute; top: 50%; left: 10%; transform: translateY(-50%); width: 40vw; display: flex; flex-direction: column; align-items: flex-start; text-align: left; z-index: 20;}
+        #apple-visual-block { position: absolute; top: 50%; right: 10%; transform: translateY(-50%); width: 40vw; height: 60vh; z-index: 30; display: flex; justify-content: center; align-items: center;}
+
+        /* --- SLIDE 5: ON WHEY (Massive Background Diagonal Text, Foreground Tub) --- */
+        #on-slide { background: #0A0A0A; color: white;}
+        #on-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-10deg); font-family: 'Oswald', sans-serif; font-size: 25vw; font-weight: 900; color: rgba(255, 215, 0, 0.03); white-space: nowrap; pointer-events: none; z-index: 15;}
+        #on-visual-block { position: absolute; bottom: 10%; right: 15%; width: 35vw; height: 60vh; z-index: 30; display: flex; align-items: center; justify-content: center;}
+        #on-text-block { position: absolute; top: 25%; left: 10%; z-index: 40; max-width: 40vw;}
+        .on-power-ring { position: absolute; width: 40vw; height: 40vw; border-radius: 50%; border: 3px dashed rgba(255,215,0,0.2); z-index: 25; }
+
+        /* --- SLIDE 6: CETAPHIL (Clean floating Horizontal) --- */
+        #ceta-slide { background: #ffffff; color: #005a9c; }
+        #ceta-slide .bg-layer { background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%); }
+        .ceta-water-ripples { position: absolute; bottom: -20%; right: -10%; width: 70vw; height: 70vw; background: radial-gradient(circle, rgba(0,90,156,0.05) 0%, transparent 60%); border-radius: 50%; z-index: 12;}
+        .ceta-water-ripples::after { content:''; position: absolute; top: 50%; left: 50%; width: 50%; height: 50%; transform: translate(-50%,-50%); border: 1px solid rgba(0,90,156,0.1); border-radius: 50%;}
+        #ceta-visual-block { position: absolute; top: 50%; right: 10%; transform: translateY(-50%); width: 30vw; height: 70vh; z-index: 30; display: flex; justify-content: center;}
+        #ceta-text-block { position: absolute; bottom: 15%; left: 8%; z-index: 40; max-width: 45vw;}
+
+        /* --- SLIDE 7: CARLSBERG (Deep Dark Void, Glowing Right) --- */
+        #carls-slide { background: #001B0E; color: #D4AF37; }
+        #carls-slide .bg-layer { background: radial-gradient(circle at 70% 50%, #005A2F 0%, #001B0E 80%); }
+        #carls-text-block { position: absolute; top: 50%; left: 8%; transform: translateY(-50%); z-index: 40; max-width: 50vw;}
+        #carls-visual-block { position: absolute; bottom: 0; right: 8%; width: 40vw; height: 85vh; z-index: 30; display: flex; align-items: flex-end; justify-content: center;}
+
+        /* --- SLIDE 8: BMW (Dark Luxe Showroom, Side-by-Side) --- */
+        #bmw-slide { background: #0a0a0a; color: white; }
+        #bmw-slide .bg-layer { background-image: url('assets/images/bg_bmw.png'); filter: brightness(0.25) contrast(1.3) saturate(0.8); }
+        .bmw-light-streak { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, transparent 40%, rgba(0,102,204,0.08) 50%, transparent 60%); z-index: 11; pointer-events: none; }
+        .bmw-light-streak::after { content:''; position: absolute; bottom: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); }
+        #bmw-text-block { position: absolute; top: 50%; left: 6%; transform: translateY(-50%); z-index: 40; max-width: 38vw; }
+        #bmw-visual-block { position: absolute; bottom: 8%; right: 3%; width: 50vw; height: 45vh; z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
+
+        /* Global UI Elements */
+        #global-ui { position: absolute; inset: 0; z-index: 100; pointer-events: none; }
+        
+        /* CENTERED HUB BUTTON */
+        .hub-nav-wrap { position: absolute; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 110; pointer-events: auto;}
+        
+        .slider-nav { position: absolute; bottom: 2rem; right: 2rem; display: flex; gap: 1rem; pointer-events: auto; }
+        .nav-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); color: white; display: flex; align-items: center; justify-content: center; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
+        .nav-btn:hover { background: white; color: black; transform: scale(1.1); }
+        .nav-btn:disabled { opacity: 0.2; pointer-events: none; }
+
+        /* Dynamic Theme Navigation (Inverts colors for light slides like Apple & Cetaphil) */
+        .theme-light .nav-btn { background: rgba(255,255,255,0.8); color: black; border-color: rgba(0,0,0,0.1); }
+        .theme-light .nav-btn:hover { background: black; color: white; }
+
+        /* Dynamic Animations */
+        .animate-spin-slow { animation: spin 15s linear infinite; }
+        .animate-spin-slow-reverse { animation: spin 20s linear infinite reverse; }
+        .animate-pulse-slow { animation: pulseA 4s ease-in-out infinite alternate; }
+        @keyframes pulseA { 0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; } }
+        
+        .float-vertical { animation: floatY 4s ease-in-out infinite alternate; }
+        @keyframes floatY { 0% { transform: translateY(-3%); } 100% { transform: translateY(3%); } }
+        .float-fast { animation: floatFx 3s ease-in-out infinite alternate; }
+        @keyframes floatFx { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
+
+        /* Mobile Reset: Ensures everything stacks cleanly if on phone */
+        @media (max-width: 850px) {
+            #nike-text-block, #ps5-text-top, #ps5-text-bottom, #coke-text-block, #apple-text-block, #on-text-block, #ceta-text-block, #carls-text-block, #bmw-text-block { 
+                position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; width: 100%; max-width: none; text-align: center; padding: 2rem; align-items: center; justify-content: center;
+                order: 2; flex: none;
+            }
+            #nike-visual-block, #ps5-visual-block, #coke-visual-block, #apple-visual-block, #on-visual-block, #ceta-visual-block, #carls-visual-block, #bmw-visual-block {
+                position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; width: 100%; height: 45vh; margin-top: 15vh;
+                order: 1; flex: none; align-items: center; justify-content: center;
+            }
+            .ad-slide { display: flex; flex-direction: column; overflow-y: auto;}
+            
+            .huge-title { font-size: clamp(3.5rem, 12vw, 4.5rem) !important; line-height: 1 !important; margin-bottom: 0.5rem !important;}
+            .sub-desc { display: none; } 
+            
+            #on-bg-text { font-size: 40vw; top: 30%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="global-ui">
+        <!-- SHIFTED HUB OPTION TO MID -->
+        <div class="hub-nav-wrap">
+            <a href="index.html" id="btn-home" class="inline-flex items-center gap-2 text-white font-[Fira\ Code] text-[10px] md:text-xs tracking-widest uppercase bg-black/60 px-6 py-3 rounded-full border border-white/20 transition-all hover:bg-black hover:scale-105 backdrop-blur-xl shadow-2xl">
+                <i class="fas fa-arrow-left"></i> Main Hub
+            </a>
+        </div>
+
+        <div class="slider-nav">
+            <button id="btn-prev" class="nav-btn" disabled><i class="fas fa-chevron-left"></i></button>
+            <button id="btn-next" class="nav-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        
+        <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-3 z-50 mix-blend-difference hidden md:flex pointer-events-auto" id="dot-container"></div>
+    </div>
+
+    <!-- 7 Unique Slides -->
+    <div id="slider-master">
+        
+        <!-- 1: NIKE / Bottom-Right Float, Top-Left Text -->
+        <div class="ad-slide active theme-dark" id="nike-slide">
+            <div class="bg-layer"></div>
+            
+            <div id="nike-text-block">
+                <div class="gsap-anim-left flex items-center gap-3 mb-6"><svg class="w-[30px] fill-white" viewBox="0 0 24 24"><path d="M24 8.25c-2.4 2.87-7.1 6.32-13.84 6.32-3.79 0-6.73-1.04-8.8-3.13C-1.22 8.87-.2 6.09 1.56 5.25c1.68-.8 3.5.53 2.97 2.15-.3.8-.93 1.3-1.63 1.05-.15-.05-.3-.02-.42.1.04.28 1.48 2.05 4.38 2.38 4.2.48 9.28-2.6 13.97-5.5.9-.55 1.52-.45 2.12.35.35.48.74.98 1.05 1.35.15.2.2.45 0 .68l-2.05 2.5a39.4 39.4 0 0 1 2.05 2.14z"/></svg><span class="font-[Oswald] text-lg font-bold tracking-widest">NIKE</span></div>
+                <h2 class="font-[Oswald] huge-title text-7xl md:text-9xl font-bold uppercase leading-[0.9] text-white tracking-tighter mb-4 gsap-anim-left">Defy<br><span class="text-gray-500">Gravity.</span></h2>
+                <div class="sarcastic-quote font-[Inter] text-gray-400 italic text-sm md:text-base border-l-2 border-white pl-4 gsap-anim-left mb-6 max-w-sm">"Because running from your problems requires aerodynamic support."</div>
+                <div class="price-tag gsap-anim-left mb-4"><span class="font-[Fira\ Code] text-[10px] text-gray-400">MSRP:</span><span class="font-[Syne] font-bold text-white">$185.00</span></div>
+            </div>
+            
+            <div id="nike-visual-block" class="cursor-shoe">
+                <div class="nike-tech-ring animate-spin-slow opacity-30"></div>
+                <div class="nike-tech-ring-inner animate-spin-slow-reverse opacity-50"></div>
+                <!-- Original isolated AI generated shoe -->
+                <div id="nike-product" class="ai-product-layer float-fast gsap-anim-right"></div>
+            </div>
+        </div>
+
+        <!-- 2: PLAYSTATION / Symmetrical Center -->
+        <div class="ad-slide theme-dark" id="ps5-slide">
+            <div class="bg-layer"></div>
+            <div class="ps5-blue-glow"></div>
+            
+            <div id="ps5-visual-block" class="cursor-game">
+                <div class="ps5-pulse-ring animate-pulse-slow"></div>
+                <div id="ps5-product" class="ai-product-layer float-vertical gsap-anim-scale"></div>
+            </div>
+
+            <div id="ps5-text-bottom">
+                <div class="gsap-anim-right flex items-center justify-center gap-2 text-white mb-6"><i class="fab fa-playstation text-2xl"></i><span class="font-[Inter] text-sm font-bold tracking-[0.3em]">SONY</span></div>
+                <h2 class="font-[Syne] huge-title text-5xl md:text-7xl font-black uppercase leading-[1] tracking-tighter text-white gsap-anim-right mb-6">Play Has<br><span class="text-blue-500">No Limits</span></h2>
+                <div class="price-tag gsap-anim-left mb-4 border-blue-500/30 bg-blue-500/10"><span class="font-[Fira\ Code] text-[10px] text-blue-200">SRP:</span><span class="font-[Syne] font-bold text-white">$499.99</span></div>
+                <div class="sarcastic-quote font-[Fira\ Code] text-blue-300 text-xs md:text-sm gsap-anim-left bg-blue-900/30 px-6 py-3 rounded-xl border border-blue-500/20 max-w-md backdrop-blur-sm">
+                    <i class="fas fa-terminal mr-2"></i>"Outside has terrible graphics and bugs. Stay inside."
+                </div>
+            </div>
+        </div>
+
+        <!-- 3: COCA-COLA / Side-by-Side White Background with Red Text -->
+        <div class="ad-slide theme-light" id="coke-slide">
+            <div id="coke-visual-block" class="cursor-soda">
+                <img src="assets/images/coke_can.png" class="real-image-normal float-fast gsap-anim-left w-auto h-[80%] object-contain scale-110 drop-shadow-2xl" alt="Coca Cola Cans">
+            </div>
+
+            <div id="coke-text-block" class="items-start text-left">
+                <div class="font-[Pacifico] text-4xl text-white mb-4 gsap-anim-right drop-shadow-sm">Coca-Cola</div>
+                <h2 class="font-[Playfair\ Display] huge-title text-5xl md:text-8xl font-black leading-[1.05] text-white gsap-anim-right mb-6 drop-shadow-lg">
+                     Open<br>Happiness.
+                </h2>
+                <div class="sarcastic-quote font-[Inter] font-medium text-white/90 italic gsap-anim-right text-sm md:text-lg border-l-4 border-white pl-4 mb-6 drop-shadow-md">
+                    "Scientifically proven to make pizza taste 300% better."
+                </div>
+                <div class="price-tag gsap-anim-right border-white/20 bg-white/10"><span class="font-[Syne] font-bold text-white text-xl">12-PACK: $6.99</span></div>
+            </div>
+        </div>
+
+        <!-- 4: APPLE WATCH / Ultra Minimal Top-Center -->
+        <div class="ad-slide theme-light" id="apple-slide">
+            <div class="bg-layer"></div>
+            
+            <div id="apple-visual-block" class="cursor-watch pt-24">
+                <!-- Real Apple.com PNG URL downloaded by the Browser Subagent -->
+                <img src="https://cdsassets.apple.com/live/SZLF0YNV/images/sp/111852_apple-watch-ultra.png" class="real-image-normal float-vertical gsap-anim-down w-auto h-full drop-shadow-2xl" alt="Apple Watch Ultra">
+            </div>
+
+            <div id="apple-text-block">
+                <div class="gsap-anim-up flex items-center text-black font-semibold text-lg md:text-xl tracking-tight mb-4">
+                    <i class="fab fa-apple text-2xl mr-2"></i> Watch Ultra
+                </div>
+                <h2 class="font-[Inter] huge-title font-black text-5xl md:text-7xl text-black leading-[1] tracking-tighter mb-4 gsap-anim-up drop-shadow-sm">
+                    Adventure Awaits.
+                </h2>
+                <div class="sarcastic-quote font-[Fira\ Code] text-gray-500 text-xs md:text-sm gsap-anim-up mb-6 border border-gray-200 bg-white/50 backdrop-blur px-4 py-2 rounded-lg max-w-sm">
+                    // "Track exactly how many steps you didn't take today."
+                </div>
+                <div class="price-tag border-black/10 bg-black/5 text-black gsap-anim-up"><span class="font-[Inter] text-[10px] text-gray-500 uppercase">From</span><span class="font-[Inter] font-bold text-lg">$799.00</span></div>
+            </div>
+        </div>
+
+        <!-- 5: ON WHEY PROTEIN / Massive Background Typography -->
+        <div class="ad-slide theme-dark" id="on-slide">
+            <div id="on-bg-text">GOLD STANDARD</div>
+            
+            <div id="on-text-block">
+                <div class="gsap-anim-left text-white mb-6"><span class="font-[Oswald] text-red-600 font-bold text-3xl border-2 border-red-600 px-2 rounded tracking-tighter bg-black/50 backdrop-blur-md">ON</span></div>
+                <h2 class="font-[Oswald] huge-title font-black uppercase text-6xl md:text-8xl text-white leading-[0.9] tracking-tight mb-6 gsap-anim-left drop-shadow-xl">Fuel Your<br><span class="text-yellow-500">Greatness.</span></h2>
+                <div class="sarcastic-quote font-[Inter] text-gray-300 bg-black/60 backdrop-blur-md p-4 rounded-r-xl border-l-4 border-red-600 italic text-sm md:text-base gsap-anim-left mb-6 font-semibold">
+                    "For when you want to look like you lift, but mostly just drink shakes."
+                </div>
+                <div class="price-tag border-yellow-500/30 bg-yellow-500/10 text-white gsap-anim-left"><span class="font-[Inter] text-[10px] text-yellow-500">5 LBS</span><span class="font-[Inter] font-bold text-lg text-white">$74.99</span></div>
+            </div>
+
+            <div id="on-visual-block" class="cursor-gym">
+                <div class="on-power-ring animate-[spin_10s_linear_infinite_reverse]"></div>
+                <img src="assets/images/whey_real.png" class="real-image-normal float-fast gsap-anim-right w-auto h-[100%] scale-110 drop-shadow-2xl" alt="ON Whey Protein Tub">
+            </div>
+        </div>
+
+        <!-- 6: CETAPHIL / Clean Fluid Floating -->
+        <div class="ad-slide theme-light" id="ceta-slide">
+            <div class="bg-layer"></div>
+            <div class="ceta-water-ripples"></div>
+            
+            <div id="ceta-text-block">
+                <div class="gsap-anim-up text-[#005a9c] mb-6 flex items-center gap-2"><i class="fas fa-leaf text-2xl"></i><span class="font-[Inter] text-2xl font-black tracking-tighter">Cetaphil</span></div>
+                <h2 class="font-[Inter] huge-title font-black text-6xl md:text-8xl text-[#005a9c] leading-[0.9] tracking-tighter mb-4 gsap-anim-up drop-shadow-sm">Pure<br><span class="text-blue-400">Hydration.</span></h2>
+                <div class="sarcastic-quote font-[Inter] text-[#005a9c] bg-white/60 backdrop-blur-md rounded-xl p-4 italic text-sm md:text-base border-l-4 border-blue-400 gsap-anim-up mb-6 font-medium shadow-lg">
+                    "Because splashing tap water on your face at 3 AM isn't a skincare routine."
+                </div>
+                <div class="price-tag border-blue-500/20 bg-blue-500/10 text-[#005a9c] gsap-anim-up"><span class="font-[Inter] font-bold text-xl">$14.50</span></div>
+            </div>
+
+            <div id="ceta-visual-block" class="cursor-drop">
+                <img src="assets/images/cetaphil_real.png" class="real-image-normal float-vertical gsap-anim-down w-auto h-full" alt="Cetaphil Cleanser">
+            </div>
+        </div>
+
+        <!-- 7: CARLSBERG / Deep Gold & Green Void -->
+        <div class="ad-slide theme-dark" id="carls-slide">
+            <div class="bg-layer"></div>
+            
+            <div id="carls-text-block">
+                <div class="gsap-anim-left text-[#D4AF37] mb-6"><span class="font-[Playfair\ Display] text-4xl font-black italic tracking-widest drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">Carlsberg</span></div>
+                <h2 class="font-[Oswald] huge-title font-bold uppercase text-6xl md:text-8xl text-[#fff] leading-[0.9] tracking-tighter mb-6 gsap-anim-left drop-shadow-2xl">
+                    Summer<br><span class="text-[#D4AF37]">Vibes.</span>
+                </h2>
+                <div class="sarcastic-quote font-[Inter] text-[#00fa7d] font-semibold text-sm md:text-base border-l-4 border-[#D4AF37] pl-4 gsap-anim-left mb-6 max-w-sm drop-shadow-md leading-relaxed">
+                    "Probably the best excuse to skip the gym today. Technical dehydration therapy for when standard lagers just won't cut through the aggressive July heatwave."
+                </div>
+                <div class="price-tag border-green-500/30 bg-green-500/10 text-white gsap-anim-left"><span class="font-[Syne] font-bold text-xl">$12.99 // 6-PACK</span></div>
+            </div>
+
+            <div id="carls-visual-block" class="cursor-beer">
+                <img src="assets/images/carlsberg_real.png" class="real-image-normal float-fast gsap-anim-up w-auto h-[110%] drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]" alt="Carlsberg Beer">
+            </div>
+        </div>
+
+        <!-- 8: BMW / Dark Luxe Showroom -->
+        <div class="ad-slide theme-dark" id="bmw-slide">
+            <div class="bg-layer"></div>
+            <div class="bmw-light-streak"></div>
+            
+            <div id="bmw-text-block">
+                <div class="gsap-anim-left flex items-center gap-4 mb-5">
+                    <!-- BMW Logo SVG -->
+                    <svg class="w-12 h-12 drop-shadow-lg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="white" stroke-width="3"/>
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="white" stroke-width="1.5"/>
+                        <path d="M50 8 L50 50 L8 50" fill="#0066CC" stroke="none"/>
+                        <path d="M50 50 L50 92 L92 50" fill="#0066CC" stroke="none"/>
+                        <path d="M50 8 L50 50 L92 50" fill="white" stroke="none"/>
+                        <path d="M50 50 L50 92 L8 50" fill="white" stroke="none"/>
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
+                        <text x="50" y="6" text-anchor="middle" fill="white" font-size="5" font-family="Inter" font-weight="800" letter-spacing="1">B</text>
+                        <text x="93" y="53" text-anchor="middle" fill="white" font-size="5" font-family="Inter" font-weight="800">M</text>
+                        <text x="50" y="98" text-anchor="middle" fill="white" font-size="5" font-family="Inter" font-weight="800">W</text>
+                    </svg>
+                    <div class="flex flex-col">
+                        <span class="font-[Inter] text-white text-xl font-black tracking-wider">BMW</span>
+                        <span class="font-[Fira\ Code] text-[9px] text-blue-400 tracking-widest">M SERIES</span>
+                    </div>
+                </div>
+                <h2 class="font-[Syne] text-4xl md:text-6xl font-black uppercase leading-[0.9] text-white tracking-tighter mb-5 gsap-anim-left drop-shadow-2xl">
+                    Born To<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600">Dominate.</span>
+                </h2>
+                <div class="sarcastic-quote font-[Inter] text-gray-300 bg-black/60 backdrop-blur-md p-4 rounded-xl border-l-4 border-blue-500 italic text-sm md:text-base gsap-anim-left mb-4 font-medium max-w-md leading-relaxed">
+                    "0–60 in 3.2 seconds. Your student loan? 0–crippling in 3.2 semesters."
+                </div>
+                <div class="font-[Fira\ Code] text-[11px] text-gray-500 gsap-anim-left mb-6 max-w-sm leading-relaxed">
+                    // Twin-turbo engineered precision. Built for those who believe turn signals are optional and speed limits are merely suggestions.
+                </div>
+                <div class="price-tag gsap-anim-left border-blue-500/30 bg-blue-500/10">
+                    <span class="font-[Fira\ Code] text-[10px] text-blue-300">STARTING:</span>
+                    <span class="font-[Syne] font-bold text-white text-xl">$142,000</span>
+                </div>
+            </div>
+
+            <div id="bmw-visual-block" class="cursor-speed">
+                <img src="assets/images/bmw_car.png" class="real-image-normal float-fast gsap-anim-right w-auto h-[100%] drop-shadow-[0_20px_60px_rgba(0,100,255,0.3)]" alt="BMW M Series">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Interface Logic -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const master = document.getElementById('slider-master');
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const dotContainer = document.getElementById('dot-container');
+            const slides = document.querySelectorAll('.ad-slide');
+            const body = document.body;
+            
+            let currentSlide = 0;
+            const totalSlides = 8; 
+
+            // Create 7 Dots
+            for(let i=0; i<totalSlides; i++) {
+                let dot = document.createElement('div');
+                dot.className = "w-1.5 h-1.5 rounded-full bg-white transition-all duration-300 cursor-pointer " + (i===0 ? "opacity-100 transform scale-150" : "opacity-40");
+                dot.addEventListener('click', () => { currentSlide = i; updateSlider(); });
+                dotContainer.appendChild(dot);
+            }
+            const dots = dotContainer.children;
+
+            triggerSlideAnim(0);
+
+            btnNext.addEventListener('click', () => { if(currentSlide < totalSlides - 1) { currentSlide++; updateSlider(); } });
+            btnPrev.addEventListener('click', () => { if(currentSlide > 0) { currentSlide--; updateSlider(); } });
+
+            function updateSlider() {
+                master.style.transform = `translateX(-${currentSlide * 100}vw)`;
+                
+                btnPrev.disabled = currentSlide === 0;
+                btnNext.disabled = currentSlide === totalSlides - 1;
+
+                slides.forEach((slide, idx) => {
+                    slide.classList.toggle('active', idx === currentSlide);
+                });
+
+                // Update UI Theme Light/Dark Context
+                if(slides[currentSlide].classList.contains('theme-light')) {
+                    document.getElementById('global-ui').classList.add('theme-light');
+                } else {
+                    document.getElementById('global-ui').classList.remove('theme-light');
+                }
+
+                Array.from(dots).forEach((dot, idx) => {
+                    if(idx === currentSlide) {
+                        dot.classList.remove('opacity-40', 'scale-100'); dot.classList.add('opacity-100', 'scale-150');
+                    } else {
+                        dot.classList.add('opacity-40', 'scale-100'); dot.classList.remove('opacity-100', 'scale-150');
+                    }
+                });
+
+                triggerSlideAnim(currentSlide);
+            }
+
+            // V7 Unique GSAP Timelines per Slide Element
+            function triggerSlideAnim(slideIndex) {
+                const slideId = '#' + slides[slideIndex].id;
+                
+                // Reset states
+                gsap.set(`${slideId} .gsap-anim-left`, { x: -80, opacity: 0 });
+                gsap.set(`${slideId} .gsap-anim-right`, { x: 80, opacity: 0 });
+                gsap.set(`${slideId} .gsap-anim-up`, { y: 80, opacity: 0 });
+                gsap.set(`${slideId} .gsap-anim-down`, { y: -80, opacity: 0 });
+                gsap.set(`${slideId} .gsap-anim-scale`, { scale: 0.8, opacity: 0 });
+
+                const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+                // Execute Animations based on classes
+                tl.to(`${slideId} .gsap-anim-scale`, { scale: 1, opacity: 1, duration: 1.5, ease: "back.out(1.5)" }, 0.1);
+                tl.to(`${slideId} .gsap-anim-left`, { x: 0, opacity: 1, duration: 1.2, stagger: 0.1 }, 0.2);
+                tl.to(`${slideId} .gsap-anim-right`, { x: 0, opacity: 1, duration: 1.2, stagger: 0.1 }, 0.2);
+                tl.to(`${slideId} .gsap-anim-up`, { y: 0, opacity: 1, duration: 1.2, stagger: 0.1 }, 0.2);
+                tl.to(`${slideId} .gsap-anim-down`, { y: 0, opacity: 1, duration: 1.2, stagger: 0.1 }, 0.2);
+            }
+        });
+    </script>
+</body>
+</html>

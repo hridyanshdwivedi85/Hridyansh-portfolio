@@ -106,13 +106,10 @@
                             <span>ENTER SPACE</span>
                             <i class="fas fa-arrow-right-long" aria-hidden="true"></i>
                         </a>
-                        <a href="video.html" class="mobile-celestial-enter sound-click" aria-label="Open custom video experience">
-                            <span>WATCH VIDEO</span>
-                            <i class="fas fa-play" aria-hidden="true"></i>
-                        </a>
-                        <a href="garage.html" class="mobile-celestial-enter sound-click" aria-label="Enter Garage Mode">
-                            <span>ENTER GARAGE</span>
-                            <i class="fas fa-warehouse" aria-hidden="true"></i>
+                        <!-- New 'See Art' Button per request -->
+                        <a href="branding.html" class="mobile-celestial-enter sound-click" aria-label="View Art">
+                            <span>Wanna see my art?</span>
+                            <i class="fas fa-palette" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -615,32 +612,34 @@
 
                 <div class="music-player-wrap">
                     <div class="airpods-shell" id="airpods-shell">
-                        <div class="airpods-label code-font">AirPods Pro (Latest)</div>
+                        <div class="airpods-label code-font"><i class="fas fa-robot mr-2 text-blue-400"></i>Astro Bot // Interactive 3D</div>
 
-                        <div class="airpods-stage">
+                        <div class="airpods-stage" id="astro-stage" style="cursor: grab; touch-action: none;">
                             <div class="airpods-vibration" id="music-vibration" aria-hidden="true">
                                 <span></span><span></span><span></span><span></span><span></span>
                             </div>
-
-                            <div class="airpods-bud airpods-bud-left" id="bud-left" aria-hidden="true"></div>
-                            <div class="airpods-bud airpods-bud-right" id="bud-right" aria-hidden="true"></div>
-
-                            <button id="buds-start" class="airpods-case sound-click" aria-label="Start and open AirPods case">
-                                <div class="airpods-case-lid"></div>
-                                <div class="airpods-case-body">
-                                    <span class="airpods-case-light" aria-hidden="true"></span>
-                                    <span class="airpods-case-text code-font">START</span>
-                                </div>
+                            <!-- Three.js Canvas renders here -->
+                            <canvas id="astro-canvas" style="width:100%;height:100%;display:block;border-radius:28px;"></canvas>
+                            
+                            <button id="buds-start" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-6 py-2.5 text-white font-[Fira\ Code] text-[10px] tracking-widest uppercase hover:bg-white/20 transition-all shadow-2xl sound-click" aria-label="Start Music">
+                                <i class="fas fa-play mr-2 text-green-400"></i>INITIALIZE
                             </button>
                         </div>
 
-                        <div class="music-player-card">
+                        <div class="music-player-card" style="background: linear-gradient(170deg, rgba(20,20,28,0.85), rgba(8,8,12,0.95)); border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 1px rgba(255,255,255,0.15), 0 20px 60px rgba(0,0,0,0.5);">
                             <div class="music-player-head">
-                                <p class="code-font text-[10px] tracking-[0.22em] text-gray-400 uppercase">Spatial Audio</p>
-                                <h2 class="heading-font music-player-title">Apple Music</h2>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="code-font text-[10px] tracking-[0.22em] text-blue-400/80 uppercase flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block"></span>Spatial Audio</p>
+                                        <h2 class="heading-font music-player-title" style="background: linear-gradient(135deg, #fff, #a0aec0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Music Engine</h2>
+                                    </div>
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center">
+                                        <i class="fas fa-headphones text-pink-400 text-sm"></i>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="music-meta">
+                            <div class="music-meta" style="border-color: rgba(255,255,255,0.06);">
                                 <p id="music-track-title" class="music-track-title">Local Track Ready</p>
                                 <p id="music-track-artist" class="music-track-artist">Local MP3 Library</p>
                             </div>
@@ -653,7 +652,7 @@
 
                             <div class="music-controls">
                                 <button id="music-prev" class="music-control-btn sound-click" aria-label="Previous track"><i class="fas fa-backward-step"></i></button>
-                                <button id="music-play" class="music-control-btn music-play-btn sound-click" aria-label="Play or pause"><i id="music-play-icon" class="fas fa-play"></i></button>
+                                <button id="music-play" class="music-control-btn music-play-btn sound-click" aria-label="Play or pause" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow: 0 8px 30px rgba(99,102,241,0.5);"><i id="music-play-icon" class="fas fa-play"></i></button>
                                 <button id="music-next" class="music-control-btn sound-click" aria-label="Next track"><i class="fas fa-forward-step"></i></button>
                             </div>
 
@@ -663,7 +662,7 @@
                                 <i class="fas fa-volume-high text-gray-500 text-xs"></i>
                             </div>
 
-                            <p class="music-headphone-note code-font">Use headphones for best experience</p>
+                            <p class="music-headphone-note code-font"><i class="fas fa-headphones mr-1"></i> Use headphones for best experience</p>
                         </div>
                     </div>
                 </div>
@@ -855,19 +854,7 @@
                         </div>
                     </div>
 
-                    <!-- Footer Links: Restored to natural flex flow for perfect mathematical centering -->
-                    <div class="identity-footer shrink-0 w-full flex flex-col items-center justify-center gap-2 z-20 pointer-events-auto pb-8 md:pb-10">
-                        <div class="relative code-font text-[10px] text-gray-600" id="legal-tabs-wrap">
-                            <button id="legal-tabs-toggle" class="hover:text-[var(--brand-orange)] transition flex items-center gap-2 cursor-pointer border border-white/10 rounded-full px-3 py-1.5 bg-[#0c0c0c]">
-                                <i class="fas fa-folder-tree text-[9px]"></i> Tabs
-                                <i class="fas fa-chevron-down text-[8px]" id="legal-tabs-chevron"></i>
-                            </button>
-                            <div id="legal-tabs-menu" class="hidden absolute left-1/2 -translate-x-1/2 bottom-[120%] min-w-[170px] bg-[#0a0a0a] border border-white/10 rounded-xl p-2 shadow-2xl">
-                                <button class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/5 hover:text-[var(--brand-orange)] transition flex items-center gap-1.5" onclick="openLegalModal('privacy')"><i class="far fa-circle text-[8px]"></i> Privacy</button>
-                                <button class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/5 hover:text-[var(--brand-orange)] transition flex items-center gap-1.5" onclick="openLegalModal('terms')"><i class="far fa-file-alt text-[8px]"></i> Terms</button>
-                                <button class="w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/5 hover:text-[var(--brand-orange)] transition flex items-center gap-1.5" onclick="openLegalModal('credits')"><i class="far fa-heart text-[8px]"></i> Credits</button>
-                            </div>
-                        </div>
+                    <!-- Footer Links Removed and Moved to Main Nav per request -->
                         <div class="code-font text-[9px] text-gray-600">
                             &copy; 2025 Hridyansh Dwivedi &bull; Made with <i class="fas fa-heart text-[var(--brand-orange)] mx-0.5"></i> & <i class="fas fa-coffee text-[#81a1c1] mx-0.5"></i>
                         </div>
@@ -915,6 +902,16 @@
                     <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity">active</span>
                     <span class="nav-label text-gray-500 hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium">ENTROPY</span>
                 </div>
+                
+                <!-- BRANDING AND ABOUT EXPLICIT LINK TABS -->
+                <a href="branding.html" class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" style="text-decoration: none;">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">launching</span>
+                    <span class="nav-label text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">BRANDING</span>
+                </a>
+                <a href="about.html" class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" style="text-decoration: none;">
+                    <span class="nav-active-text font-serif italic text-white text-[10px] opacity-0 transition-opacity group-hover:opacity-100">launching</span>
+                    <span class="nav-label text-gray-500 group-hover:text-white transition-colors text-[10px] md:text-xs tracking-[0.15em] uppercase font-medium" style="font-family: 'Inter', sans-serif;">ABOUT</span>
+                </a>
                 
                 <!-- Merged Identity/Contact Tab -->
                 <div class="nav-item flex items-center gap-3 sound-hover group cursor-pointer" data-target="mod-identity" data-theme="aurora">
@@ -1073,6 +1070,94 @@
 
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Three.js for Astro Bot 3D Model -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const canvas = document.getElementById('astro-canvas');
+        if (canvas) {
+            const stage = document.getElementById('astro-stage');
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.outputColorSpace = THREE.SRGBColorSpace;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.4;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+            camera.position.set(0, 1.2, 3.5);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
+            dirLight.position.set(3, 5, 4);
+            scene.add(dirLight);
+            const rimLight = new THREE.DirectionalLight(0x6366f1, 0.8);
+            rimLight.position.set(-3, 2, -2);
+            scene.add(rimLight);
+            const bottomLight = new THREE.PointLight(0x22c55e, 0.5, 10);
+            bottomLight.position.set(0, -1, 2);
+            scene.add(bottomLight);
+
+            // Controls
+            const controls = new OrbitControls(camera, canvas);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.08;
+            controls.enableZoom = false;
+            controls.enablePan = false;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 2.5;
+            controls.minPolarAngle = Math.PI / 4;
+            controls.maxPolarAngle = Math.PI / 1.6;
+
+            // Load Astro Bot GLB
+            const loader = new GLTFLoader();
+            loader.load('assets/textures/astro_bot.glb', (gltf) => {
+                const model = gltf.scene;
+                // Auto-center and scale
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = 2.0 / maxDim;
+                model.scale.setScalar(scale);
+                model.position.sub(center.multiplyScalar(scale));
+                model.position.y -= 0.2;
+                scene.add(model);
+            }, undefined, (err) => {
+                console.warn('Astro Bot GLB load error:', err);
+            });
+
+            function resize() {
+                const w = stage.clientWidth;
+                const h = stage.clientHeight;
+                renderer.setSize(w, h);
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+    </script>
     
     <!-- Custom Application Logic -->
     <script src="app.js"></script>
