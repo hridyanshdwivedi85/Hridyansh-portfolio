@@ -612,7 +612,7 @@
 
                 <div class="music-player-wrap">
                     <div class="airpods-shell" id="airpods-shell">
-                        <div class="airpods-label code-font"><i class="fas fa-robot mr-2 text-blue-400"></i>Astro Bot // Interactive 3D</div>
+                        <div class="airpods-label code-font"><i class="fas fa-robot mr-2 text-blue-400"></i>Nothing Buds // Interactive 3D</div>
 
                         <div class="airpods-stage" id="astro-stage" style="cursor: grab; touch-action: none;">
                             <div class="airpods-vibration" id="music-vibration" aria-hidden="true">
@@ -622,7 +622,7 @@
                             <canvas id="astro-canvas" style="width:100%;height:100%;display:block;border-radius:28px;"></canvas>
                             
                             <div id="astro-load-status" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/45 backdrop-blur-xl border border-white/15 rounded-full px-5 py-2 text-white/90 font-[Fira\ Code] text-[10px] tracking-widest uppercase pointer-events-none">
-                                Loading Astro Bot...
+                                Loading Nothing Buds...
                             </div>
                         </div>
 
@@ -637,6 +637,7 @@
                                         <i class="fas fa-headphones text-pink-400 text-sm"></i>
                                     </div>
                                 </div>
+                                <button id="music-start" class="music-start-btn code-font sound-click" type="button">Start</button>
                             </div>
 
                             <div class="music-meta" style="border-color: rgba(255,255,255,0.06);">
@@ -1123,20 +1124,88 @@
             controls.minPolarAngle = Math.PI / 4;
             controls.maxPolarAngle = Math.PI / 1.6;
 
-            // Load Astro Bot GLB (supports both texture/textures directories)
+            // Load Nothing Buds GLB (supports legacy Astro path as fallback)
             const loader = new GLTFLoader();
             const dracoLoader = new DRACOLoader();
             dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
             loader.setDRACOLoader(dracoLoader);
             const astroStatus = document.getElementById('astro-load-status');
-            // Try multiple URL styles because deployments may serve this page from a nested base path.
-            const astroModelPaths = [
-                new URL('./assets/textures/astro_bot.glb', document.baseURI).href,
-                new URL('assets/textures/astro_bot.glb', document.baseURI).href,
-                '/assets/textures/astro_bot.glb',
-                'assets/textures/astro_bot.glb',
-                'assets/texture/astro_bot.glb'
+            // Try many path+name combinations because some deployments use "Assets" and custom GLB names.
+            const baseDirs = [
+                './assets/textures/',
+                './assets/texture/',
+                './Assets/textures/',
+                './Assets/texture/',
+                '/assets/textures/',
+                '/assets/texture/',
+                '/Assets/textures/',
+                '/Assets/texture/',
+                'assets/textures/',
+                'assets/texture/',
+                'Assets/textures/',
+                'Assets/texture/'
             ];
+            const modelNames = [
+                window.NOTHING_BUDS_GLB || '',
+                'nothing_buds_animation.glb',
+                'nothing_buds.glb',
+                'nothing-buds.glb',
+                'nothing buds animation.glb',
+                'nothing buds.glb',
+                'astro_bot.glb'
+            ].filter(Boolean);
+            const astroModelPaths = [...new Set(baseDirs.flatMap((dir) => modelNames.map((name) => new URL(`${dir}${name}`, document.baseURI).href)))];
+            let modelMixer = null;
+            let modelActions = [];
+            const modelClock = new THREE.Clock();
+            let fallbackGroup = null;
+
+            const createFallbackModel = () => {
+                if (fallbackGroup) return;
+                fallbackGroup = new THREE.Group();
+
+                const bodyMat = new THREE.MeshPhysicalMaterial({
+                    color: 0xf8fafc,
+                    metalness: 0.05,
+                    roughness: 0.26,
+                    clearcoat: 0.6
+                });
+                const accentMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, emissive: 0x1d4ed8, emissiveIntensity: 0.2 });
+                const capsuleGeo = new THREE.CapsuleGeometry(0.24, 0.9, 10, 20);
+                const stemGeo = new THREE.CylinderGeometry(0.06, 0.07, 0.65, 14);
+                const budTipGeo = new THREE.SphereGeometry(0.12, 18, 18);
+
+                const makeBud = (side = 1) => {
+                    const bud = new THREE.Group();
+                    const capsule = new THREE.Mesh(capsuleGeo, bodyMat);
+                    capsule.rotation.z = side * 0.28;
+                    bud.add(capsule);
+
+                    const stem = new THREE.Mesh(stemGeo, bodyMat);
+                    stem.position.set(side * 0.24, -0.64, 0.04);
+                    stem.rotation.z = side * 0.18;
+                    bud.add(stem);
+
+                    const accent = new THREE.Mesh(budTipGeo, accentMat);
+                    accent.position.set(side * 0.23, 0.34, 0.18);
+                    bud.add(accent);
+                    return bud;
+                };
+
+                const left = makeBud(-1);
+                const right = makeBud(1);
+                left.position.x = -0.52;
+                right.position.x = 0.52;
+                fallbackGroup.add(left, right);
+                fallbackGroup.position.y = -0.1;
+                scene.add(fallbackGroup);
+
+                if (astroStatus) {
+                    astroStatus.textContent = 'Fallback 3D Active';
+                    setTimeout(() => astroStatus.style.opacity = '0', 1200);
+                    setTimeout(() => astroStatus.remove(), 1900);
+                }
+            };
 
             const placeModel = (gltf) => {
                 const model = gltf.scene;
@@ -1144,15 +1213,30 @@
                 const center = box.getCenter(new THREE.Vector3());
                 const size = box.getSize(new THREE.Vector3());
                 const maxDim = Math.max(size.x, size.y, size.z) || 1;
-                const scale = 2.0 / maxDim;
+                const scale = 1.72 / maxDim;
 
                 model.scale.setScalar(scale);
                 model.position.sub(center.multiplyScalar(scale));
-                model.position.y -= 0.2;
+                model.position.y -= 0.06;
                 scene.add(model);
 
+                if (gltf.animations && gltf.animations.length) {
+                    modelMixer = new THREE.AnimationMixer(model);
+                    modelActions = [];
+                    gltf.animations.forEach((clip, clipIndex) => {
+                        const action = modelMixer.clipAction(clip);
+                        action.setLoop(THREE.LoopRepeat, Infinity);
+                        action.clampWhenFinished = false;
+                        action.enabled = true;
+                        action.paused = true;
+                        action.play();
+                        if (clipIndex > 0) action.weight = 0.75;
+                        modelActions.push(action);
+                    });
+                }
+
                 if (astroStatus) {
-                    astroStatus.textContent = 'Astro Bot Online';
+                    astroStatus.textContent = 'Nothing Buds Online';
                     setTimeout(() => astroStatus.style.opacity = '0', 1000);
                     setTimeout(() => astroStatus.remove(), 1600);
                 }
@@ -1161,19 +1245,25 @@
             const tryLoadAstro = (pathIndex = 0) => {
                 const modelPath = astroModelPaths[pathIndex];
                 if (!modelPath) {
-                    if (astroStatus) astroStatus.textContent = 'Astro Bot unavailable (check asset path/server)';
+                    createFallbackModel();
                     return;
                 }
 
                 loader.load(modelPath, (gltf) => {
                     placeModel(gltf);
                 }, undefined, (err) => {
-                    console.warn(`Astro Bot GLB load error at ${modelPath}:`, err);
+                    console.warn(`GLB load error at ${modelPath}:`, err);
                     tryLoadAstro(pathIndex + 1);
                 });
             };
 
             tryLoadAstro();
+            window.startMusicModelAnimation = () => {
+                if (!modelMixer) return false;
+                modelMixer.timeScale = 1;
+                modelActions.forEach((action) => { action.paused = false; });
+                return true;
+            };
 
             function resize() {
                 const w = stage.clientWidth;
@@ -1187,6 +1277,8 @@
 
             function animate() {
                 requestAnimationFrame(animate);
+                if (modelMixer) modelMixer.update(modelClock.getDelta());
+                if (fallbackGroup) fallbackGroup.rotation.y += 0.007;
                 controls.update();
                 renderer.render(scene, camera);
             }

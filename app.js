@@ -1430,9 +1430,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         currentIndex: 0,
         isReady: false,
+        hasStarted: false,
         init() {
             this.audio = document.getElementById('music-audio');
             this.shell = document.getElementById('airpods-shell');
+            this.startBtn = document.getElementById('music-start');
             this.playBtn = document.getElementById('music-play');
             this.playIcon = document.getElementById('music-play-icon');
             this.stopBtn = document.getElementById('music-stop');
@@ -1448,13 +1450,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.audio || !this.playBtn || !this.progress || !this.volume) return;
 
             this.loadTrack(0);
-            this.setControlsEnabled(true);
+            this.setControlsEnabled(false);
             this.bind();
-            this.openCase({ auto: true });
+            this.openCase({ auto: true, keepLocked: true });
             this.bind3DRotation();
             this.initRainScene();
         },
         bind() {
+            this.startBtn?.addEventListener('click', () => this.beginExperience());
             this.playBtn.addEventListener('click', () => this.togglePlay());
             this.stopBtn?.addEventListener('click', () => this.stopAndDock());
             this.prevBtn?.addEventListener('click', () => this.prevTrack());
@@ -1489,6 +1492,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             this.audio.volume = Number(this.volume.value);
         },
+        beginExperience() {
+            if (this.hasStarted) return;
+            this.hasStarted = true;
+            this.openCase({ auto: true });
+            this.setControlsEnabled(true);
+            if (this.startBtn) {
+                this.startBtn.classList.add('is-active');
+                this.startBtn.setAttribute('disabled', 'disabled');
+                this.startBtn.textContent = 'Started';
+            }
+
+            if (typeof window.startMusicModelAnimation === 'function') {
+                window.startMusicModelAnimation();
+            }
+        },
         loadTrack(index) {
             const total = this.tracks.length;
             this.currentIndex = (index + total) % total;
@@ -1521,11 +1539,11 @@ document.addEventListener('DOMContentLoaded', () => {
             this.playIcon.classList.toggle('fa-pause', isPlaying);
             this.shell?.classList.toggle('is-playing', isPlaying);
         },
-        openCase({ auto = false } = {}) {
-            if (this.isReady) return;
-            this.isReady = true;
+        openCase({ auto = false, keepLocked = false } = {}) {
+            if (this.isReady && !keepLocked) return;
+            this.isReady = !keepLocked;
             this.shell?.classList.add('is-open');
-            this.setControlsEnabled(true);
+            if (!keepLocked) this.setControlsEnabled(true);
             if (!auto) this.audio.play().catch(() => {});
         },
         setControlsEnabled(enabled) {
@@ -1572,6 +1590,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 ripple.style.height = ripple.style.width;
                 reflectionLayer.appendChild(ripple);
             }
+        },
+        stopAndDock() {
+            if (!this.audio) return;
+            this.audio.pause();
+            this.audio.currentTime = 0;
+            this.progress.value = 0;
+            this.currentTimeEl.textContent = '00:00';
+            this.setPlayingState(false);
+        },
+        bind3DRotation() {
+            const stage = document.getElementById('astro-stage');
+            if (!stage || stage.dataset.bound === 'true') return;
+            stage.dataset.bound = 'true';
+
+            let dragging = false;
+            let lastX = 0;
+            let baseRotate = -7;
+
+            const updateTilt = (clientX) => {
+                baseRotate += (clientX - lastX) * 0.08;
+                baseRotate = Math.max(-18, Math.min(18, baseRotate));
+                stage.style.transform = `perspective(900px) rotateX(4deg) rotateY(${baseRotate}deg)`;
+                lastX = clientX;
+            };
+
+            stage.addEventListener('pointerdown', (event) => {
+                dragging = true;
+                lastX = event.clientX;
+                stage.style.cursor = 'grabbing';
+                stage.setPointerCapture?.(event.pointerId);
+            });
+            stage.addEventListener('pointermove', (event) => {
+                if (!dragging) return;
+                updateTilt(event.clientX);
+            });
+            stage.addEventListener('pointerup', (event) => {
+                dragging = false;
+                stage.style.cursor = 'grab';
+                stage.releasePointerCapture?.(event.pointerId);
+            });
+            stage.addEventListener('pointercancel', () => {
+                dragging = false;
+                stage.style.cursor = 'grab';
+            });
         }
     };
 
