@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="style.css?v=7.0">
 
     <style>
-        body { margin: 0; padding: 0; width: 100vw; height: 100dvh; background: #000; overflow: hidden; position: fixed; overscroll-behavior-y: none; font-family: 'Inter', sans-serif;}
+        body { margin: 0; padding: 0; width: 100vw; max-width: 100vw; height: 100dvh; background: #000; overflow: hidden; overflow-x: hidden; position: fixed; overscroll-behavior-y: none; font-family: 'Syne', 'Inter', sans-serif;}
         
         * { cursor: default; }
         a, button, .nav-btn, .side-nav-dot { cursor: pointer !important; }
@@ -66,7 +66,7 @@
         #coke-slide { background: #E50014; display: flex; }
         #coke-slide .bg-layer { display: none; }
         #coke-visual-block { width: 50vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: transparent; z-index: 30; }
-        #coke-text-block { width: 50vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 0 10%; z-index: 20; color: #ffffff; }
+        #coke-text-block { width: 50vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 0.65rem; padding: 0 8%; z-index: 20; color: #ffffff; }
         
         /* --- SLIDE 4: APPLE WATCH (Minimal Top-Center Float, Content Below) --- */
         #apple-slide { background: #f5f5f7; }
@@ -130,27 +130,38 @@
         @keyframes floatFx { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
 
         /* Mobile Reset: Ensures everything stacks cleanly if on phone */
-        @media (max-width: 850px) {
-            #nike-text-block, #ps5-text-top, #ps5-text-bottom, #coke-text-block, #apple-text-block, #on-text-block, #ceta-text-block, #carls-text-block, #bmw-text-block { 
-                position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; width: 100%; max-width: none; text-align: center; padding: 2rem; align-items: center; justify-content: center;
+        @media (max-width: 1024px) {
+            html, body { overflow-x: hidden !important; }
+            #slider-master { width: 800vw; max-width: 800vw; }
+            .ad-slide { width: 100vw; max-width: 100vw; overflow-x: hidden; }
+
+            .hub-nav-wrap { top: 0.8rem; }
+            .slider-nav { right: 1rem; bottom: 1rem; gap: 0.65rem; }
+            .nav-btn { width: 44px; height: 44px; }
+
+            #nike-text-block, #ps5-text-top, #ps5-text-bottom, #coke-text-block, #apple-text-block, #on-text-block, #ceta-text-block, #carls-text-block, #bmw-text-block {
+                position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; width: 100%; max-width: none; text-align: center; padding: 1.15rem 1rem; align-items: center; justify-content: center;
                 order: 2; flex: none;
             }
             #nike-visual-block, #ps5-visual-block, #coke-visual-block, #apple-visual-block, #on-visual-block, #ceta-visual-block, #carls-visual-block, #bmw-visual-block {
-                position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; width: 100%; height: 45vh; margin-top: 8vh;
+                position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; width: 100%; height: 41vh; margin-top: 0.45rem;
                 order: 1; flex: none; align-items: center; justify-content: center;
             }
-            #coke-visual-block {
-                margin-top: 2rem;
-                height: 40vh;
-            }
+            #coke-slide { flex-direction: column; justify-content: flex-start; }
+            #coke-visual-block { margin-top: 1.25rem; height: 32vh; }
             #coke-text-block {
-                padding-top: 0.75rem;
+                width: 100%; height: auto; padding: 0.25rem 1.25rem 1.25rem; gap: 0.35rem;
             }
-            .ad-slide { display: flex; flex-direction: column; overflow-y: auto;}
-            
-            .huge-title { font-size: clamp(3.5rem, 12vw, 4.5rem) !important; line-height: 1 !important; margin-bottom: 0.5rem !important;}
-            .sub-desc { display: none; } 
-            
+            #coke-text-block > div:first-child {
+                font-family: 'Syne', 'Inter', sans-serif; font-size: clamp(1.45rem, 7.2vw, 2rem); margin-bottom: 0.15rem;
+            }
+            #coke-text-block h2 { font-family: 'Syne', 'Inter', sans-serif; line-height: 0.95; letter-spacing: -0.01em; margin-bottom: 0.45rem; }
+            #coke-text-block .sarcastic-quote { font-size: 0.85rem; line-height: 1.35; margin-bottom: 0.45rem; border-left-width: 3px; padding-left: 0.65rem; }
+            #coke-text-block .price-tag { transform: scale(0.92); transform-origin: center; }
+
+            .ad-slide { display: flex; flex-direction: column; overflow-y: auto; }
+            .huge-title { font-size: clamp(2.15rem, 8.6vw, 3.3rem) !important; line-height: 0.96 !important; margin-bottom: 0.35rem !important; letter-spacing: -0.01em; }
+            .sub-desc { display: none; }
             #on-bg-text { font-size: 40vw; top: 30%; }
         }
     </style>
