@@ -303,21 +303,55 @@ document.addEventListener('DOMContentLoaded', () => {
         return !!document.getElementById('mod-entropy')?.classList.contains('active');
     };
 
+    let cursorTargetX = window.innerWidth / 2;
+    let cursorTargetY = window.innerHeight / 2;
+    let cursorOutlineX = cursorTargetX;
+    let cursorOutlineY = cursorTargetY;
+    let cursorRafId = null;
+
+    const renderCursorOutline = () => {
+        cursorRafId = null;
+        if (!cursorOutline) return;
+
+        const isFinePointer = window.matchMedia("(pointer: fine)").matches;
+        if (!isFinePointer) {
+            cursorOutline.style.left = `${cursorTargetX}px`;
+            cursorOutline.style.top = `${cursorTargetY}px`;
+            return;
+        }
+
+        // Smooth follow (same visual intent as previous animation, without creating
+        // a new Web Animations timeline on every pointer event).
+        const lerp = 0.18;
+        cursorOutlineX += (cursorTargetX - cursorOutlineX) * lerp;
+        cursorOutlineY += (cursorTargetY - cursorOutlineY) * lerp;
+
+        cursorOutline.style.left = `${cursorOutlineX}px`;
+        cursorOutline.style.top = `${cursorOutlineY}px`;
+
+        if (Math.abs(cursorTargetX - cursorOutlineX) > 0.1 || Math.abs(cursorTargetY - cursorOutlineY) > 0.1) {
+            cursorRafId = requestAnimationFrame(renderCursorOutline);
+        }
+    };
+
     const updateCursorPosition = (x, y, instant = false) => {
         if (!cursorDot || !cursorOutline) return;
+        cursorTargetX = x;
+        cursorTargetY = y;
         cursorDot.style.left = `${x}px`;
         cursorDot.style.top = `${y}px`;
 
         if (instant || !window.matchMedia("(pointer: fine)").matches) {
+            cursorOutlineX = x;
+            cursorOutlineY = y;
             cursorOutline.style.left = `${x}px`;
             cursorOutline.style.top = `${y}px`;
             return;
         }
 
-        cursorOutline.animate(
-            { left: `${x}px`, top: `${y}px` },
-            { duration: 500, fill: "forwards" }
-        );
+        if (!cursorRafId) {
+            cursorRafId = requestAnimationFrame(renderCursorOutline);
+        }
     };
 
     window.addEventListener("mousemove", (e) => {
