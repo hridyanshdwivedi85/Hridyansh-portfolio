@@ -79,9 +79,9 @@ body, html {
 }
 
 body.music-active .nav-area {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 /* MUSIC PLAYER TAB */
@@ -147,6 +147,12 @@ body.music-active .nav-area {
     width: min(88vw, 560px);
     text-align: center;
     pointer-events: none;
+}
+.music-copy-overlay,
+.music-copy-chip,
+.music-copy-title,
+.music-copy-sub {
+    display: none !important;
 }
 .music-copy-chip {
     display: inline-flex;
@@ -322,6 +328,31 @@ body.music-active .nav-area {
 .music-meta { border-top: 1px solid rgba(255,255,255,0.16); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.62rem 0; }
 .music-track-title { color: #fff; margin: 0; font-size: 0.84rem; font-weight: 700; letter-spacing: 0.005em; }
 .music-track-artist { color: #c4c8d1; margin: 0; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.music-visualizer {
+    display: grid;
+    grid-template-columns: repeat(48, minmax(0, 1fr));
+    align-items: end;
+    gap: 0.22rem;
+    min-height: 46px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 0.55rem 0.5rem;
+    background:
+        radial-gradient(circle at 50% -80%, rgba(56,189,248,0.26), rgba(6,6,10,0)),
+        linear-gradient(180deg, rgba(10,14,26,0.86), rgba(7,8,14,0.62));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 28px rgba(0,0,0,0.32);
+}
+.music-visualizer .bar {
+    display: block;
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    transform-origin: center bottom;
+    background: linear-gradient(180deg, #7dd3fc, #6366f1 70%, #ec4899);
+    box-shadow: 0 0 10px rgba(99,102,241,0.26);
+    opacity: 0.32;
+    transition: height 90ms linear, opacity 120ms linear, background 120ms linear;
+}
 .music-progress-wrap {
     display: grid;
     grid-template-columns: 48px 1fr 48px;

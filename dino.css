@@ -26,6 +26,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 14px;
 }
 
@@ -41,6 +43,21 @@ body {
   text-decoration: none;
   color: #666;
   font-weight: 600;
+}
+
+.time-pill {
+  margin-left: auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #d8d8d8;
+  background: rgba(255, 255, 255, 0.82);
+  font-size: 11px;
+  color: #666;
+  font-family: "Press Start 2P", monospace;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .game-wrap {
@@ -59,7 +76,7 @@ canvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   display: block;
-  background: #fff;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 58%, #f2f2f2 100%);
 }
 
 .hud {
