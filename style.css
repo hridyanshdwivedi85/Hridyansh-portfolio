@@ -78,6 +78,11 @@ body, html {
     animation: entropy-hint-fade 1.7s ease-in-out infinite;
 }
 
+body.music-active .global-header {
+    opacity: 0;
+    visibility: hidden;
+}
+
 /* MUSIC PLAYER TAB */
 #mod-music {
     background: #050505;
