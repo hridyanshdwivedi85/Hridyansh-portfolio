@@ -143,7 +143,55 @@
         .reveal { opacity: 0; transform: translateY(40px); }
 
         @media (max-width: 768px) {
-            .stat-number { font-size: 3rem; }
+            .stat-number { font-size: 2.4rem; }
+
+            .about-nav {
+                top: max(0.8rem, env(safe-area-inset-top));
+                width: calc(100vw - 1.25rem);
+            }
+
+            .about-nav .dynamic-island {
+                width: 100%;
+                justify-content: space-between;
+                gap: 0.55rem;
+                padding: 0.65rem 0.85rem;
+                border-radius: 18px;
+            }
+
+            .about-nav .dynamic-island .w-px {
+                display: none;
+            }
+
+            .about-nav .dynamic-island a,
+            .about-nav .dynamic-island span {
+                font-size: 10px;
+                letter-spacing: 0.12em;
+                white-space: nowrap;
+            }
+
+            section {
+                padding-top: 4.25rem !important;
+                padding-bottom: 3.5rem !important;
+            }
+
+            h1 {
+                font-size: clamp(2.3rem, 12vw, 3.4rem) !important;
+                line-height: 0.93 !important;
+            }
+
+            h2 {
+                font-size: clamp(1.8rem, 8.8vw, 2.6rem) !important;
+                margin-bottom: 2rem !important;
+            }
+
+            .ios-card {
+                padding: 1rem !important;
+            }
+
+            .skill-badge {
+                font-size: 11px;
+                padding: 7px 12px;
+            }
         }
     </style>
 </head>
@@ -155,7 +203,7 @@
     <div class="orb orb-3"></div>
 
     <!-- iOS Dynamic Island Navigation -->
-    <nav class="fixed top-6 left-1/2 -translate-x-1/2 z-[999]">
+    <nav class="about-nav fixed top-6 left-1/2 -translate-x-1/2 z-[999]">
         <div class="dynamic-island px-6 py-3 flex items-center gap-6">
             <a href="index.html" class="flex items-center gap-2 text-[13px] text-gray-400 hover:text-white transition-colors font-medium">
                 <i class="fas fa-chevron-left text-[10px]"></i> Hub
