@@ -1,42 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dino Runner | Hridyansh Dwivedi</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="dino.css" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DinoJump Game</title>
+    <style>
+        /* CSS STYLES */
+        * {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        #restart {
+            margin: 1em;
+            cursor: pointer;
+            font-size: 2rem;
+            transition: transform 0.2s;
+        }
+
+        #restart:hover {
+            color: red;
+            transform: rotate(-45deg);
+        }
+
+        #game {
+            width: 600px;
+            height: 300px;
+            border: 2px solid #333;
+            background-color: black;
+            margin: auto;
+            position: relative;
+        }
+
+        #dino {
+            width: 30px;
+            height: 100px;
+            background-color: #555;
+            position: absolute;
+            top: 200px;
+            left: 15px;
+            border-radius: 4px;
+        }
+
+        #block {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            position: absolute;
+            top: 270px;
+            left: 600px;
+            border-radius: 50%;
+        }
+
+        .dinojump {
+            animation: dinojump 0.3s linear;
+        }
+
+        .block-animate {
+            animation: incomingblock 1.5s linear infinite;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* ANIMATIONS */
+        @keyframes incomingblock {
+            0% { left: 600px; }
+            100% { left: -50px; }
+        }
+
+        @keyframes dinojump {
+            0% { top: 200px; }
+            25% { top: 150px; }
+            50% { top: 100px; }
+            75% { top: 150px; }
+            100% { top: 200px; }
+        }
+    </style>
 </head>
 <body>
-  <main class="dino-shell">
-    <header class="dino-topbar">
-      <a class="back-link" href="index.html" aria-label="Back to home">← Home</a>
-      <h1>Dino Runner</h1>
-      <div id="currentTime" class="time-pill" aria-live="polite"></div>
-    </header>
 
-    <section class="game-wrap" aria-label="Chrome Dino style game">
-      <canvas id="game" width="600" height="150" aria-label="Dino game canvas"></canvas>
+    <div id="restart" onclick="restart();">🔄</div>
 
-      <div class="hud">
-        <span id="score">00000</span>
-        <span id="hi">HI 00000</span>
-      </div>
-
-      <div id="overlay" class="overlay visible" role="status" aria-live="polite">
-        <p class="overlay-title">Press Space / Tap to Start</p>
-        <p class="overlay-sub">Jump: Space, ↑, Tap &nbsp;|&nbsp; Duck: ↓ or hold DUCK</p>
-      </div>
-    </section>
-
-    <div class="mobile-controls" aria-label="Touch controls">
-      <button id="jumpBtn" class="ctrl-btn jump">JUMP</button>
-      <button id="duckBtn" class="ctrl-btn duck">DUCK</button>
+    <div id="game" onclick="dinoJump();">
+        <div id="dino"></div>
+        <div id="block" class="block-animate"></div>
     </div>
-  </main>
 
-  <script src="dino.js"></script>
+    <h1>Score: <span id="score">0</span></h1>
+
+    <script>
+        /* JAVASCRIPT LOGIC */
+        const dino = document.getElementById('dino');
+        const block = document.getElementById('block');
+        const scoreElement = document.getElementById('score');
+
+        let score = 0;
+        let isGameOver = false;
+
+        // Jump Function
+        const dinoJump = () => {
+            if (isGameOver) return;
+            if (!dino.classList.contains('dinojump')) {
+                dino.classList.add('dinojump');
+                setTimeout(() => {
+                    dino.classList.remove('dinojump');
+                }, 300);
+            }
+        };
+
+        // Listen for Spacebar to jump
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                dinoJump();
+            }
+        });
+
+        // Main Game Loop (Collision and Score)
+        const checkCollision = setInterval(() => {
+            if (isGameOver) return;
+
+            // Get current positions
+            let dinoTop = parseInt(window.getComputedStyle(dino).getPropertyValue('top'));
+            let blockLeft = parseInt(window.getComputedStyle(block).getPropertyValue('left'));
+
+            // Collision detection
+            // Block is between 15px and 45px (dino width) and dino is not high enough
+            if (blockLeft < 45 && blockLeft > 15 && dinoTop >= 170) {
+                gameOver();
+            }
+        }, 10);
+
+        // Score logic: Increase score every time the block resets
+        const scoreTracker = setInterval(() => {
+            if (isGameOver) return;
+            score++;
+            scoreElement.innerHTML = score;
+        }, 100);
+
+        const gameOver = () => {
+            isGameOver = true;
+            block.style.animation = 'none';
+            block.style.display = 'none';
+            alert('Game Over! Your Score: ' + score);
+        };
+
+        const restart = () => {
+            location.reload();
+        };
+    </script>
 </body>
 </html>
