@@ -487,6 +487,30 @@ body.music-active .nav-area {
 #app-container { position: relative; width: 100vw; height: 100dvh; display: flex; z-index: 10; pointer-events: none;}
 .content-area { flex-grow: 1; position: relative; height: 100%; display: flex; align-items: center; justify-content: center; pointer-events: none;}
 .nav-area { position: fixed !important; bottom: 3rem !important; right: 1.5rem !important; width: auto; height: auto !important; display: flex; flex-direction: column; justify-content: flex-end; z-index: 999; pointer-events: auto; }
+#main-nav {
+    position: relative;
+}
+.nav-rail-highlight {
+    position: absolute;
+    left: -0.35rem;
+    right: -0.2rem;
+    top: 0;
+    height: 1.8rem;
+    border-radius: 999px;
+    border: 1px solid rgba(217, 119, 6, 0.42);
+    background: linear-gradient(110deg, rgba(217, 119, 6, 0.16), rgba(217, 119, 6, 0.06));
+    box-shadow: 0 0 20px rgba(217, 119, 6, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(0, 0, 0);
+    transition: transform 260ms cubic-bezier(.2,.7,.2,1), width 260ms cubic-bezier(.2,.7,.2,1), height 260ms cubic-bezier(.2,.7,.2,1), opacity 220ms ease;
+    will-change: transform, width, height;
+    z-index: 0;
+}
+.nav-item {
+    position: relative;
+    z-index: 1;
+}
 
 /* Bottom Corner Navigation Menu */
 .nav-item.active .nav-label { 
@@ -1081,6 +1105,7 @@ input:checked + .slider:before { transform: translateX(18px); }
         padding: 0.05rem 0.1rem;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        position: relative;
     }
 
     .nav-area nav::-webkit-scrollbar {
@@ -1094,6 +1119,12 @@ input:checked + .slider:before { transform: translateX(18px); }
         border: 1px solid rgba(255, 255, 255, 0.11);
         background: rgba(13, 13, 13, 0.74);
         gap: 0.38rem !important;
+    }
+    .nav-area nav .nav-rail-highlight {
+        left: 0;
+        right: auto;
+        height: calc(100% - 2px);
+        top: 1px;
     }
 
     .nav-area nav .nav-active-text {
