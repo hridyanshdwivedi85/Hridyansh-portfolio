@@ -32,7 +32,7 @@
         .cursor-speed { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>🏎️</text></svg>"), auto; }
 
         /* Core Mechanics */
-        #slider-master { display: flex; width: 800vw; height: 100dvh; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1); will-change: transform; }
+        #slider-master { display: flex; width: 1000vw; height: 100dvh; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1); will-change: transform; }
         .ad-slide { width: 100vw; height: 100dvh; position: relative; overflow: hidden; flex-shrink: 0; }
         
         .bg-layer { position: absolute; inset: 0; z-index: 10; background-size: cover; background-position: center; transition: transform 12s cubic-bezier(0.2, 0.8, 0.2, 1); transform: scale(1.15); pointer-events: none;}
@@ -65,9 +65,9 @@
         /* --- SLIDE 3: COCA-COLA (Side by Side Red Classic) --- */
         #coke-slide { background: #E50014; display: flex; }
         #coke-slide .bg-layer { display: none; }
-        #coke-visual-block { width: 50vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: transparent; z-index: 30; }
-        #coke-text-block { width: 50vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 0.65rem; padding: 0 8%; z-index: 20; color: #ffffff; }
-        #coke-text-block .huge-title { font-size: clamp(3rem, 6.1vw, 6.35rem); line-height: 1.04; max-width: 100%; padding-right: 0.08em; overflow: visible; }
+        #coke-visual-block { width: 40vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: transparent; z-index: 30; }
+        #coke-text-block { width: 60vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 0.65rem; padding: 0 4% 0 2%; z-index: 20; color: #ffffff; }
+        #coke-text-block .huge-title { font-size: clamp(3rem, 5.25vw, 5.8rem); line-height: 1.04; max-width: 100%; padding-right: 0.1em; overflow: visible; }
         
         /* --- SLIDE 4: APPLE WATCH (Minimal Top-Center Float, Content Below) --- */
         #apple-slide { background: #f5f5f7; }
@@ -104,6 +104,95 @@
         #bmw-text-block { position: absolute; top: 50%; left: 6%; transform: translateY(-50%); z-index: 40; max-width: 38vw; }
         #bmw-visual-block { position: absolute; bottom: 8%; right: 3%; width: 50vw; height: 45vh; z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
 
+        /* --- SLIDE 9: XBOX SERIES X (Green Dark Powerhouse) --- */
+        #xbox-slide { background: #050f05; color: white; }
+        #xbox-slide .bg-layer { background-image: url('assets/images/xbox_bg.png'); background-size: cover; background-position: center; filter: brightness(0.22) saturate(1.5) contrast(1.2); }
+        .xbox-green-glow { position: absolute; top: 50%; left: 75%; transform: translate(-50%,-50%); width: 60vw; height: 60vw; max-width: 700px; max-height: 700px; background: radial-gradient(circle, rgba(16,124,16,0.28) 0%, transparent 65%); z-index: 12; pointer-events: none; }
+        .xbox-hex-ring { position: absolute; top: 50%; left: 75%; transform: translate(-50%,-50%); width: 48vw; height: 48vw; max-width: 600px; max-height: 600px; border-radius: 50%; border: 1px solid rgba(16,180,16,0.2); z-index: 13; pointer-events: none; }
+        .xbox-hex-ring-inner { position: absolute; top: 50%; left: 75%; transform: translate(-50%,-50%); width: 38vw; height: 38vw; max-width: 480px; max-height: 480px; border-radius: 50%; border: 2px dashed rgba(16,180,16,0.12); z-index: 13; pointer-events: none; }
+        .xbox-scanline { position: absolute; inset: 0; z-index: 11; background: repeating-linear-gradient(to bottom, transparent 0px, transparent 5px, rgba(16,124,16,0.02) 5px, rgba(16,124,16,0.02) 6px); pointer-events: none; }
+        .xbox-corner-accent { position: absolute; width: 80px; height: 80px; z-index: 15; pointer-events: none; }
+        .xbox-corner-accent.tl { top: 1.5rem; left: 1.5rem; border-top: 2px solid rgba(16,180,16,0.5); border-left: 2px solid rgba(16,180,16,0.5); }
+        .xbox-corner-accent.br { bottom: 1.5rem; right: 1.5rem; border-bottom: 2px solid rgba(16,180,16,0.5); border-right: 2px solid rgba(16,180,16,0.5); }
+        #xbox-text-block { position: absolute; top: 50%; left: 8%; transform: translateY(-50%); z-index: 40; max-width: 44vw; }
+        #xbox-visual-block { position: absolute; top: 50%; left: 75%; transform: translate(-50%,-50%); width: 42vw; height: 80vh; z-index: 30; display: flex; align-items: center; justify-content: center; }
+        .xbox-logo-badge { display: inline-flex; align-items: center; gap: 0.55rem; margin-bottom: 1.2rem; }
+        .xbox-sphere { width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #52d152, #107C10 60%, #054505); box-shadow: 0 0 20px rgba(16,124,16,0.6), 0 0 40px rgba(16,124,16,0.2); display: flex; align-items: center; justify-content: center; }
+        .xbox-sphere svg { width: 22px; height: 22px; }
+        .xbox-title { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 3.8vw, 3.5rem); font-weight: 900; line-height: 0.92; letter-spacing: -0.03em; color: white; text-shadow: 0 0 40px rgba(16,180,16,0.3); margin-bottom: 1rem; }
+        .xbox-title span { background: linear-gradient(135deg, #52d152, #107C10); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .xbox-sarcastic { font-family: 'Fira Code', monospace; font-size: clamp(0.7rem, 1.1vw, 0.9rem); color: rgba(82,209,82,0.85); background: rgba(16,124,16,0.08); border: 1px solid rgba(16,180,16,0.2); border-left: 3px solid #52d152; border-radius: 4px; padding: 10px 16px; line-height: 1.65; max-width: 420px; }
+        .xbox-spec-row { display: flex; flex-direction: column; gap: 6px; }
+        .xbox-spec-item { display: flex; align-items: center; gap: 8px; font-family: 'Fira Code', monospace; font-size: 0.62rem; color: rgba(255,255,255,0.5); letter-spacing: 0.08em; }
+        .xbox-spec-item::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: #52d152; box-shadow: 0 0 6px #52d152; flex-shrink: 0; }
+        .xbox-price-tag { display: inline-flex; align-items: center; gap: 10px; background: rgba(16,124,16,0.15); border: 1px solid rgba(16,180,16,0.3); border-radius: 999px; padding: 8px 22px; }
+        @keyframes xboxPulse { 0%,100% { box-shadow: 0 0 20px rgba(16,124,16,0.6), 0 0 40px rgba(16,124,16,0.2); } 50% { box-shadow: 0 0 35px rgba(52,209,52,0.8), 0 0 70px rgba(16,124,16,0.35); } }
+        .xbox-sphere { animation: xboxPulse 3s ease-in-out infinite; }
+        @keyframes xboxRingPulse { 0%,100% { opacity: 0.4; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 0.9; transform: translate(-50%,-50%) scale(1.03); } }
+        .xbox-hex-ring { animation: xboxRingPulse 4s ease-in-out infinite; }
+        .xbox-hex-ring-inner { animation: xboxRingPulse 6s ease-in-out infinite reverse; }
+
+        /* --- SLIDE 10: GTA 6 (Cinematic Dark Minimal Hype) ENHANCED --- */
+        #gta6-slide { background: #06060a; color: white; overflow: hidden; }
+        #gta6-slide .bg-layer { background-image: url('assets/images/gta6_bg.png'); background-size: cover; background-position: center 40%; filter: brightness(0.35) saturate(2) contrast(1.15); }
+        /* Heavy gradient overlay to punch text above the bg */
+        .gta6-overlay { position: absolute; inset: 0; z-index: 11; background: linear-gradient(to bottom, rgba(6,6,10,0.75) 0%, rgba(6,6,10,0.2) 40%, rgba(6,6,10,0.5) 70%, rgba(6,6,10,0.92) 100%); pointer-events: none; }
+        .gta6-side-fade-l { position: absolute; top: 0; left: 0; bottom: 0; width: 22vw; background: linear-gradient(to right, rgba(6,6,10,0.9), transparent); z-index: 12; pointer-events: none; }
+        .gta6-side-fade-r { position: absolute; top: 0; right: 0; bottom: 0; width: 22vw; background: linear-gradient(to left, rgba(6,6,10,0.9), transparent); z-index: 12; pointer-events: none; }
+        .gta6-scanlines { position: absolute; inset: 0; z-index: 13; background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(255,100,0,0.012) 3px, rgba(255,100,0,0.012) 4px); pointer-events: none; }
+        .gta6-orange-glow { position: absolute; bottom: -10%; left: 50%; transform: translateX(-50%); width: 80vw; height: 40vh; background: radial-gradient(ellipse, rgba(255,110,30,0.18) 0%, transparent 70%); z-index: 14; pointer-events: none; }
+        .gta6-vi-logo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Oswald', sans-serif; font-size: 38vw; font-weight: 900; color: rgba(255,255,255,0.022); letter-spacing: -0.05em; z-index: 15; pointer-events: none; user-select: none; white-space: nowrap; }
+        #gta6-top-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #FF6E1E, #FF3E8A, #FF6E1E, transparent); z-index: 60; }
+        #gta6-bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #FF6E1E, #FF3E8A, #FF6E1E, transparent); z-index: 60; }
+        /* Layout: Text LEFT, CD RIGHT */
+        #gta6-layout { position: absolute; inset: 0; z-index: 40; display: flex; align-items: center; padding: 0 5%; gap: 2vw; }
+        #gta6-text-col { flex: 1; display: flex; flex-direction: column; gap: 0; }
+        #gta6-right-col { flex: 0 0 auto; width: 42vw; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; }
+        /* Glass panel behind text for readability */
+        #gta6-text-col::before { content:''; position: absolute; inset: 0; z-index: -1; }
+        .gta6-text-glass { background: rgba(6,6,10,0.55); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,110,30,0.12); border-radius: 12px; padding: 28px 32px; display: flex; flex-direction: column; gap: 1rem; }
+        .gta6-logo-text { font-family: 'Oswald', sans-serif; font-size: clamp(0.65rem, 1.2vw, 0.9rem); font-weight: 900; letter-spacing: 0.45em; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+        .gta6-main-title { font-family: 'Syne', sans-serif; font-size: clamp(3.5rem, 8.5vw, 8rem); font-weight: 900; line-height: 0.82; letter-spacing: -0.04em; background: linear-gradient(135deg, #FFFFFF 0%, #FFD4A0 40%, #FF6E1E 70%, #FF3E8A 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 2px 20px rgba(255,110,30,0.5)); }
+        .gta6-subtitle { font-family: 'Oswald', sans-serif; font-size: clamp(0.7rem, 1.3vw, 1rem); font-weight: 700; letter-spacing: 0.55em; color: rgba(255,150,80,0.7); }
+        .gta6-coming-soon { font-family: 'Fira Code', monospace; font-size: clamp(0.55rem, 0.85vw, 0.72rem); letter-spacing: 0.45em; color: rgba(255,80,30,0.95); text-transform: uppercase; padding: 4px 0; }
+        .gta6-sarcastic { font-family: 'Fira Code', monospace; font-size: clamp(0.6rem, 0.95vw, 0.8rem); color: rgba(255,140,80,0.9); line-height: 1.65; }
+        .gta6-prebook-btn { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #FF6E1E, #FF3E8A); color: white; font-family: 'Syne', sans-serif; font-size: clamp(0.7rem, 1.1vw, 0.9rem); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 32px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 25px rgba(255,110,30,0.4); pointer-events: all; width: fit-content; }
+        .gta6-prebook-btn:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(255,110,30,0.7); }
+        .gta6-stats-row { display: flex; align-items: center; gap: 1.2rem; }
+        .gta6-stat { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+        .gta6-stat-num { font-family: 'Oswald', sans-serif; font-size: clamp(1rem, 2vw, 1.6rem); font-weight: 700; color: #FF6E1E; }
+        .gta6-stat-label { font-family: 'Fira Code', monospace; font-size: 0.48rem; letter-spacing: 0.18em; color: rgba(255,255,255,0.35); text-transform: uppercase; }
+        .gta6-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.12); }
+        .gta6-platform-badge { font-family: 'Fira Code', monospace; font-size: 0.48rem; letter-spacing: 0.18em; color: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.12); padding: 3px 9px; border-radius: 3px; }
+        /* Platform logo tiles */
+        .gta6-platform-tile { width: 40px; height: 40px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: rgba(255,255,255,0.05); transition: all 0.25s; }
+        .gta6-platform-tile:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,110,30,0.4); transform: translateY(-2px); }
+        .gta6-platform-tile span { font-family: 'Fira Code', monospace; font-size: 0.38rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+        /* Rockstar logo row */
+        .gta6-rockstar-row { display: flex; align-items: center; gap: 6px; }
+        .gta6-rockstar-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 4px 10px; }
+        .gta6-rockstar-badge span { font-family: 'Oswald', sans-serif; font-size: 0.52rem; letter-spacing: 0.18em; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+        /* ---- CSS GTA 6 Disc / CD ---- */
+        .gta6-disc-wrap { position: relative; width: clamp(180px, 28vw, 360px); height: clamp(180px, 28vw, 360px); display: flex; align-items: center; justify-content: center; }
+        .gta6-disc { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(from 0deg, #1a0a00, #FF3E8A 8%, #FF6E1E 16%, #FFD4A0 24%, #c0a070 30%, #111 40%, #FF3E8A 50%, #FF6E1E 58%, #c09060 66%, #1a0800 75%, #FF3E8A 82%, #FFD4A0 90%, #1a0a00 100%); box-shadow: 0 0 50px rgba(255,110,30,0.5), 0 0 100px rgba(255,60,130,0.25), inset 0 0 40px rgba(0,0,0,0.5); animation: discSpin 8s linear infinite; position: relative; }
+        .gta6-disc-hole { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 14%; height: 14%; border-radius: 50%; background: #06060a; box-shadow: 0 0 0 3px rgba(255,110,30,0.35), 0 0 15px rgba(255,110,30,0.4); z-index: 2; }
+        .gta6-disc-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); border-radius: 50%; border: 1px solid rgba(255,255,255,0.08); pointer-events: none; }
+        .gta6-disc-ring-1 { width: 30%; height: 30%; border-color: rgba(255,110,30,0.25); }
+        .gta6-disc-ring-2 { width: 55%; height: 55%; border-color: rgba(255,255,255,0.06); }
+        .gta6-disc-ring-3 { width: 80%; height: 80%; border-color: rgba(255,60,130,0.12); }
+        .gta6-disc-shine { position: absolute; top: 10%; left: 15%; width: 35%; height: 35%; background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.22), transparent 70%); border-radius: 50%; z-index: 3; pointer-events: none; animation: discSpin 8s linear infinite reverse; }
+        .gta6-disc-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 32%; height: 32%; border-radius: 50%; background: radial-gradient(circle, #1a0800, #0d0408); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 4; border: 1px solid rgba(255,110,30,0.3); }
+        .gta6-disc-label span { font-family: 'Oswald', sans-serif; font-weight: 900; color: #FF6E1E; line-height: 1; }
+        .gta6-disc-label span.big { font-size: clamp(0.9rem, 1.8vw, 1.4rem); }
+        .gta6-disc-label span.small { font-size: clamp(0.35rem, 0.6vw, 0.5rem); letter-spacing: 0.15em; color: rgba(255,180,100,0.7); }
+        @keyframes discSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .gta6-disc-glow { position: absolute; inset: -15%; border-radius: 50%; background: radial-gradient(ellipse, rgba(255,110,30,0.15) 0%, transparent 65%); animation: discGlowPulse 3s ease-in-out infinite; pointer-events: none; }
+        @keyframes discGlowPulse { 0%,100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+        @keyframes gta6Pulse { 0%, 100% { box-shadow: 0 0 25px rgba(255,110,30,0.4); } 50% { box-shadow: 0 0 50px rgba(255,110,30,0.7), 0 0 80px rgba(255,60,130,0.2); } }
+        .gta6-prebook-btn { animation: gta6Pulse 2.5s ease-in-out infinite; }
+        #gta6-visual { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 35; display: flex; align-items: flex-end; justify-content: center; width: 70%; height: 90%; opacity: 0.6; }
+        #gta6-visual img { width: auto; height: 100%; object-fit: contain; object-position: bottom; }
+
         /* Global UI Elements */
         #global-ui { position: absolute; inset: 0; z-index: 100; pointer-events: none; }
         
@@ -133,21 +222,39 @@
         /* Mobile Reset: Ensures everything stacks cleanly if on phone */
         @media (max-width: 1024px) {
             html, body { overflow-x: hidden !important; }
-            #slider-master { width: 800vw; max-width: 800vw; }
+            #slider-master { width: 1000vw; max-width: 1000vw; }
             .ad-slide { width: 100vw; max-width: 100vw; overflow-x: hidden; }
 
             .hub-nav-wrap { top: max(0.8rem, env(safe-area-inset-top)); left: max(0.8rem, env(safe-area-inset-left)); }
             .slider-nav { right: 1rem; bottom: 1rem; gap: 0.65rem; }
             .nav-btn { width: 44px; height: 44px; }
 
-            #nike-text-block, #ps5-text-top, #ps5-text-bottom, #coke-text-block, #apple-text-block, #on-text-block, #ceta-text-block, #carls-text-block, #bmw-text-block {
+            #nike-text-block, #ps5-text-top, #ps5-text-bottom, #coke-text-block, #apple-text-block, #on-text-block, #ceta-text-block, #carls-text-block, #bmw-text-block, #xbox-text-block {
                 position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; width: 100%; max-width: none; text-align: center; padding: 1.15rem 1rem; align-items: center; justify-content: center;
                 order: 2; flex: none;
             }
-            #nike-visual-block, #ps5-visual-block, #coke-visual-block, #apple-visual-block, #on-visual-block, #ceta-visual-block, #carls-visual-block, #bmw-visual-block {
+            #nike-visual-block, #ps5-visual-block, #coke-visual-block, #apple-visual-block, #on-visual-block, #ceta-visual-block, #carls-visual-block, #bmw-visual-block, #xbox-visual-block {
                 position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; width: 100%; height: 41vh; margin-top: 0.45rem;
                 order: 1; flex: none; align-items: center; justify-content: center;
             }
+            /* Xbox mobile overrides */
+            #xbox-slide { flex-direction: column; justify-content: flex-start; }
+            #xbox-text-block { max-width: none !important; padding: 1rem !important; }
+            .xbox-hex-ring, .xbox-hex-ring-inner { display: none; }
+            .xbox-title { font-size: clamp(2.2rem, 9vw, 3.2rem) !important; line-height: 0.92 !important; }
+            /* GTA6 mobile overrides */
+            #gta6-layout { flex-direction: column; padding: calc(env(safe-area-inset-top) + 3.9rem) 1rem calc(env(safe-area-inset-bottom) + 5.2rem); gap: 1.5rem; overflow-y: auto; justify-content: flex-start; }
+            #gta6-text-col { flex: none; width: 100%; }
+            #gta6-right-col { flex: none; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+            .gta6-disc-wrap { width: clamp(140px, 50vw, 240px) !important; height: clamp(140px, 50vw, 240px) !important; }
+            .gta6-text-glass { padding: 16px 18px !important; gap: 0.65rem !important; }
+            .gta6-main-title { font-size: clamp(2.2rem, 9vw, 4rem) !important; }
+            .gta6-prebook-btn { width: 100%; justify-content: center; }
+            .gta6-stats-row { flex-wrap: wrap; gap: 0.8rem; }
+            .gta6-vi-logo { display: none; }
+            .gta6-side-fade-l, .gta6-side-fade-r { display: none; }
+            #gta6-slide { overflow-y: auto; }
+            #gta6-visual { display: none; }
             #coke-slide { flex-direction: column; justify-content: flex-start; }
             #coke-visual-block { margin-top: 1.25rem; height: 32vh; }
             #coke-text-block {
@@ -178,10 +285,10 @@
         }
 
         @media (max-width: 640px) {
-            #nike-text-block, #ps5-text-top, #ps5-text-bottom, #coke-text-block, #apple-text-block, #on-text-block, #ceta-text-block, #carls-text-block, #bmw-text-block {
+            #nike-text-block, #ps5-text-top, #ps5-text-bottom, #coke-text-block, #apple-text-block, #on-text-block, #ceta-text-block, #carls-text-block, #bmw-text-block, #xbox-text-block {
                 padding: 1rem 1rem 0.45rem;
             }
-            #nike-visual-block, #ps5-visual-block, #coke-visual-block, #apple-visual-block, #on-visual-block, #ceta-visual-block, #carls-visual-block, #bmw-visual-block {
+            #nike-visual-block, #ps5-visual-block, #coke-visual-block, #apple-visual-block, #on-visual-block, #ceta-visual-block, #carls-visual-block, #bmw-visual-block, #xbox-visual-block {
                 height: 35vh;
                 margin-top: 0.15rem;
             }
@@ -410,6 +517,219 @@
             </div>
         </div>
 
+        <!-- 9: XBOX SERIES X / Dark Green Powerhouse -->
+        <div class="ad-slide theme-dark" id="xbox-slide">
+            <div class="bg-layer"></div>
+            <div class="xbox-scanline"></div>
+            <div class="xbox-green-glow"></div>
+            <div class="xbox-hex-ring animate-spin-slow"></div>
+            <div class="xbox-hex-ring-inner animate-spin-slow-reverse"></div>
+            <div class="xbox-corner-accent tl"></div>
+            <div class="xbox-corner-accent br"></div>
+
+            <div id="xbox-text-block">
+                <!-- Official Xbox Logo SVG -->
+                <div class="xbox-logo-badge gsap-anim-left">
+                    <!-- Xbox sphere - accurate 4-quadrant design -->
+                    <svg width="44" height="44" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="48" fill="#107C10"/>
+                        <circle cx="50" cy="50" r="48" fill="url(#xbg)" opacity="0.6"/>
+                        <defs>
+                            <radialGradient id="xbg" cx="40%" cy="35%" r="65%">
+                                <stop offset="0%" stop-color="#52d152"/>
+                                <stop offset="100%" stop-color="#0a4a0a"/>
+                            </radialGradient>
+                        </defs>
+                        <!-- X shape -->
+                        <line x1="22" y1="22" x2="78" y2="78" stroke="white" stroke-width="11" stroke-linecap="round"/>
+                        <line x1="78" y1="22" x2="22" y2="78" stroke="white" stroke-width="11" stroke-linecap="round"/>
+                    </svg>
+                    <div class="flex flex-col">
+                        <span style="font-family:'Segoe UI',Arial,sans-serif;font-weight:700;font-size:1.4rem;letter-spacing:0.08em;color:white;">Xbox</span>
+                        <span style="font-family:'Segoe UI',Arial,sans-serif;font-size:0.6rem;letter-spacing:0.25em;color:#52d152;">SERIES X</span>
+                    </div>
+                </div>
+
+                <!-- Headline -->
+                <div class="xbox-title gsap-anim-left mb-2">
+                    Next Gen.<br>Next Level.<br><span>No Excuses.</span>
+                </div>
+
+                <!-- Sarcastic Quote -->
+                <div class="xbox-sarcastic gsap-anim-left mb-5">
+                    // "12 teraflops. Your GPU is crying.<br>Your wallet is already in therapy."
+                </div>
+
+                <!-- Additional sarcastic line -->
+                <div style="font-family:'Fira Code',monospace;font-size:clamp(0.58rem,0.9vw,0.72rem);color:rgba(82,209,82,0.5);margin-bottom:1.2rem;" class="gsap-anim-left">
+                    > Zero load screens. Infinite excuses to skip the gym.
+                </div>
+
+                <!-- Tech specs -->
+                <div class="xbox-spec-row gsap-anim-left mb-5">
+                    <div class="xbox-spec-item">12 TERAFLOPS GPU · RDNA 2 ARCHITECTURE</div>
+                    <div class="xbox-spec-item">1TB NVME SSD · ZERO LOAD SCREENS</div>
+                    <div class="xbox-spec-item">4K 120FPS · DOLBY VISION + ATMOS</div>
+                    <div class="xbox-spec-item">QUICK RESUME · 6 GAMES SIMULTANEOUSLY</div>
+                </div>
+
+                <!-- Price tag -->
+                <div class="xbox-price-tag gsap-anim-left">
+                    <span style="font-family:'Fira Code',monospace;font-size:10px;color:#52d152;">STARTING AT</span>
+                    <span style="font-family:'Segoe UI',Arial,sans-serif;font-weight:700;font-size:1.3rem;color:white;">$499.99</span>
+                </div>
+
+            </div>
+
+            <div id="xbox-visual-block" class="cursor-game">
+                <div class="ps5-pulse-ring animate-pulse-slow" style="border-color:rgba(16,180,16,0.3);"></div>
+                <img src="assets/images/xbox_real.png" class="real-image-normal float-vertical gsap-anim-scale w-auto h-[85%] object-contain drop-shadow-[0_0_60px_rgba(16,180,16,0.35)]" alt="Xbox Series X Console">
+            </div>
+        </div>
+
+        <!-- 10: GTA 6 / Cinematic Minimal Hype — ENHANCED -->
+        <div class="ad-slide theme-dark" id="gta6-slide">
+            <!-- Layered background system -->
+            <div class="bg-layer"></div>
+            <div class="gta6-overlay"></div>
+            <div class="gta6-side-fade-l"></div>
+            <div class="gta6-side-fade-r"></div>
+            <div class="gta6-scanlines"></div>
+            <div class="gta6-orange-glow"></div>
+            <div class="gta6-vi-logo" aria-hidden="true">VI</div>
+            <div id="gta6-top-bar"></div>
+            <div id="gta6-bottom-bar"></div>
+
+            <!-- GTA6 Character art — behind glass, hidden if image missing -->
+            <div id="gta6-visual">
+                <img src="assets/images/1gta6_real.png" alt="" style="pointer-events:none;" onerror="this.style.display='none'">
+            </div>
+
+            <!-- Main layout: Text LEFT | CD RIGHT -->
+            <div id="gta6-layout">
+
+                <!-- LEFT: Text Column with glass panel -->
+                <div id="gta6-text-col">
+                    <div class="gta6-text-glass">
+                        <div class="gta6-logo-text gsap-anim-left">▸ ROCKSTAR GAMES PRESENTS</div>
+
+                        <!-- GTA 6 Logo Image instead of text -->
+                        <img src="assets/images/gta6.png"
+                             class="gsap-anim-scale"
+                             alt="Grand Theft Auto VI"
+                             style="width:auto;max-width:100%;height:clamp(60px,10vw,120px);object-fit:contain;filter:drop-shadow(0 0 20px rgba(255,110,30,0.5));margin-bottom:0.2rem;">
+
+                        <div class="gta6-coming-soon gsap-anim-left">◈ &nbsp; COMING 2025 — MARK YOUR CALENDAR &nbsp; ◈</div>
+
+                        <div class="gta6-sarcastic gsap-anim-left">
+                            // "Finally — a game that lets you simulate crime, traffic jams<br>
+                            &amp; moral bankruptcy at 60fps. Basically just Tuesday,<br>
+                            but with ray-traced guilt &amp; 4K consequences."
+                        </div>
+
+                        <!-- Pre-Book CTA -->
+                        <button class="gta6-prebook-btn gsap-anim-left">
+                            <i class="fas fa-gamepad" style="font-size:12px"></i>
+                            Pre-Book Now — Limited Access
+                        </button>
+
+                        <!-- Stats -->
+                        <div class="gta6-stats-row gsap-anim-left">
+                            <div class="gta6-stat">
+                                <span class="gta6-stat-num">170M+</span>
+                                <span class="gta6-stat-label">GTA V Sold</span>
+                            </div>
+                            <div class="gta6-divider"></div>
+                            <div class="gta6-stat">
+                                <span class="gta6-stat-num">$2B+</span>
+                                <span class="gta6-stat-label">Day-1 Revenue Target</span>
+                            </div>
+                            <div class="gta6-divider"></div>
+                            <div class="gta6-stat">
+                                <span class="gta6-stat-num">∞</span>
+                                <span class="gta6-stat-label">Chaos Index</span>
+                            </div>
+                        </div>
+
+                        <!-- Publisher + Platforms row -->
+                        <div class="gsap-anim-left" style="display:flex;flex-direction:column;gap:6px;">
+
+                            <!-- Rockstar badge -->
+                            <div class="gta6-rockstar-row">
+                                <div class="gta6-rockstar-badge">
+                                    <!-- Rockstar R* SVG logo -->
+                                    <svg width="14" height="14" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="60" height="60" rx="4" fill="#FFFF00" opacity="0.9"/>
+                                        <!-- Letter R -->
+                                        <path d="M14 12 L14 48 M14 12 L36 12 C44 12 48 16 48 22 C48 28 44 30 38 31 L48 48 M14 30 L36 30 C42 30 46 26 46 22" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                        <!-- star asterisk -->
+                                        <circle cx="46" cy="10" r="3" fill="#111"/>
+                                    </svg>
+                                    <span>ROCKSTAR GAMES</span>
+                                </div>
+                            </div>
+
+                            <!-- Available on label + platform tiles -->
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <span style="font-family:'Fira Code',monospace;font-size:0.42rem;letter-spacing:0.2em;color:rgba(255,255,255,0.3);text-transform:uppercase;white-space:nowrap;">AVAILABLE ON</span>
+
+                                <!-- PS5 tile -->
+                                <div class="gta6-platform-tile">
+                                    <!-- PlayStation logo SVG -->
+                                    <svg width="20" height="20" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M55 15 L55 90 L70 85 L70 58 C70 58 90 62 90 44 C90 26 70 22 55 15Z" fill="white" opacity="0.85"/>
+                                        <path d="M70 44 C70 50 65 52 55 50 L55 35 C65 37 70 38 70 44Z" fill="#003087" opacity="0.7"/>
+                                        <path d="M20 80 L45 72 L45 82 L20 90Z" fill="white" opacity="0.6"/>
+                                        <path d="M45 72 L75 64 C90 60 100 65 100 72 C100 79 90 82 75 86 L55 92 L55 82 L70 77 C78 74 82 72 82 68 C82 64 78 63 70 65 L45 72Z" fill="white" opacity="0.85"/>
+                                    </svg>
+                                    <span>PS5</span>
+                                </div>
+
+                                <!-- Xbox tile -->
+                                <div class="gta6-platform-tile">
+                                    <!-- Xbox sphere SVG -->
+                                    <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="50" cy="50" r="46" fill="#107C10" opacity="0.9"/>
+                                        <line x1="25" y1="25" x2="75" y2="75" stroke="white" stroke-width="12" stroke-linecap="round"/>
+                                        <line x1="75" y1="25" x2="25" y2="75" stroke="white" stroke-width="12" stroke-linecap="round"/>
+                                    </svg>
+                                    <span>XBOX</span>
+                                </div>
+
+                                <!-- PC tile -->
+                                <div class="gta6-platform-tile">
+                                    <!-- Windows PC SVG -->
+                                    <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Windows logo 4 squares -->
+                                        <rect x="8" y="8" width="38" height="38" rx="3" fill="#00ADEF" opacity="0.9"/>
+                                        <rect x="54" y="8" width="38" height="38" rx="3" fill="#00ADEF" opacity="0.9"/>
+                                        <rect x="8" y="54" width="38" height="38" rx="3" fill="#00ADEF" opacity="0.9"/>
+                                        <rect x="54" y="54" width="38" height="38" rx="3" fill="#00ADEF" opacity="0.9"/>
+                                    </svg>
+                                    <span>PC</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: User's CD Image with spin animation -->
+                <div id="gta6-right-col">
+                    <div class="gta6-disc-wrap gsap-anim-right">
+                        <div class="gta6-disc-glow"></div>
+                        <!-- Real cd.png spinning -->
+                        <img src="assets/images/cd.png"
+                             alt="GTA 6 Disc"
+                             style="width:100%;height:100%;border-radius:50%;object-fit:cover;animation:discSpin 7s linear infinite;filter:drop-shadow(0 0 30px rgba(255,110,30,0.55)) drop-shadow(0 0 60px rgba(255,60,130,0.25));position:relative;z-index:2;"
+                        >
+                    </div>
+                    <!-- Sub-label under disc -->
+                    <div class="gta6-coming-soon gsap-anim-right" style="font-size:0.55rem; letter-spacing:0.35em;">▶ &nbsp; PHYSICAL EDITION INCLUDED &nbsp; ◀</div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <!-- Interface Logic -->
@@ -424,7 +744,7 @@
             const body = document.body;
             
             let currentSlide = 0;
-            const totalSlides = 8; 
+            const totalSlides = 10; 
 
             // Create 7 Dots
             for(let i=0; i<totalSlides; i++) {
