@@ -492,6 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
         switchTab(navElement, targetId, theme, updateHash = true) {
             this.isAnimating = true;
             document.body.classList.toggle('identity-active', targetId === 'mod-identity');
+            document.body.classList.toggle('music-active', targetId === 'mod-music');
             
             // Toggle Crosshair Cursor for Entropy
             const cursorOutline = document.getElementById("cursor-outline");
