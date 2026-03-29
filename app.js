@@ -1593,6 +1593,9 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         stopAndDock() {
             if (!this.audio) return;
+            if (typeof window.stopMusicModelAnimation === 'function') {
+                window.stopMusicModelAnimation();
+            }
             this.audio.pause();
             this.audio.currentTime = 0;
             this.progress.value = 0;

@@ -621,12 +621,12 @@
                             <!-- Three.js Canvas renders here -->
                             <canvas id="astro-canvas" style="width:100%;height:100%;display:block;border-radius:28px;"></canvas>
                             
-                            <div id="astro-load-status" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/45 backdrop-blur-xl border border-white/15 rounded-full px-5 py-2 text-white/90 font-[Fira\ Code] text-[10px] tracking-widest uppercase pointer-events-none">
+                            <div id="astro-load-status" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 px-2 py-1 text-white/90 font-[Fira\ Code] text-[10px] tracking-widest uppercase pointer-events-none drop-shadow-[0_0_14px_rgba(0,0,0,0.9)]">
                                 Loading Nothing Buds...
                             </div>
                         </div>
 
-                        <div class="music-player-card" style="background: linear-gradient(170deg, rgba(20,20,28,0.85), rgba(8,8,12,0.95)); border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 1px rgba(255,255,255,0.15), 0 20px 60px rgba(0,0,0,0.5);">
+                        <div class="music-player-card">
                             <div class="music-player-head">
                                 <div class="flex items-center justify-between">
                                     <div>
@@ -653,7 +653,7 @@
 
                             <div class="music-controls">
                                 <button id="music-prev" class="music-control-btn sound-click" aria-label="Previous track"><i class="fas fa-backward-step"></i></button>
-                                <button id="music-play" class="music-control-btn music-play-btn sound-click" aria-label="Play or pause" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow: 0 8px 30px rgba(99,102,241,0.5);"><i id="music-play-icon" class="fas fa-play"></i></button>
+                                <button id="music-play" class="music-control-btn music-play-btn sound-click" aria-label="Play or pause"><i id="music-play-icon" class="fas fa-play"></i></button>
                                 <button id="music-next" class="music-control-btn sound-click" aria-label="Next track"><i class="fas fa-forward-step"></i></button>
                             </div>
 
@@ -1147,6 +1147,12 @@
             ];
             let modelMixer = null;
             let modelActions = [];
+            let activePrimaryAction = null;
+            const modelSegment = {
+                openUntil: 4.15,
+                currentMode: 'idle',
+                targetTime: null
+            };
             const modelClock = new THREE.Clock();
 
             const isLikelyValidModelAsset = async (url) => {
@@ -1183,13 +1189,14 @@
                     gltf.animations.forEach((clip, clipIndex) => {
                         const action = modelMixer.clipAction(clip);
                         action.setLoop(THREE.LoopRepeat, Infinity);
-                        action.clampWhenFinished = false;
+                        action.clampWhenFinished = true;
                         action.enabled = true;
                         action.paused = true;
                         action.play();
                         if (clipIndex > 0) action.weight = 0.75;
                         modelActions.push(action);
                     });
+                    activePrimaryAction = modelActions[0] || null;
                 }
 
                 if (astroStatus) {
@@ -1222,11 +1229,45 @@
             };
 
             tryLoadAstro();
-            window.startMusicModelAnimation = () => {
-                if (!modelMixer) return false;
+            const playPrimarySegment = (fromTime, toTime) => {
+                if (!modelMixer || !activePrimaryAction) return false;
+                modelSegment.targetTime = null;
+
+                const clipDuration = activePrimaryAction.getClip().duration || 0;
+                const startTime = Math.max(0, Math.min(fromTime, clipDuration));
+                const endTime = Math.max(startTime, Math.min(toTime, clipDuration));
+
                 modelMixer.timeScale = 1;
-                modelActions.forEach((action) => { action.paused = false; });
+                activePrimaryAction.reset();
+                activePrimaryAction.enabled = true;
+                activePrimaryAction.paused = false;
+                activePrimaryAction.clampWhenFinished = true;
+                activePrimaryAction.setLoop(THREE.LoopOnce, 1);
+                activePrimaryAction.time = startTime;
+                activePrimaryAction.play();
+
+                if (endTime <= startTime) {
+                    activePrimaryAction.paused = true;
+                    return true;
+                }
+                modelSegment.targetTime = endTime;
                 return true;
+            };
+
+            window.startMusicModelAnimation = () => {
+                if (!activePrimaryAction) return false;
+                const duration = activePrimaryAction.getClip().duration || 0;
+                const holdTime = Math.min(modelSegment.openUntil, duration);
+                modelSegment.currentMode = 'opened';
+                return playPrimarySegment(0, holdTime);
+            };
+
+            window.stopMusicModelAnimation = () => {
+                if (!activePrimaryAction) return false;
+                const duration = activePrimaryAction.getClip().duration || 0;
+                const fromTime = Math.min(modelSegment.openUntil, duration);
+                modelSegment.currentMode = 'closed';
+                return playPrimarySegment(fromTime, duration);
             };
 
             function resize() {
@@ -1241,7 +1282,14 @@
 
             function animate() {
                 requestAnimationFrame(animate);
-                if (modelMixer) modelMixer.update(modelClock.getDelta());
+                if (modelMixer) {
+                    modelMixer.update(modelClock.getDelta());
+                    if (activePrimaryAction && modelSegment.targetTime !== null && activePrimaryAction.time >= modelSegment.targetTime - 0.01) {
+                        activePrimaryAction.paused = true;
+                        activePrimaryAction.time = modelSegment.targetTime;
+                        modelSegment.targetTime = null;
+                    }
+                }
                 controls.update();
                 renderer.render(scene, camera);
             }
