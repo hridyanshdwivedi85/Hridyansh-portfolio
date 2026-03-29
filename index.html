@@ -1120,6 +1120,8 @@
             controls.autoRotateSpeed = 2.5;
             controls.minPolarAngle = Math.PI / 4;
             controls.maxPolarAngle = Math.PI / 1.6;
+            controls.target.set(0, -0.35, 0);
+            controls.update();
 
             // Load Astro Bot GLB (supports legacy fallback names)
             const loader = new GLTFLoader();
@@ -1173,7 +1175,7 @@
                 const center = box.getCenter(new THREE.Vector3());
                 const size = box.getSize(new THREE.Vector3());
                 const maxDim = Math.max(size.x, size.y, size.z) || 1;
-                const scale = 1.72 / maxDim;
+                const scale = 1.28 / maxDim;
 
                 model.scale.setScalar(scale);
                 model.position.sub(center.multiplyScalar(scale));
