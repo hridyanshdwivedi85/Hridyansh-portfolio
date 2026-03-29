@@ -165,13 +165,12 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1.35rem 0.75rem 0.7rem;
+    padding: 0.85rem;
 }
 .airpods-shell {
-    width: min(340px, 92vw);
+    width: min(390px, 94vw);
     display: grid;
-    gap: 0.52rem;
-    transform: translateY(26px);
+    gap: 0.68rem;
 }
 .airpods-label {
     color: rgba(233,237,244,0.9);
@@ -182,8 +181,8 @@ body, html {
     text-shadow: 0 8px 18px rgba(0,0,0,0.65);
 }
 .airpods-stage {
-    height: clamp(142px, 26vh, 188px);
-    min-height: 136px;
+    height: clamp(160px, 30vh, 220px);
+    min-height: 152px;
     border-radius: 0;
     border: 0;
     background: transparent;
@@ -240,8 +239,8 @@ body, html {
 }
 .airpods-bud-left { left: 30%; transform: translate(-50%, 14px) rotate(-18deg); }
 .airpods-bud-right { right: 30%; transform: translate(50%, 14px) rotate(18deg); }
-.airpods-shell.is-open .airpods-bud-left { opacity: 1; transform: translate(-62px, -16px) rotate(-24deg); }
-.airpods-shell.is-open .airpods-bud-right { opacity: 1; transform: translate(62px, -16px) rotate(24deg); }
+.airpods-shell.is-open .airpods-bud-left { opacity: 1; transform: translate(-72px, -34px) rotate(-24deg); }
+.airpods-shell.is-open .airpods-bud-right { opacity: 1; transform: translate(72px, -34px) rotate(24deg); }
 .airpods-case {
     appearance: none;
     border: 0;
@@ -295,10 +294,10 @@ body, html {
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -18px 40px rgba(0,0,0,0.35), 0 20px 45px rgba(0,0,0,0.44);
     backdrop-filter: blur(16px) saturate(1.1);
     -webkit-backdrop-filter: blur(16px) saturate(1.1);
-    padding: 0.68rem;
+    padding: 0.82rem;
     display: flex;
     flex-direction: column;
-    gap: 0.48rem;
+    gap: 0.58rem;
 }
 .music-player-head { display: flex; flex-direction: column; gap: 0.4rem; }
 .music-start-btn {
@@ -326,15 +325,15 @@ body, html {
     cursor: default;
 }
 .music-meta { border-top: 1px solid rgba(255,255,255,0.16); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 0.62rem 0; }
-.music-track-title { color: #fff; margin: 0 0 0.24rem; font-size: 0.86rem; font-weight: 700; letter-spacing: 0.005em; }
-.music-track-artist { color: #c4c8d1; margin: 0; font-size: 0.64rem; letter-spacing: 0.11em; text-transform: uppercase; }
+.music-track-title { color: #fff; margin: 0 0 0.3rem; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.005em; }
+.music-track-artist { color: #c4c8d1; margin: 0; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
 .music-progress-wrap {
     display: grid;
     grid-template-columns: 48px 1fr 48px;
     gap: 0.6rem;
     align-items: center;
 }
-.music-time { color: #8f8f95; font-size: 0.56rem; text-align: center; letter-spacing: 0.1em; }
+.music-time { color: #8f8f95; font-size: 0.62rem; text-align: center; letter-spacing: 0.12em; }
 #music-progress, #music-volume {
     -webkit-appearance: none;
     appearance: none;
@@ -361,8 +360,8 @@ body, html {
 }
 .music-controls { display: flex; justify-content: center; align-items: center; gap: 0.8rem; }
 .music-control-btn {
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     border: 1px solid rgba(255,255,255,0.16);
     color: #e2e8f0;
@@ -384,8 +383,8 @@ body, html {
     transform: none;
 }
 .music-play-btn {
-    width: 42px;
-    height: 42px;
+    width: 50px;
+    height: 50px;
     background: linear-gradient(145deg, #6f7483, #404554);
     color: #fff;
     border-color: rgba(255,255,255,0.26);
@@ -396,13 +395,13 @@ body, html {
 }
 .music-volume-wrap {
     display: grid;
-    grid-template-columns: 14px 1fr 14px;
-    gap: 0.5rem;
+    grid-template-columns: 18px 1fr 18px;
+    gap: 0.6rem;
     align-items: center;
 }
 .music-headphone-note {
-    margin: 0.06rem 0 0;
-    font-size: 0.48rem;
+    margin: 0.08rem 0 0;
+    font-size: 0.52rem;
     color: #9ca3af;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -1129,16 +1128,15 @@ input:checked + .slider:before { transform: translateX(18px); }
         align-items: center;
         justify-content: center;
         padding:
-            calc(var(--music-content-top) + 0.78rem)
-            0.54rem
-            calc(var(--music-content-bottom) + 0.18rem);
+            calc(var(--music-content-top) + 0.25rem)
+            0.62rem
+            calc(var(--music-content-bottom) + 0.32rem);
     }
 
     .airpods-shell {
-        width: min(100%, 286px);
+        width: min(100%, 320px);
         max-height: calc(var(--music-content-height) - 0.2rem);
-        gap: 0.46rem;
-        transform: translateY(20px);
+        gap: 0.56rem;
     }
 
     .airpods-label {
@@ -1146,14 +1144,14 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     .airpods-stage {
-        height: clamp(128px, 22vh, 164px);
-        min-height: 122px;
+        height: clamp(148px, 26vh, 190px);
+        min-height: 142px;
     }
 
     .music-player-card {
         justify-content: space-between;
-        gap: 0.34rem;
-        padding: 0.6rem 0.56rem 0.52rem;
+        gap: 0.44rem;
+        padding: 0.74rem 0.7rem 0.62rem;
         overflow: hidden;
         min-height: 0;
     }
@@ -1166,8 +1164,8 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     .music-volume-wrap {
         width: 100%;
-        grid-template-columns: 11px minmax(0, 1fr) 11px;
-        gap: 0.3rem;
+        grid-template-columns: 12px minmax(0, 1fr) 12px;
+        gap: 0.38rem;
     }
 
     #music-progress,
@@ -1468,19 +1466,19 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     .airpods-shell {
-        width: min(100%, 252px);
+        width: min(100%, 278px);
         max-height: calc(var(--music-content-height) - 0.3rem);
         transform: translateY(14px);
     }
 
     .airpods-stage {
-        height: clamp(116px, 20vh, 144px);
-        min-height: 112px;
+        height: clamp(138px, 24vh, 172px);
+        min-height: 134px;
     }
 
     .music-player-card {
-        gap: 0.3rem;
-        padding: 0.52rem 0.5rem 0.42rem;
+        gap: 0.38rem;
+        padding: 0.66rem 0.58rem 0.5rem;
     }
 
     .music-track-title {
