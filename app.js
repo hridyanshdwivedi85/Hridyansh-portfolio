@@ -1433,7 +1433,6 @@ document.addEventListener('DOMContentLoaded', () => {
         init() {
             this.audio = document.getElementById('music-audio');
             this.shell = document.getElementById('airpods-shell');
-            this.startCaseBtn = document.getElementById('buds-start');
             this.playBtn = document.getElementById('music-play');
             this.playIcon = document.getElementById('music-play-icon');
             this.stopBtn = document.getElementById('music-stop');
@@ -1449,13 +1448,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!this.audio || !this.playBtn || !this.progress || !this.volume) return;
 
             this.loadTrack(0);
-            this.setControlsEnabled(false);
+            this.setControlsEnabled(true);
             this.bind();
+            this.openCase({ auto: true });
             this.bind3DRotation();
             this.initRainScene();
         },
         bind() {
-            this.startCaseBtn?.addEventListener('click', () => this.openCase());
             this.playBtn.addEventListener('click', () => this.togglePlay());
             this.stopBtn?.addEventListener('click', () => this.stopAndDock());
             this.prevBtn?.addEventListener('click', () => this.prevTrack());
@@ -1522,12 +1521,12 @@ document.addEventListener('DOMContentLoaded', () => {
             this.playIcon.classList.toggle('fa-pause', isPlaying);
             this.shell?.classList.toggle('is-playing', isPlaying);
         },
-        openCase() {
+        openCase({ auto = false } = {}) {
             if (this.isReady) return;
             this.isReady = true;
             this.shell?.classList.add('is-open');
             this.setControlsEnabled(true);
-            this.startCaseBtn?.setAttribute('aria-label', 'AirPods case opened');
+            if (!auto) this.audio.play().catch(() => {});
         },
         setControlsEnabled(enabled) {
             const elements = [this.playBtn, this.prevBtn, this.nextBtn, this.progress, this.volume];
