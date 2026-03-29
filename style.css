@@ -211,31 +211,6 @@ body.music-active .nav-area {
     position: relative;
     overflow: visible;
 }
-.airpods-vibration {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 280ms ease;
-}
-.airpods-vibration span {
-    width: 4px;
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(34,197,94,0.9), rgba(59,130,246,0.65));
-    box-shadow: 0 0 14px rgba(34,197,94,0.45);
-    animation: vibration-bars 0.85s ease-in-out infinite;
-    transform-origin: center;
-}
-.airpods-vibration span:nth-child(1) { height: 20px; animation-delay: -0.20s; }
-.airpods-vibration span:nth-child(2) { height: 42px; animation-delay: -0.05s; }
-.airpods-vibration span:nth-child(3) { height: 54px; animation-delay: -0.26s; }
-.airpods-vibration span:nth-child(4) { height: 36px; animation-delay: -0.11s; }
-.airpods-vibration span:nth-child(5) { height: 22px; animation-delay: -0.33s; }
-.airpods-shell.is-playing .airpods-vibration { opacity: 0.9; }
 .airpods-bud {
     position: absolute;
     top: 54%;
@@ -439,11 +414,6 @@ body.music-active .nav-area {
     45% { transform: scale(0.97); opacity: 0.7; }
     100% { transform: scale(1); opacity: 1; }
 }
-@keyframes vibration-bars {
-    0%, 100% { transform: scaleY(0.55); opacity: 0.65; }
-    50% { transform: scaleY(1.08); opacity: 1; }
-}
-
 @keyframes entropy-hint-fade {
     0%, 100% { opacity: 0.45; transform: translateX(-50%) translateY(0); }
     50% { opacity: 1; transform: translateX(-50%) translateY(-2px); }
