@@ -1157,8 +1157,8 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     .airpods-stage {
-        height: clamp(210px, 38vh, 320px);
-        min-height: 190px;
+        height: clamp(186px, 34vh, 280px);
+        min-height: 176px;
     }
 
     .music-player-card {
@@ -1485,8 +1485,8 @@ input:checked + .slider:before { transform: translateX(18px); }
     }
 
     .airpods-stage {
-        height: clamp(188px, 36vh, 264px);
-        min-height: 174px;
+        height: clamp(170px, 32vh, 230px);
+        min-height: 162px;
     }
 
     .music-player-card {
