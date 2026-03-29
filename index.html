@@ -604,7 +604,7 @@
             </div>
 			
             <!-- MODULE: MUSIC PLAYER -->
-            <div class="module overflow-hidden" id="mod-music">
+            <div class="module" id="mod-music">
                 <div class="music-wallpaper-layer"></div>
                 <div class="music-overlay-layer"></div>
                 <div class="music-rain-layer" id="music-rain-layer" aria-hidden="true"></div>
@@ -1094,8 +1094,8 @@
             renderer.toneMappingExposure = 1.4;
 
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-            camera.position.set(0, 1.2, 3.5);
+            const camera = new THREE.PerspectiveCamera(56, 1, 0.1, 100);
+            camera.position.set(0, 0.88, 5.15);
 
             // Lighting
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -1177,7 +1177,7 @@
 
                 model.scale.setScalar(scale);
                 model.position.sub(center.multiplyScalar(scale));
-                model.position.y -= 0.06;
+                model.position.y -= 0.24;
                 scene.add(model);
 
                 if (gltf.animations && gltf.animations.length) {
