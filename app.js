@@ -1414,18 +1414,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const MusicPlayer = {
         tracks: [
             {
-                title: 'Tum Hi Ho Aashiqui 2',
-                artist: 'Local MP3',
-                src: 'assets/media/Tum Hi Ho Aashiqui 2 320 Kbps.mp3'
-            },
-            {
                 title: 'Meri Aashiqui',
-                artist: 'Local MP3',
+                artist: 'Aashiqui 2',
                 src: 'assets/media/Meri Aashiqui Aashiqui 2 320 Kbps.mp3'
             },
             {
                 title: 'Sunn Raha Hai',
-                artist: 'Local MP3',
+                artist: 'Aashiqui 2',
                 src: 'assets/media/Sunn Raha Hai Male Aashiqui 2 320 Kbps.mp3'
             }
         ],
@@ -1477,7 +1472,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.audio.addEventListener('play', () => this.setPlayingState(true));
             this.audio.addEventListener('pause', () => this.setPlayingState(false));
             this.audio.addEventListener('error', () => {
-                this.trackArtistEl.textContent = 'Unable to load this MP3. Skipping to the next track.';
+                if (this.trackArtistEl) {
+                    this.trackArtistEl.textContent = 'Unable to load this track. Skipping to the next one.';
+                }
                 setTimeout(() => this.nextTrack(), 600);
                 this.setPlayingState(false);
             });
@@ -1514,7 +1511,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const track = this.tracks[this.currentIndex];
             this.audio.src = track.src;
             this.trackTitleEl.textContent = track.title;
-            this.trackArtistEl.textContent = track.artist;
+            if (this.trackArtistEl) this.trackArtistEl.textContent = track.artist;
             this.currentTimeEl.textContent = '00:00';
             this.durationEl.textContent = '00:00';
             this.progress.value = 0;
