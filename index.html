@@ -1124,7 +1124,7 @@
             controls.minPolarAngle = Math.PI / 4;
             controls.maxPolarAngle = Math.PI / 1.6;
 
-            // Load Nothing Buds GLB (supports legacy Astro path as fallback)
+            // Load Astro Bot GLB (supports legacy fallback names)
             const loader = new GLTFLoader();
             const dracoLoader = new DRACOLoader();
             dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
@@ -1132,25 +1132,37 @@
             const astroStatus = document.getElementById('astro-load-status');
             // Try multiple URL styles + possible file names because deployments may serve from nested paths.
             const astroModelPaths = [
+                new URL('./assets/textures/astro_bot.glb', document.baseURI).href,
+                '/assets/textures/astro_bot.glb',
+                'assets/textures/astro_bot.glb',
+                new URL('./assets/textures/astro-bot.glb', document.baseURI).href,
+                '/assets/textures/astro-bot.glb',
+                'assets/textures/astro-bot.glb',
+                new URL('./assets/textures/astro_bot.gltf', document.baseURI).href,
+                '/assets/textures/astro_bot.gltf',
+                'assets/textures/astro_bot.gltf',
                 new URL('./assets/textures/nothing_buds_animation.glb', document.baseURI).href,
                 new URL('./assets/textures/nothing_buds.glb', document.baseURI).href,
-                new URL('./assets/textures/nothing-buds.glb', document.baseURI).href,
-                new URL('./assets/textures/astro_bot.glb', document.baseURI).href,
-                '/assets/textures/nothing_buds_animation.glb',
-                '/assets/textures/nothing_buds.glb',
-                '/assets/textures/nothing-buds.glb',
-                '/assets/textures/astro_bot.glb',
-                'assets/textures/nothing_buds_animation.glb',
-                'assets/textures/nothing_buds.glb',
-                'assets/textures/nothing-buds.glb',
-                'assets/textures/astro_bot.glb',
-                'assets/texture/nothing_buds_animation.glb',
-                'assets/texture/nothing_buds.glb',
-                'assets/texture/astro_bot.glb'
+                new URL('./assets/textures/nothing-buds.glb', document.baseURI).href
             ];
             let modelMixer = null;
             let modelActions = [];
             const modelClock = new THREE.Clock();
+
+            const isLikelyValidModelAsset = async (url) => {
+                try {
+                    const response = await fetch(url, { method: 'GET', cache: 'no-store' });
+                    if (!response.ok) return false;
+                    const buffer = await response.arrayBuffer();
+                    if (buffer.byteLength < 32) return false;
+                    const bytes = new Uint8Array(buffer);
+                    const glbMagic = bytes[0] === 0x67 && bytes[1] === 0x6c && bytes[2] === 0x54 && bytes[3] === 0x46; // glTF
+                    const looksJson = bytes[0] === 0x7b || bytes[0] === 0x5b;
+                    return glbMagic || looksJson;
+                } catch {
+                    return false;
+                }
+            };
 
             const placeModel = (gltf) => {
                 const model = gltf.scene;
@@ -1181,23 +1193,30 @@
                 }
 
                 if (astroStatus) {
-                    astroStatus.textContent = 'Nothing Buds Online';
+                    astroStatus.textContent = 'Astro Bot Online';
                     setTimeout(() => astroStatus.style.opacity = '0', 1000);
                     setTimeout(() => astroStatus.remove(), 1600);
                 }
             };
 
-            const tryLoadAstro = (pathIndex = 0) => {
+            const tryLoadAstro = async (pathIndex = 0) => {
                 const modelPath = astroModelPaths[pathIndex];
                 if (!modelPath) {
-                    if (astroStatus) astroStatus.textContent = '3D model unavailable (check asset path/server)';
+                    if (astroStatus) astroStatus.textContent = '3D model unavailable: astro_bot file missing or invalid';
+                    return;
+                }
+
+                const looksValid = await isLikelyValidModelAsset(modelPath);
+                if (!looksValid) {
+                    console.warn(`Skipping invalid model candidate: ${modelPath}`);
+                    tryLoadAstro(pathIndex + 1);
                     return;
                 }
 
                 loader.load(modelPath, (gltf) => {
                     placeModel(gltf);
                 }, undefined, (err) => {
-                    console.warn(`GLB load error at ${modelPath}:`, err);
+                    console.warn(`GLB/GLTF load error at ${modelPath}:`, err);
                     tryLoadAstro(pathIndex + 1);
                 });
             };
