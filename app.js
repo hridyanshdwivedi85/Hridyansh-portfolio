@@ -298,6 +298,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const cursorDot = document.getElementById("cursor-dot");
     const cursorOutline = document.getElementById("cursor-outline");
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+    const shouldRenderTouchCursor = () => {
+        if (!isTouchDevice) return true;
+        return !!document.getElementById('mod-entropy')?.classList.contains('active');
+    };
 
     const updateCursorPosition = (x, y, instant = false) => {
         if (!cursorDot || !cursorOutline) return;
@@ -324,14 +328,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener("touchstart", (e) => {
-        if (!isTouchDevice) return;
+        if (!isTouchDevice || !shouldRenderTouchCursor()) return;
         const touch = e.touches?.[0];
         if (!touch) return;
         updateCursorPosition(touch.clientX, touch.clientY, true);
     }, { passive: true });
 
     window.addEventListener("touchmove", (e) => {
-        if (!isTouchDevice) return;
+        if (!isTouchDevice || !shouldRenderTouchCursor()) return;
         const touch = e.touches?.[0];
         if (!touch) return;
         updateCursorPosition(touch.clientX, touch.clientY, true);
@@ -501,12 +505,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 cursorOutline.classList.add('entropy-cursor');
                 cursorDot.classList.add('entropy-cursor-dot');
                 if (isTouchDevice) {
+                    document.body.classList.add('entropy-mobile-cursor-active');
                     cursorOutline.style.opacity = '1';
                     cursorDot.style.opacity = '0';
                     cursorOutline.style.left = `${window.innerWidth / 2}px`;
                     cursorOutline.style.top = `${window.innerHeight / 2}px`;
                 }
             } else {
+                document.body.classList.remove('entropy-mobile-cursor-active');
                 cursorOutline.classList.remove('entropy-cursor');
                 cursorDot.classList.remove('entropy-cursor-dot');
                 cursorOutline.style.opacity = '';
