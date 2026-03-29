@@ -1125,7 +1125,14 @@
             // Load Astro Bot GLB (supports both texture/textures directories)
             const loader = new GLTFLoader();
             const astroStatus = document.getElementById('astro-load-status');
-            const astroModelPaths = ['assets/textures/astro_bot.glb', 'assets/texture/astro_bot.glb'];
+            // Try multiple URL styles because deployments may serve this page from a nested base path.
+            const astroModelPaths = [
+                new URL('./assets/textures/astro_bot.glb', document.baseURI).href,
+                new URL('assets/textures/astro_bot.glb', document.baseURI).href,
+                '/assets/textures/astro_bot.glb',
+                'assets/textures/astro_bot.glb',
+                'assets/texture/astro_bot.glb'
+            ];
 
             const placeModel = (gltf) => {
                 const model = gltf.scene;
@@ -1150,7 +1157,7 @@
             const tryLoadAstro = (pathIndex = 0) => {
                 const modelPath = astroModelPaths[pathIndex];
                 if (!modelPath) {
-                    if (astroStatus) astroStatus.textContent = 'Astro Bot unavailable';
+                    if (astroStatus) astroStatus.textContent = 'Astro Bot unavailable (check asset path/server)';
                     return;
                 }
 
