@@ -181,7 +181,10 @@
     * @enum {string}
     */
     Runner.events = {
-    ANIM_END: 'webkitAnimationEnd',
+    ANIM_END: 'animationend',
+    WEBKIT_ANIM_END: 'webkitAnimationEnd',
+    POINTERDOWN: 'pointerdown',
+    POINTERUP: 'pointerup',
     CLICK: 'click',
     KEYDOWN: 'keydown',
     KEYUP: 'keyup',
@@ -368,6 +371,9 @@
     document.styleSheets[0].insertRule(keyframes, 0);
     this.containerEl.addEventListener(Runner.events.ANIM_END,
     this.startGame.bind(this));
+    this.containerEl.addEventListener(Runner.events.WEBKIT_ANIM_END,
+    this.startGame.bind(this));
+    this.containerEl.style.animation = 'intro .4s ease-out 1 both';
     this.containerEl.style.webkitAnimation = 'intro .4s ease-out 1 both';
     this.containerEl.style.width = this.dimensions.WIDTH + 'px';
     if (this.touchController) {
@@ -386,6 +392,7 @@
     this.runningTime = 0;
     this.playingIntro = false;
     this.tRex.playingIntro = false;
+    this.containerEl.style.animation = '';
     this.containerEl.style.webkitAnimation = '';
     this.playCount++;
     // Handle tabbing off the page. Pause the current game.
@@ -461,11 +468,14 @@
     case events.KEYDOWN:
     case events.TOUCHSTART:
     case events.MOUSEDOWN:
+    case events.POINTERDOWN:
+    case events.CLICK:
     this.onKeyDown(e);
     break;
     case events.KEYUP:
     case events.TOUCHEND:
     case events.MOUSEUP:
+    case events.POINTERUP:
     this.onKeyUp(e);
     break;
     }
@@ -475,18 +485,21 @@
     * Bind relevant key / mouse / touch listeners.
     */
     startListening: function() {
-    // Keys.
+    // Keyboard.
     document.addEventListener(Runner.events.KEYDOWN, this);
     document.addEventListener(Runner.events.KEYUP, this);
-    if (IS_MOBILE) {
-    // Mobile only touch devices.
+    // Cross-device input so tapping/clicking anywhere can jump.
+    document.addEventListener(Runner.events.TOUCHSTART, this);
+    document.addEventListener(Runner.events.TOUCHEND, this);
+    document.addEventListener(Runner.events.MOUSEDOWN, this);
+    document.addEventListener(Runner.events.MOUSEUP, this);
+    document.addEventListener(Runner.events.POINTERDOWN, this);
+    document.addEventListener(Runner.events.POINTERUP, this);
+    document.addEventListener(Runner.events.CLICK, this);
+    if (IS_MOBILE && this.touchController) {
     this.touchController.addEventListener(Runner.events.TOUCHSTART, this);
     this.touchController.addEventListener(Runner.events.TOUCHEND, this);
     this.containerEl.addEventListener(Runner.events.TOUCHSTART, this);
-    } else {
-    // Mouse.
-    document.addEventListener(Runner.events.MOUSEDOWN, this);
-    document.addEventListener(Runner.events.MOUSEUP, this);
     }
     },
     /**
@@ -495,13 +508,17 @@
     stopListening: function() {
     document.removeEventListener(Runner.events.KEYDOWN, this);
     document.removeEventListener(Runner.events.KEYUP, this);
-    if (IS_MOBILE) {
+    document.removeEventListener(Runner.events.TOUCHSTART, this);
+    document.removeEventListener(Runner.events.TOUCHEND, this);
+    document.removeEventListener(Runner.events.MOUSEDOWN, this);
+    document.removeEventListener(Runner.events.MOUSEUP, this);
+    document.removeEventListener(Runner.events.POINTERDOWN, this);
+    document.removeEventListener(Runner.events.POINTERUP, this);
+    document.removeEventListener(Runner.events.CLICK, this);
+    if (IS_MOBILE && this.touchController) {
     this.touchController.removeEventListener(Runner.events.TOUCHSTART, this);
     this.touchController.removeEventListener(Runner.events.TOUCHEND, this);
     this.containerEl.removeEventListener(Runner.events.TOUCHSTART, this);
-    } else {
-    document.removeEventListener(Runner.events.MOUSEDOWN, this);
-    document.removeEventListener(Runner.events.MOUSEUP, this);
     }
     },
     /**
@@ -511,7 +528,10 @@
     onKeyDown: function(e) {
     if (e.target != this.detailsButton) {
     if (!this.crashed && (Runner.keycodes.JUMP[String(e.keyCode)] ||
-    e.type == Runner.events.TOUCHSTART)) {
+    e.type == Runner.events.TOUCHSTART ||
+    e.type == Runner.events.MOUSEDOWN ||
+    e.type == Runner.events.POINTERDOWN ||
+    e.type == Runner.events.CLICK)) {
     if (!this.activated) {
     this.loadSounds();
     this.activated = true;
@@ -540,7 +560,8 @@
     var keyCode = String(e.keyCode);
     var isjumpKey = Runner.keycodes.JUMP[keyCode] ||
     e.type == Runner.events.TOUCHEND ||
-    e.type == Runner.events.MOUSEDOWN;
+    e.type == Runner.events.MOUSEUP ||
+    e.type == Runner.events.POINTERUP;
     if (this.isRunning() && isjumpKey) {
     this.tRex.endJump();
     } else if (Runner.keycodes.DUCK[keyCode]) {
@@ -2535,9 +2556,8 @@ html[subframe] body {
 <body id="t">
 <a href="index.html" style="position:fixed;top:14px;left:14px;z-index:9999;padding:8px 12px;border:1px solid #d9d9d9;background:#fff;color:#333;border-radius:999px;text-decoration:none;font-family:Arial,sans-serif;font-size:14px;">← Main Menu</a>
 <div id="main-frame-error" class="interstitial-wrapper" jstcache="0">
-    <div class="onlyforchrome" style="font-size: 30px;text-align: center;font-family: Helvetica;">Running T-Rex</div>
-    <div class="onlyforchrome" style="margin-top:5px;text-align:center;color:#8a8a8a;margin-bottom:80px; font-size:.8em;line-height:1.2em;font-family: Georgia;">Press "Space" to jump your Dino and start the game.</div>
-	<div id="main-frame-notchrome" style="display:none; margin-top:50px;">Sorry, this game only runs on the Google Chrome! You can download it free <a href="https://www.google.com/chrome">here</a></div>
+    <div style="font-size: 30px;text-align: center;font-family: Helvetica;">Running T-Rex</div>
+    <div style="margin-top:5px;text-align:center;color:#8a8a8a;margin-bottom:80px; font-size:.8em;line-height:1.2em;font-family: Georgia;">Press Space, tap, or click anywhere to jump and start the game.</div>
     <div id="offline-resources" jstcache="0">
     <div id="offline-resources-1x" jstcache="0">
       <img id="1x-obstacle-large" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAAyCAMAAACJUtIoAAAACVBMVEX////39/dTU1OabbyfAAAAAXRSTlMAQObYZgAAAXhJREFUeF7t2NGqAjEMANGM///RlwvaYQndULuFPJgHUYaEI6IPhgNAOA8HZ+3U6384F5y1U6YzAZTWG+dZamnFEstBFtCKJZSHWMADLJ18z+JqpQeLdKoDC8siC5iFCQs4znIxB5B1t6F3lQWkL4N0JsF+u6GXJdbI+FKW+yWr3lhgCZ2VSag3Nlk/FnRkIRbasLCO0oulikMsvmGpeiGLZ1jOMgtIP5bODivYYUXEIVbwFCt4khVssRgsgidZwQaLd2A8m7MYLGTl4KeQQs2y4kMAMGGlmQViDIb5O6xZnnLD485dIBzqDSE1yyFdL4Iqu4XJqUUWl/NVAFSZq1P6a5aqbAUM2epQbBioWflUBABiUyhYyZoCBev8XyMAObDNOhOAfiyxmHU0YNlldGAphGjFCjA3YkUn1o/1Y3EkZFZ5isCC6NUgwDBn1RuXH96doNfAhDXfsIyJ2AnolcCVhay0kcYbW0HvCO8OwIcJ3GzkORpkFuUP/1Ec8FW1qJkAAAAASUVORK5CYII=" jstcache="0">
@@ -2565,16 +2585,7 @@ html[subframe] body {
   </div>
 
   <script type="text/javascript">
-    if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-      new Runner('.interstitial-wrapper');
-    } else {
-      document.getElementById("main-frame-notchrome").style.display="";
-	}
-  </script>
-<script type="text/javascript">
-    if (navigator.userAgent.toLowerCase().indexOf('chrome') <= -1) {
-	  hideClass(".onlyforchrome");
-	}
+    new Runner('.interstitial-wrapper');
   </script>
 	  
 
