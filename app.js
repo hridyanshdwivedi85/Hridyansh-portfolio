@@ -354,10 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    window.addEventListener("mousemove", (e) => {
-        // Only run if the device has a mouse pointer (ignores touch screens)
+    window.addEventListener("pointermove", (e) => {
+        if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
         if (window.matchMedia("(pointer: fine)").matches) {
-            updateCursorPosition(e.clientX, e.clientY);
+            const instantFollow = document.getElementById('mod-entropy')?.classList.contains('active');
+            updateCursorPosition(e.clientX, e.clientY, instantFollow);
         }
     });
 
@@ -497,6 +498,8 @@ document.addEventListener('DOMContentLoaded', () => {
             this.updateNavIndicator();
             window.addEventListener('resize', () => this.updateNavIndicator(), { passive: true });
             window.addEventListener('orientationchange', () => this.updateNavIndicator(), { passive: true });
+            const navWrap = document.getElementById('main-nav');
+            navWrap?.addEventListener('scroll', () => this.updateNavIndicator(), { passive: true });
         },
         isOnNavRail(clientX) {
             if (typeof clientX !== 'number') return false;
@@ -517,11 +520,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const navRect = navWrap.getBoundingClientRect();
             const activeRect = activeTab.getBoundingClientRect();
-            const top = Math.max(0, activeRect.top - navRect.top + 2);
-            const height = Math.max(8, activeRect.height - 4);
-
-            this.navIndicator.style.top = `${top}px`;
-            this.navIndicator.style.height = `${height}px`;
+            const isMobileRail = window.matchMedia('(max-width: 1023px)').matches;
+            if (isMobileRail) {
+                const left = Math.max(0, activeRect.left - navRect.left + navWrap.scrollLeft);
+                const width = Math.max(24, activeRect.width);
+                this.navIndicator.style.transform = `translate3d(${left}px, 0, 0)`;
+                this.navIndicator.style.width = `${width}px`;
+                this.navIndicator.style.height = `${Math.max(8, activeRect.height)}px`;
+            } else {
+                const top = Math.max(0, activeRect.top - navRect.top + navWrap.scrollTop + 2);
+                const height = Math.max(8, activeRect.height - 4);
+                this.navIndicator.style.transform = `translate3d(0, ${top}px, 0)`;
+                this.navIndicator.style.width = '';
+                this.navIndicator.style.height = `${height}px`;
+            }
             this.navIndicator.style.opacity = '1';
         },
         bindScrollTabSwitch() {
@@ -569,6 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.navItems.forEach(n => n.classList.remove('active')); 
             navElement.classList.add('active');
             this.updateNavIndicator();
+            requestAnimationFrame(() => this.updateNavIndicator());
             
             BGEngine.setTheme(theme);
 
