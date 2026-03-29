@@ -99,7 +99,7 @@ body.music-active .nav-area {
     max-width: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: visible;
     border: 0;
     border-radius: 0;
 }
@@ -176,6 +176,7 @@ body.music-active .nav-area {
     align-items: flex-end;
     justify-content: center;
     padding: 1.8rem 0.85rem 3.6rem;
+    overflow: visible;
 }
 .airpods-shell {
     width: min(332px, 90vw);
