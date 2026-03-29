@@ -32,7 +32,7 @@
         .cursor-speed { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text y='24' font-size='24'>🏎️</text></svg>"), auto; }
 
         /* Core Mechanics */
-        #slider-master { display: flex; width: 1000vw; height: 100dvh; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1); will-change: transform; }
+        #slider-master { display: flex; width: 1000vw; height: 100dvh; transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1); will-change: transform; touch-action: pan-y; }
         .ad-slide { width: 100vw; height: 100dvh; position: relative; overflow: hidden; flex-shrink: 0; }
         
         .bg-layer { position: absolute; inset: 0; z-index: 10; background-size: cover; background-position: center; transition: transform 12s cubic-bezier(0.2, 0.8, 0.2, 1); transform: scale(1.15); pointer-events: none;}
@@ -242,6 +242,12 @@
             #xbox-text-block { max-width: none !important; padding: 1rem !important; }
             .xbox-hex-ring, .xbox-hex-ring-inner { display: none; }
             .xbox-title { font-size: clamp(2.2rem, 9vw, 3.2rem) !important; line-height: 0.92 !important; }
+            #xbox-visual-block { height: 30vh !important; margin-top: 0 !important; }
+            .xbox-sarcastic { font-size: 0.72rem !important; line-height: 1.45 !important; padding: 8px 12px !important; margin-bottom: 0.75rem !important; }
+            .xbox-spec-row { gap: 4px !important; margin-bottom: 0.8rem !important; }
+            .xbox-spec-item { font-size: 0.54rem !important; letter-spacing: 0.05em !important; }
+            .xbox-price-tag { padding: 7px 16px !important; }
+            .xbox-mobile-hide { display: none !important; }
             /* GTA6 mobile overrides */
             #gta6-layout { flex-direction: column; padding: calc(env(safe-area-inset-top) + 3.9rem) 1rem calc(env(safe-area-inset-bottom) + 5.2rem); gap: 1.5rem; overflow-y: auto; justify-content: flex-start; }
             #gta6-text-col { flex: none; width: 100%; }
@@ -561,7 +567,7 @@
                 </div>
 
                 <!-- Additional sarcastic line -->
-                <div style="font-family:'Fira Code',monospace;font-size:clamp(0.58rem,0.9vw,0.72rem);color:rgba(82,209,82,0.5);margin-bottom:1.2rem;" class="gsap-anim-left">
+                <div style="font-family:'Fira Code',monospace;font-size:clamp(0.58rem,0.9vw,0.72rem);color:rgba(82,209,82,0.5);margin-bottom:1.2rem;" class="gsap-anim-left xbox-mobile-hide">
                     > Zero load screens. Infinite excuses to skip the gym.
                 </div>
 
@@ -741,12 +747,11 @@
             const btnNext = document.getElementById('btn-next');
             const dotContainer = document.getElementById('dot-container');
             const slides = document.querySelectorAll('.ad-slide');
-            const body = document.body;
-            
             let currentSlide = 0;
-            const totalSlides = 10; 
+            const totalSlides = slides.length;
+            let isTransitioning = false;
 
-            // Create 7 Dots
+            // Create navigation dots
             for(let i=0; i<totalSlides; i++) {
                 let dot = document.createElement('div');
                 dot.className = "w-1.5 h-1.5 rounded-full bg-white transition-all duration-300 cursor-pointer " + (i===0 ? "opacity-100 transform scale-150" : "opacity-40");
@@ -757,11 +762,12 @@
 
             triggerSlideAnim(0);
 
-            btnNext.addEventListener('click', () => { if(currentSlide < totalSlides - 1) { currentSlide++; updateSlider(); } });
-            btnPrev.addEventListener('click', () => { if(currentSlide > 0) { currentSlide--; updateSlider(); } });
+            btnNext.addEventListener('click', () => { if(currentSlide < totalSlides - 1 && !isTransitioning) { currentSlide++; updateSlider(); } });
+            btnPrev.addEventListener('click', () => { if(currentSlide > 0 && !isTransitioning) { currentSlide--; updateSlider(); } });
 
             function updateSlider() {
-                master.style.transform = `translateX(-${currentSlide * 100}vw)`;
+                isTransitioning = true;
+                master.style.transform = `translate3d(-${currentSlide * 100}vw, 0, 0)`;
                 
                 btnPrev.disabled = currentSlide === 0;
                 btnNext.disabled = currentSlide === totalSlides - 1;
@@ -787,6 +793,35 @@
 
                 triggerSlideAnim(currentSlide);
             }
+
+            master.addEventListener('transitionend', () => { isTransitioning = false; }, { passive: true });
+
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let isSwiping = false;
+            const swipeThreshold = 45;
+
+            master.addEventListener('touchstart', (e) => {
+                if (!e.touches?.length) return;
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                isSwiping = true;
+            }, { passive: true });
+
+            master.addEventListener('touchend', (e) => {
+                if (!isSwiping || isTransitioning || !e.changedTouches?.length) return;
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dy = e.changedTouches[0].clientY - touchStartY;
+                isSwiping = false;
+                if (Math.abs(dx) < swipeThreshold || Math.abs(dx) <= Math.abs(dy)) return;
+                if (dx < 0 && currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSlider();
+                } else if (dx > 0 && currentSlide > 0) {
+                    currentSlide--;
+                    updateSlider();
+                }
+            }, { passive: true });
 
             // V7 Unique GSAP Timelines per Slide Element
             function triggerSlideAnim(slideIndex) {
