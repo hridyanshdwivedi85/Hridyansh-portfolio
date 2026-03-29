@@ -1468,6 +1468,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     .airpods-shell {
         width: min(100%, 278px);
         max-height: calc(var(--music-content-height) - 0.3rem);
+        transform: translateY(14px);
     }
 
     .airpods-stage {
